@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8n 實用案例：連接 LLM 與知識庫的自動客服機器人 - n8n 自動化工作流學習指南</title>
+    <meta name="description" content="使用 n8n 創建連接 LLM 與知識庫的自動客服機器人的完整實作指南">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <img src="images/n8n-logo.png" alt="n8n Logo">
+                <h1>n8n 自動化工作流學習指南</h1>
+            </div>
+            <button class="mobile-menu-btn">☰</button>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">首頁</a></li>
+                    <li><a href="learning-path.html">學習路徑</a></li>
+                    <li><a href="basic-tutorial.html">基礎教學</a></li>
+                    <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                    <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    <li><a href="use-cases.html" class="active">實用案例</a></li>
+                    <li><a href="resources.html">資源</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="two-column">
+                <div class="main-content">
+                    <section id="customer-service-bot" class="content-section">
+                        <h2>實用案例：連接 LLM 與知識庫的自動客服機器人</h2>
+                        
+                        <p>本案例將指導您如何使用 n8n 創建一個智能客服機器人，該機器人結合了大型語言模型 (LLM) 和自定義知識庫，能夠自動回答用戶問題，並在無法解答時轉接真人客服。這種解決方案特別適合希望提高客戶支持效率、降低成本，同時保持高質量服務的企業和組織。</p>
+
+                        <section id="use-case-overview" class="content-section">
+                            <h3>案例概述</h3>
+                            <p>自動客服機器人已成為現代客戶支持不可或缺的一部分。然而，傳統的基於規則的機器人往往無法處理複雜或非標準的查詢。通過結合 LLM 的自然語言理解能力和自定義知識庫的專業領域知識，我們可以創建一個更智能、更有效的客服解決方案。</p>
+
+                            <h4>主要功能</h4>
+                            <ul>
+                                <li>多渠道接入：支持網站聊天、Telegram、電子郵件等多種渠道</li>
+                                <li>知識庫整合：使用向量數據庫存儲和檢索相關信息</li>
+                                <li>LLM 驅動的回答生成：基於檢索到的信息生成自然、準確的回答</li>
+                                <li>意圖識別：識別用戶意圖，提供針對性的回應</li>
+                                <li>人工轉接：在無法解答或需要人工處理時，智能轉接真人客服</li>
+                                <li>對話管理：維護對話上下文，提供連貫的交互體驗</li>
+                                <li>多語言支持：自動檢測語言並提供多語言回答</li>
+                            </ul>
+
+                            <h4>技術要求</h4>
+                            <ul>
+                                <li>n8n 實例（自託管或雲端）</li>
+                                <li>OpenAI API 密鑰（用於 GPT 模型和嵌入生成）</li>
+                                <li>PostgreSQL 數據庫（帶 pgvector 擴展）或其他向量數據庫</li>
+                                <li>（可選）Telegram Bot API 密鑰</li>
+                                <li>（可選）Slack Webhook URL（用於通知）</li>
+                            </ul>
+                        </section>
+
+                        <section id="workflow-architecture" class="content-section">
+                            <h3>工作流架構</h3>
+                            <p>我們的自動客服機器人系統將分為四個主要部分：</p>
+
+                            <h4>1. 知識庫建立與維護</h4>
+                            <p>這部分負責創建和維護機器人的知識基礎：</p>
+                            <ul>
+                                <li>文檔收集：從多個來源收集知識文檔（FAQ、產品手冊、支持文章等）</li>
+                                <li>文檔處理：分割文檔為適合嵌入的片段</li>
+                                <li>嵌入生成：為每個文檔片段生成向量嵌入</li>
+                                <li>向量存儲：將嵌入和原始文本存儲在向量數據庫中</li>
+                                <li>知識更新：定期更新知識庫以保持信息的準確性和時效性</li>
+                            </ul>
+
+                            <h4>2. 用戶查詢處理</h4>
+                            <p>這部分處理來自各種渠道的用戶查詢：</p>
+                            <ul>
+                                <li>多渠道接入：接收來自網站、Telegram、電子郵件等渠道的查詢</li>
+                                <li>查詢標準化：將不同渠道的查詢轉換為標準格式</li>
+                                <li>語言檢測：識別查詢的語言</li>
+                                <li>意圖識別：分析用戶意圖（問題、投訴、請求等）</li>
+                                <li>實體提取：識別查詢中的關鍵實體（產品名稱、訂單號等）</li>
+                            </ul>
+
+                            <h4>3. 知識檢索與回答生成</h4>
+                            <p>這部分從知識庫中檢索相關信息並生成回答：</p>
+                            <ul>
+                                <li>查詢嵌入：為用戶查詢生成向量嵌入</li>
+                                <li>相似度搜索：在向量數據庫中查找相似的文檔片段</li>
+                                <li>上下文組裝：將檢索到的信息組裝為 LLM 的上下文</li>
+                                <li>回答生成：使用 LLM 基於上下文生成回答</li>
+                                <li>回答評估：評估回答的質量和可信度</li>
+                            </ul>
+
+                            <h4>4. 對話管理與人工轉接</h4>
+                            <p>這部分管理對話流程並處理人工轉接：</p>
+                            <ul>
+                                <li>對話歷史：維護用戶對話歷史</li>
+                                <li>狀態管理：跟踪對話狀態和進度</li>
+                                <li>人工轉接決策：決定何時需要轉接真人客服</li>
+                                <li>通知系統：通知客服人員需要處理的查詢</li>
+                                <li>回覆發送：將回答發送回用戶的原始渠道</li>
+                            </ul>
+                        </section>
+
+                        <section id="implementation" class="content-section">
+                            <h3>實作步驟</h3>
+                            <p>讓我們逐步實作這個自動客服機器人系統：</p>
+
+                            <h4>步驟 1：設置知識庫</h4>
+                            <p>首先，我們需要創建和設置向量數據庫來存儲知識：</p>
+
+                            <h5>1.1 設置 PostgreSQL 與 pgvector</h5>
+                            <pre><code class="language-javascript">// 創建新工作流：Knowledge Base Setup
+// 添加 PostgreSQL 節點
+// 操作：執行查詢
+// 查詢：
+CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE TABLE IF NOT EXISTS knowledge_base (
+  id SERIAL PRIMARY KEY,
+  content TEXT NOT NULL,
+  embedding VECTOR(1536) NOT NULL,
+  metadata JSONB,
+  source TEXT,
+  category TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS knowledge_base_embedding_idx ON knowledge_base USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+</code></pre>
+
+                            <h5>1.2 設置文檔處理工作流</h5>
+                            <pre><code class="language-javascript">// 創建新工作流：Document Processing
+// 添加 Webhook 節點
+// 方法：POST
+// 路徑：/process-document
+// 響應模式：等待
+
+// 添加 Function 節點
+// 處理文檔輸入
+return items.map(item => {
+  const data = item.json.body || item.json;
+  
+  // 獲取文檔內容
+  let text = data.text || '';
+  const url = data.url || '';
+  const fileContent = data.fileContent || '';
+  
+  // 如果提供了 URL，則從 URL 獲取內容
+  if (url && !text) {
+    // URL 處理將在後續 HTTP Request 節點中進行
+    return {
+      json: {
+        ...data,
+        inputType: 'url',
+        url,
+        category: data.category || 'general',
+        source: data.source || url
+      }
+    };
+  }
+  
+  // 如果提供了文件內容，則使用文件內容
+  if (fileContent && !text) {
+    text = fileContent;
+  }
+  
+  return {
+    json: {
+      ...data,
+      text,
+      inputType: fileContent ? 'file' : 'text',
+      category: data.category || 'general',
+      source: data.source || 'manual_input'
+    }
+  };
+});</code></pre>
+
+                            <h5>1.3 處理 URL 輸入</h5>
+                            <pre><code class="language-javascript">// 添加 IF 節點
+// 條件：{{$json.inputType === 'url'}}
+
+// 添加 HTTP Request 節點（True 分支）
+// 方法：GET
+// URL：{{$json.url}}
+// 響應格式：String
+
+// 添加 Function 節點（True 分支）
+// 處理 URL 響應
+return items.map(item => {
+  const data = item.json;
+  const text = item.json.data || '';
+  
+  return {
+    json: {
+      ...data,
+      text,
+      inputType: 'url'
+    }
+  };
+});</code></pre>
+
+                            <h5>1.4 文檔分割</h5>
+                            <pre><code class="language-javascript">// 添加 Merge 節點
+// 模式：合併所有
+
+// 添加 Function 節點
+// 分割文檔為片段
+function splitTextIntoChunks(text, maxChunkSize = 1000, overlap = 200) {
+  // 如果文本足夠短，直接返回
+  if (text.length <= maxChunkSize) {
+    return [text];
+  }
+  
+  // 按段落分割
+  const paragraphs = text.split(/\n\s*\n/);
+  const chunks = [];
+  let currentChunk = '';
+  
+  for (const paragraph of paragraphs) {
+    // 如果添加這個段落會超出最大長度，先保存當前片段
+    if (currentChunk.length + paragraph.length > maxChunkSize && currentChunk.length > 0) {
+      chunks.push(currentChunk);
+      
+      // 保留一部分重疊內容
+      const lastParagraphs = currentChunk.split(/\n\s*\n/).slice(-2);
+      currentChunk = lastParagraphs.join('\n\n');
+    }
+    
+    // 添加當前段落
+    currentChunk += (currentChunk ? '\n\n' : '') + paragraph;
+  }
+  
+  // 添加最後一個片段
+  if (currentChunk) {
+    chunks.push(currentChunk);
+  }
+  
+  return chunks;
+}
+
+return items.map(item => {
+  const text = item.json.text;
+  const chunks = splitTextIntoChunks(text);
+  
+  return {
+    json: {
+      ...item.json,
+      chunks,
+      chunkCount: chunks.length
+    }
+  };
+});</code></pre>
+
+                            <h5>1.5 生成嵌入向量</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 準備嵌入生成
+return items.flatMap(item => {
+  const chunks = item.json.chunks || [];
+  const source = item.json.source;
+  const category = item.json.category;
+  
+  // 為每個片段創建一個項目
+  return chunks.map((chunk, index) => {
+    return {
+      json: {
+        content: chunk,
+        source,
+        category,
+        chunkIndex: index,
+        totalChunks: chunks.length,
+        metadata: {
+          source,
+          category,
+          chunkIndex: index,
+          totalChunks: chunks.length,
+          processedAt: new Date().toISOString()
+        }
+      }
+    };
+  });
+});
+
+// 添加 OpenAI 節點
+// 操作：Embedding
+// 輸入：{{$json.content}}
+// 模型：text-embedding-3-small
+
+// 添加 Function 節點
+// 處理嵌入結果
+return items.map(item => {
+  const embedding = item.json.data[0].embedding;
+  
+  return {
+    json: {
+      ...item.json,
+      embedding
+    }
+  };
+});</code></pre>
+
+                            <h5>1.6 存儲到向量數據庫</h5>
+                            <pre><code class="language-javascript">// 添加 PostgreSQL 節點
+// 操作：插入
+// 表：knowledge_base
+// 數據：
+// - content: {{$json.content}}
+// - embedding: {{$json.embedding}}
+// - metadata: {{JSON.stringify($json.metadata)}}
+// - source: {{$json.source}}
+// - category: {{$json.category}}
+
+// 添加 Function 節點
+// 處理存儲結果
+return items.map(item => {
+  return {
+    json: {
+      success: true,
+      message: `成功存儲文檔片段 ${item.json.chunkIndex + 1}/${item.json.totalChunks}`,
+      source: item.json.source,
+      category: item.json.category,
+      chunkIndex: item.json.chunkIndex,
+      totalChunks: item.json.totalChunks
+    }
+  };
+});
+
+// 添加 Respond to Webhook 節點
+// 響應類型：JSON
+// 響應數據：
+{
+  "success": true,
+  "message": "文檔處理完成",
+  "totalChunks": {{$json.totalChunks}},
+  "source": "{{$json.source}}",
+  "category": "{{$json.category}}"
+}</code></pre>
+
+                            <h4>步驟 2：設置用戶查詢處理</h4>
+                            <p>接下來，我們創建工作流來處理用戶的查詢：</p>
+
+                            <h5>2.1 設置網站聊天接入</h5>
+                            <pre><code class="language-javascript">// 創建新工作流：Chatbot Interface
+// 添加 Webhook 節點
+// 方法：POST
+// 路徑：/chat
+// 響應模式：等待
+
+// 添加 Function 節點
+// 處理聊天輸入
+return items.map(item => {
+  const data = item.json.body || item.json;
+  
+  return {
+    json: {
+      message: data.message || '',
+      userId: data.userId || data.sessionId || Date.now().toString(),
+      sessionId: data.sessionId || Date.now().toString(),
+      channel: 'website',
+      timestamp: new Date().toISOString(),
+      language: data.language || 'auto',
+      metadata: data.metadata || {}
+    }
+  };
+});</code></pre>
+
+                            <h5>2.2 設置 Telegram 接入</h5>
+                            <pre><code class="language-javascript">// 創建新工作流：Telegram Bot
+// 添加 Telegram Trigger 節點
+// 更新類型：消息
+// Bot 名稱：your-bot-name
+
+// 添加 Function 節點
+// 處理 Telegram 消息
+return items.map(item => {
+  const message = item.json.message;
+  
+  return {
+    json: {
+      message: message.text || '',
+      userId: message.from.id.toString(),
+      sessionId: message.chat.id.toString(),
+      channel: 'telegram',
+      timestamp: new Date().toISOString(),
+      language: 'auto',
+      metadata: {
+        firstName: message.from.first_name,
+        lastName: message.from.last_name,
+        username: message.from.username
+      }
+    }
+  };
+});</code></pre>
+
+                            <h5>2.3 查詢標準化和語言檢測</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 標準化查詢
+return items.map(item => {
+  // 清理和標準化消息文本
+  let message = item.json.message.trim();
+  
+  // 移除多餘的空格和換行
+  message = message.replace(/\s+/g, ' ');
+  
+  return {
+    json: {
+      ...item.json,
+      originalMessage: item.json.message,
+      message
+    }
+  };
+});
+
+// 添加 IF 節點
+// 條件：{{$json.language === 'auto'}}
+
+// 添加 OpenAI 節點（True 分支）
+// 操作：Chat
+// 模型：gpt-3.5-turbo
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個語言檢測助手。你的任務是識別提供文本的語言，並返回 ISO 639-1 語言代碼。請只返回語言代碼，不要添加任何解釋或額外文本。"
+  },
+  {
+    "role": "user",
+    "content": "請識別以下文本的語言：\n\n{{$json.message}}"
+  }
+]
+// 溫度：0.3
+// 最大令牌：20
+
+// 添加 Function 節點（True 分支）
+// 處理語言檢測結果
+return items.map(item => {
+  const detectedLanguage = item.json.choices[0].message.content.trim();
+  
+  return {
+    json: {
+      ...item.json,
+      language: detectedLanguage,
+      detectedLanguage: true
+    }
+  };
+});</code></pre>
+
+                            <h5>2.4 意圖識別和實體提取</h5>
+                            <pre><code class="language-javascript">// 添加 Merge 節點
+// 模式：合併所有
+
+// 添加 OpenAI 節點
+// 操作：Chat
+// 模型：gpt-3.5-turbo
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個意圖識別助手。你的任務是分析用戶消息，識別其主要意圖和任何相關實體。請以 JSON 格式返回結果。"
+  },
+  {
+    "role": "user",
+    "content": "請分析以下用戶消息的意圖和實體：\n\n\"{{$json.message}}\""
+  }
+]
+// 溫度：0.3
+// 響應格式：JSON 對象
+// 響應架構：
+{
+  "intent": {
+    "type": "string",
+    "enum": ["greeting", "question", "support_request", "complaint", "feedback", "order_status", "account_issue", "general_question", "other"],
+    "description": "用戶消息的主要意圖"
+  },
+  "confidence": {
+    "type": "number",
+    "description": "意圖識別的置信度，範圍 0-1"
+  },
+  "entities": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "實體類型，如 product, order_id, date, location 等"
+        },
+        "value": {
+          "type": "string",
+          "description": "實體的實際值"
+        }
+      }
+    },
+    "description": "從用戶消息中提取的關鍵實體"
+  }
+}
+
+// 添加 Function 節點
+// 處理意圖識別結果
+return items.map(item => {
+  return {
+    json: {
+      ...item.json,
+      intent: item.json.intent,
+      intentConfidence: item.json.confidence,
+      entities: item.json.entities || []
+    }
+  };
+});</code></pre>
+
+                            <h4>步驟 3：設置知識檢索與回答生成</h4>
+                            <p>現在，我們實現知識檢索和回答生成功能：</p>
+
+                            <h5>3.1 生成查詢嵌入</h5>
+                            <pre><code class="language-javascript">// 添加 OpenAI 節點
+// 操作：Embedding
+// 輸入：{{$json.message}}
+// 模型：text-embedding-3-small
+
+// 添加 Function 節點
+// 處理嵌入結果
+return items.map(item => {
+  const embedding = item.json.data[0].embedding;
+  
+  return {
+    json: {
+      ...item.json,
+      queryEmbedding: embedding
+    }
+  };
+});</code></pre>
+
+                            <h5>3.2 向量相似度搜索</h5>
+                            <pre><code class="language-javascript">// 添加 PostgreSQL 節點
+// 操作：執行查詢
+// 查詢：
+SELECT 
+  id, 
+  content, 
+  source, 
+  category,
+  metadata,
+  1 - (embedding <=> $1) AS similarity
+FROM 
+  knowledge_base
+WHERE 
+  category = $2 OR $2 = 'all'
+ORDER BY 
+  embedding <=> $1
+LIMIT 5;
+// 查詢參數：
+// - $1: {{$json.queryEmbedding}}
+// - $2: {{$json.metadata.category || 'all'}}
+
+// 添加 Function 節點
+// 處理搜索結果
+return items.map(item => {
+  const searchResults = item.json.data || [];
+  
+  return {
+    json: {
+      ...item.json,
+      searchResults,
+      hasRelevantResults: searchResults.length > 0
+    }
+  };
+});</code></pre>
+
+                            <h5>3.3 上下文組裝</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 組裝上下文
+return items.map(item => {
+  const searchResults = item.json.searchResults || [];
+  
+  // 組裝上下文
+  let context = '';
+  if (searchResults.length > 0) {
+    context = '以下是與問題相關的信息：\n\n';
+    
+    searchResults.forEach((result, index) => {
+      context += `[文檔 ${index + 1}] 來源: ${result.source}\n`;
+      context += `${result.content}\n\n`;
+    });
+  } else {
+    context = '沒有找到與問題直接相關的信息。';
+  }
+  
+  return {
+    json: {
+      ...item.json,
+      context,
+      hasRelevantContext: searchResults.length > 0
+    }
+  };
+});</code></pre>
+
+                            <h5>3.4 獲取對話歷史</h5>
+                            <pre><code class="language-javascript">// 添加 PostgreSQL 節點
+// 操作：選擇
+// 表：conversation_history
+// 條件：
+// - user_id = {{$json.userId}}
+// - session_id = {{$json.sessionId}}
+// 排序：timestamp ASC
+// 限制：5
+
+// 添加 Function 節點
+// 處理對話歷史
+return items.map(item => {
+  const history = item.json.selectItems || [];
+  
+  // 格式化為對話格式
+  const formattedHistory = history.map(h => {
+    return {
+      role: h.is_bot ? 'assistant' : 'user',
+      content: h.message
+    };
+  });
+  
+  return {
+    json: {
+      ...item.json,
+      conversationHistory: formattedHistory
+    }
+  };
+});</code></pre>
+
+                            <h5>3.5 生成回答</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 準備 LLM 提示
+return items.map(item => {
+  const message = item.json.message;
+  const context = item.json.context;
+  const language = item.json.language;
+  const conversationHistory = item.json.conversationHistory || [];
+  
+  // 構建系統提示
+  let systemPrompt = `你是一個專業、友善的客服助手。`;
+  
+  // 根據意圖調整提示
+  if (item.json.intent === 'question') {
+    systemPrompt += `\n請提供準確、有幫助的回答。`;
+  } else if (item.json.intent === 'complaint') {
+    systemPrompt += `\n請表示理解和同情，並提供解決方案。`;
+  } else if (item.json.intent === 'greeting') {
+    systemPrompt += `\n請友善地問候用戶，並詢問如何提供幫助。`;
+  }
+  
+  systemPrompt += `\n請使用${language}回答。請根據提供的知識庫信息回答用戶問題。如果知識庫中沒有相關信息，請誠實地表明你不知道，並提供聯繫人工客服的方式。`;
+  
+  // 構建消息數組
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    ...conversationHistory,
+    { role: 'user', content: `問題：${message}\n\n知識庫信息：\n${context}` }
+  ];
+  
+  return {
+    json: {
+      ...item.json,
+      messages
+    }
+  };
+});
+
+// 添加 OpenAI 節點
+// 操作：Chat
+// 模型：gpt-4
+// 消息：{{$json.messages}}
+// 溫度：0.7
+// 最大令牌：1000
+
+// 添加 Function 節點
+// 處理回答
+return items.map(item => {
+  const response = item.json.choices[0].message.content;
+  
+  return {
+    json: {
+      ...item.json,
+      response
+    }
+  };
+});</code></pre>
+
+                            <h5>3.6 回答評估</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 評估回答質量
+return items.map(item => {
+  const response = item.json.response;
+  const hasRelevantContext = item.json.hasRelevantContext;
+  
+  // 檢查不確定性標記
+  const uncertaintyMarkers = [
+    "我不確定", "可能", "也許", "我猜", "不太清楚",
+    "需要更多信息", "無法確定", "難以判斷", "我不知道"
+  ];
+  
+  let confidenceScore = 0.9; // 默認高信心
+  
+  // 降低包含不確定性標記的回答的信心分數
+  for (const marker of uncertaintyMarkers) {
+    if (response.toLowerCase().includes(marker.toLowerCase())) {
+      confidenceScore -= 0.2;
+      break;
+    }
+  }
+  
+  // 如果沒有相關上下文，降低信心分數
+  if (!hasRelevantContext) {
+    confidenceScore -= 0.3;
+  }
+  
+  // 檢查回答長度是否過短
+  if (response.length < 50) {
+    confidenceScore -= 0.2;
+  }
+  
+  // 限制最終分數範圍
+  confidenceScore = Math.max(0, Math.min(1, confidenceScore));
+  
+  return {
+    json: {
+      ...item.json,
+      confidenceScore,
+      requiresHumanReview: confidenceScore < 0.6
+    }
+  };
+});</code></pre>
+
+                            <h4>步驟 4：設置對話管理與人工轉接</h4>
+                            <p>最後，我們實現對話管理和人工轉接功能：</p>
+
+                            <h5>4.1 人工轉接決策</h5>
+                            <pre><code class="language-javascript">// 添加 IF 節點
+// 條件：{{$json.requiresHumanReview || $json.intent === 'complaint' && $json.intentConfidence > 0.7}}
+
+// 添加 Function 節點（True 分支）
+// 準備人工轉接
+return items.map(item => {
+  // 準備人工轉接消息
+  const transferMessage = `感謝您的耐心等待。您的問題需要更專業的協助，我已將您的問題轉交給我們的客服團隊，他們將盡快與您聯繫。`;
+  
+  return {
+    json: {
+      ...item.json,
+      transferToHuman: true,
+      humanTransferMessage: transferMessage
+    }
+  };
+});
+
+// 添加 Slack 節點（True 分支）
+// 操作：發送消息
+// 頻道：#customer-support
+// 消息：
+/*
+需要人工處理的客服請求
+客戶: {{$json.metadata.firstName || ''}} {{$json.metadata.lastName || ''}} ({{$json.userId}})
+渠道: {{$json.channel}}
+問題: {{$json.message}}
+意圖: {{$json.intent}} (置信度: {{$json.intentConfidence}})
+AI回答: {{$json.response}}
+信心分數: {{$json.confidenceScore}}
+會話ID: {{$json.sessionId}}
+*/
+
+// 添加 Function 節點（False 分支）
+// 準備機器人回答
+return items.map(item => {
+  return {
+    json: {
+      ...item.json,
+      transferToHuman: false
+    }
+  };
+});</code></pre>
+
+                            <h5>4.2 保存對話歷史</h5>
+                            <pre><code class="language-javascript">// 添加 Merge 節點
+// 模式：合併所有
+
+// 添加 PostgreSQL 節點
+// 操作：插入
+// 表：conversation_history
+// 數據：
+// - user_id: {{$json.userId}}
+// - session_id: {{$json.sessionId}}
+// - message: {{$json.message}}
+// - response: {{$json.transferToHuman ? $json.humanTransferMessage : $json.response}}
+// - is_bot: false
+// - channel: {{$json.channel}}
+// - intent: {{$json.intent}}
+// - confidence_score: {{$json.confidenceScore}}
+// - requires_human_review: {{$json.requiresHumanReview}}
+// - timestamp: {{$json.timestamp}}
+
+// 添加 PostgreSQL 節點
+// 操作：插入
+// 表：conversation_history
+// 數據：
+// - user_id: {{$json.userId}}
+// - session_id: {{$json.sessionId}}
+// - message: {{$json.transferToHuman ? $json.humanTransferMessage : $json.response}}
+// - response: null
+// - is_bot: true
+// - channel: {{$json.channel}}
+// - intent: null
+// - confidence_score: null
+// - requires_human_review: null
+// - timestamp: {{$now}}</code></pre>
+
+                            <h5>4.3 發送回覆</h5>
+                            <pre><code class="language-javascript">// 添加 IF 節點
+// 條件：{{$json.channel === 'telegram'}}
+
+// 添加 Telegram 節點（True 分支）
+// 操作：發送消息
+// 聊天 ID：{{$json.sessionId}}
+// 內容：{{$json.transferToHuman ? $json.humanTransferMessage : $json.response}}
+
+// 添加 Function 節點（False 分支）
+// 準備 Webhook 響應
+return items.map(item => {
+  return {
+    json: {
+      response: item.json.transferToHuman ? item.json.humanTransferMessage : item.json.response,
+      requiresHumanReview: item.json.requiresHumanReview,
+      transferToHuman: item.json.transferToHuman,
+      sessionId: item.json.sessionId,
+      userId: item.json.userId,
+      intent: item.json.intent,
+      confidenceScore: item.json.confidenceScore
+    }
+  };
+});
+
+// 添加 Respond to Webhook 節點（False 分支）
+// 響應類型：JSON
+// 響應數據：
+{
+  "response": "{{$json.response}}",
+  "requiresHumanReview": {{$json.requiresHumanReview}},
+  "transferToHuman": {{$json.transferToHuman}},
+  "sessionId": "{{$json.sessionId}}",
+  "userId": "{{$json.userId}}"
+}</code></pre>
+                        </section>
+
+                        <section id="advanced-features" class="content-section">
+                            <h3>進階功能</h3>
+                            <p>以下是一些可以添加到基本工作流的進階功能：</p>
+
+                            <h4>1. 多語言支持</h4>
+                            <p>擴展機器人的多語言能力：</p>
+                            <pre><code class="language-javascript">// 修改知識庫設置
+// 添加語言字段
+// 添加 PostgreSQL 節點
+// 操作：執行查詢
+// 查詢：
+ALTER TABLE knowledge_base ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT 'zh-TW';
+
+// 修改知識檢索查詢
+// 添加語言過濾
+// 添加 PostgreSQL 節點
+// 操作：執行查詢
+// 查詢：
+SELECT 
+  id, 
+  content, 
+  source, 
+  category,
+  metadata,
+  1 - (embedding <=> $1) AS similarity
+FROM 
+  knowledge_base
+WHERE 
+  (category = $2 OR $2 = 'all')
+  AND (language = $3 OR language = 'all')
+ORDER BY 
+  embedding <=> $1
+LIMIT 5;
+// 查詢參數：
+// - $1: {{$json.queryEmbedding}}
+// - $2: {{$json.metadata.category || 'all'}}
+// - $3: {{$json.language}}
+
+// 添加翻譯功能
+// 添加 Function 節點
+// 準備翻譯
+return items.map(item => {
+  const response = item.json.response;
+  const userLanguage = item.json.language;
+  const needsTranslation = userLanguage !== 'zh-TW' && userLanguage !== 'en';
+  
+  return {
+    json: {
+      ...item.json,
+      needsTranslation,
+      originalResponse: response
+    }
+  };
+});
+
+// 添加 IF 節點
+// 條件：{{$json.needsTranslation}}
+
+// 添加 OpenAI 節點（True 分支）
+// 操作：Chat
+// 模型：gpt-3.5-turbo
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個專業翻譯助手。請將以下中文文本翻譯成{{$json.language}}，保持專業術語的準確性和整體語氣。"
+  },
+  {
+    "role": "user",
+    "content": "{{$json.response}}"
+  }
+]
+// 溫度：0.3
+// 最大令牌：1000
+
+// 添加 Function 節點（True 分支）
+// 處理翻譯結果
+return items.map(item => {
+  const translatedResponse = item.json.choices[0].message.content;
+  
+  return {
+    json: {
+      ...item.json,
+      response: translatedResponse,
+      translated: true
+    }
+  };
+});</code></pre>
+
+                            <h4>2. 主動學習和改進</h4>
+                            <p>實現機器人的自我學習和改進：</p>
+                            <pre><code class="language-javascript">// 創建新工作流：Feedback Collection
+// 添加 Webhook 節點
+// 方法：POST
+// 路徑：/feedback
+// 響應模式：等待
+
+// 添加 Function 節點
+// 處理反饋
+return items.map(item => {
+  const data = item.json.body || item.json;
+  
+  return {
+    json: {
+      sessionId: data.sessionId,
+      userId: data.userId,
+      responseId: data.responseId,
+      rating: data.rating, // 1-5 評分
+      feedback: data.feedback || '',
+      timestamp: new Date().toISOString()
+    }
+  };
+});
+
+// 添加 PostgreSQL 節點
+// 操作：插入
+// 表：feedback
+// 數據：
+// - session_id: {{$json.sessionId}}
+// - user_id: {{$json.userId}}
+// - response_id: {{$json.responseId}}
+// - rating: {{$json.rating}}
+// - feedback: {{$json.feedback}}
+// - timestamp: {{$json.timestamp}}
+
+// 創建新工作流：Knowledge Improvement
+// 添加 Schedule 節點
+// 設置為每週運行一次
+
+// 添加 PostgreSQL 節點
+// 操作：執行查詢
+// 查詢：
+SELECT 
+  ch.message AS query,
+  ch.response,
+  f.rating,
+  f.feedback
+FROM 
+  conversation_history ch
+JOIN 
+  feedback f ON ch.session_id = f.session_id
+WHERE 
+  f.rating < 3
+  AND ch.is_bot = true
+  AND f.timestamp > NOW() - INTERVAL '7 days'
+LIMIT 20;
+
+// 添加 Function 節點
+// 準備改進建議
+return items.map(item => {
+  const lowRatedResponses = item.json.data || [];
+  
+  return {
+    json: {
+      lowRatedResponses,
+      hasLowRatedResponses: lowRatedResponses.length > 0
+    }
+  };
+});
+
+// 添加 IF 節點
+// 條件：{{$json.hasLowRatedResponses}}
+
+// 添加 OpenAI 節點（True 分支）
+// 操作：Chat
+// 模型：gpt-4
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個知識庫改進專家。你的任務是分析用戶反饋較差的回答，並提供改進建議。"
+  },
+  {
+    "role": "user",
+    "content": "以下是一些用戶評分較低的問答對。請分析這些回答的問題，並提供改進建議：\n\n{{$json.lowRatedResponses.map(item => `問題：${item.query}\n回答：${item.response}\n評分：${item.rating}\n用戶反饋：${item.feedback || '無'}\n---\n`).join('\n')}}"
+  }
+]
+// 溫度：0.7
+// 最大令牌：2000
+
+// 添加 Function 節點（True 分支）
+// 處理改進建議
+return items.map(item => {
+  const improvementSuggestions = item.json.choices[0].message.content;
+  
+  return {
+    json: {
+      ...item.json,
+      improvementSuggestions
+    }
+  };
+});
+
+// 添加 Send Email 節點（True 分支）
+// 收件人：your-email@example.com
+// 主題：客服機器人知識庫改進建議
+// 內容：
+/*
+# 客服機器人知識庫改進建議
+
+以下是基於用戶反饋的改進建議：
+
+{{$json.improvementSuggestions}}
+
+## 詳細數據
+
+{{$json.lowRatedResponses.map(item => `### 問題：${item.query}\n回答：${item.response}\n評分：${item.rating}\n用戶反饋：${item.feedback || '無'}\n`).join('\n')}}
+*/</code></pre>
+
+                            <h4>3. 多輪對話管理</h4>
+                            <p>實現更複雜的多輪對話管理：</p>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 對話狀態管理
+return items.map(item => {
+  // 獲取或初始化對話狀態
+  let conversationState = item.json.conversationState || {
+    stage: 'initial',
+    userData: {},
+    pendingActions: [],
+    lastInteractionTime: null
+  };
+  
+  // 更新對話狀態
+  conversationState.lastInteractionTime = new Date().toISOString();
+  
+  // 根據當前階段和用戶消息更新狀態
+  if (conversationState.stage === 'initial') {
+    // 初始階段，檢查是否是問候或特定意圖
+    if (item.json.intent === 'greeting') {
+      conversationState.stage = 'greeting';
+    } else if (item.json.intent === 'question') {
+      conversationState.stage = 'question';
+    } else {
+      conversationState.stage = 'general';
+    }
+  } else if (conversationState.stage === 'waiting_for_details') {
+    // 等待用戶提供更多詳情
+    conversationState.userData.details = item.json.message;
+    conversationState.stage = 'processing_details';
+  } else if (conversationState.stage === 'waiting_for_confirmation') {
+    // 等待用戶確認
+    const confirmation = isConfirmation(item.json.message);
+    if (confirmation === true) {
+      conversationState.stage = 'confirmed';
+      conversationState.userData.confirmed = true;
+    } else if (confirmation === false) {
+      conversationState.stage = 'denied';
+      conversationState.userData.confirmed = false;
+    } else {
+      // 用戶回答不明確，保持當前狀態
+    }
+  }
+  
+  return {
+    json: {
+      ...item.json,
+      conversationState
+    }
+  };
+});
+
+// 添加 Function 節點
+// 根據對話狀態調整回答
+return items.map(item => {
+  const state = item.json.conversationState;
+  let response = item.json.response;
+  
+  // 根據對話狀態調整回答
+  if (state.stage === 'greeting') {
+    // 添加問候後的引導問題
+    response += '\n\n有什麼我可以幫助您的嗎？';
+  } else if (state.stage === 'confirmed') {
+    // 用戶確認後的回應
+    response = `感謝您的確認。${response}`;
+  } else if (state.stage === 'denied') {
+    // 用戶拒絕後的回應
+    response = `抱歉造成誤解。請告訴我您確切的需求，我會重新為您提供幫助。`;
+  } else if (state.stage === 'processing_details') {
+    // 處理用戶提供的詳情
+    response = `感謝您提供的詳細信息。${response}`;
+  }
+  
+  return {
+    json: {
+      ...item.json,
+      response
+    }
+  };
+});</code></pre>
+
+                            <h4>4. 主動跟進和提醒</h4>
+                            <p>實現主動跟進和提醒功能：</p>
+                            <pre><code class="language-javascript">// 創建新工作流：Follow-up Reminders
+// 添加 Schedule 節點
+// 設置為每天運行一次
+
+// 添加 PostgreSQL 節點
+// 操作：執行查詢
+// 查詢：
+SELECT 
+  ch.user_id,
+  ch.session_id,
+  ch.channel,
+  MAX(ch.timestamp) as last_interaction,
+  json_agg(json_build_object('message', ch.message, 'response', ch.response, 'timestamp', ch.timestamp) ORDER BY ch.timestamp DESC) as recent_messages
+FROM 
+  conversation_history ch
+WHERE 
+  ch.requires_human_review = true
+  AND NOT EXISTS (
+    SELECT 1 FROM follow_up_sent fs 
+    WHERE fs.session_id = ch.session_id
+  )
+  AND ch.timestamp > NOW() - INTERVAL '3 days'
+  AND ch.timestamp < NOW() - INTERVAL '1 day'
+GROUP BY 
+  ch.user_id, ch.session_id, ch.channel
+LIMIT 10;
+
+// 添加 Loop 節點
+// 輸入：data
+// 輸出：每個需要跟進的會話
+
+// 添加 Function 節點（循環內）
+// 準備跟進消息
+return items.map(item => {
+  const userData = item.json;
+  const recentMessages = userData.recent_messages || [];
+  
+  // 分析最近的消息
+  const lastUserMessage = recentMessages.find(m => !m.is_bot)?.message || '';
+  
+  // 準備跟進消息
+  const followUpMessage = `您好！我們注意到您之前有一個問題可能沒有得到完全解決。請問您的問題是否已經解決，或者您是否需要進一步的幫助？`;
+  
+  return {
+    json: {
+      ...userData,
+      followUpMessage
+    }
+  };
+});
+
+// 添加 IF 節點（循環內）
+// 條件：{{$json.channel === 'telegram'}}
+
+// 添加 Telegram 節點（True 分支）
+// 操作：發送消息
+// 聊天 ID：{{$json.session_id}}
+// 內容：{{$json.followUpMessage}}
+
+// 添加 Send Email 節點（False 分支）
+// 收件人：根據用戶 ID 查詢或使用默認郵箱
+// 主題：您的客服問題跟進
+// 內容：{{$json.followUpMessage}}
+
+// 添加 PostgreSQL 節點（循環內）
+// 操作：插入
+// 表：follow_up_sent
+// 數據：
+// - user_id: {{$json.user_id}}
+// - session_id: {{$json.session_id}}
+// - channel: {{$json.channel}}
+// - sent_at: {{$now}}
+// - message: {{$json.followUpMessage}}</code></pre>
+                        </section>
+
+                        <section id="customization" class="content-section">
+                            <h3>自定義與擴展</h3>
+                            <p>以下是一些自定義和擴展工作流的建議：</p>
+
+                            <h4>1. 針對特定行業調整</h4>
+                            <p>根據您的特定行業調整工作流：</p>
+                            <ul>
+                                <li><strong>行業特定知識庫</strong>：建立針對您行業的專業知識庫</li>
+                                <li><strong>專業術語處理</strong>：添加行業術語表和專業詞彙處理</li>
+                                <li><strong>特定意圖識別</strong>：添加行業特定的意圖類型</li>
+                                <li><strong>行業標準流程</strong>：實施符合行業標準的對話流程</li>
+                                <li><strong>合規性檢查</strong>：添加行業特定的合規性檢查</li>
+                            </ul>
+
+                            <h4>2. 添加更多渠道</h4>
+                            <p>擴展支持的客戶溝通渠道：</p>
+                            <ul>
+                                <li><strong>WhatsApp</strong>：整合 WhatsApp Business API</li>
+                                <li><strong>Facebook Messenger</strong>：添加 Facebook Messenger 支持</li>
+                                <li><strong>SMS</strong>：通過 Twilio 等服務添加 SMS 支持</li>
+                                <li><strong>微信</strong>：整合微信公眾號或小程序</li>
+                                <li><strong>語音助手</strong>：添加語音交互支持</li>
+                            </ul>
+
+                            <h4>3. 整合 CRM 系統</h4>
+                            <p>與客戶關係管理系統整合：</p>
+                            <ul>
+                                <li><strong>客戶資料同步</strong>：與 CRM 系統同步客戶資料</li>
+                                <li><strong>工單創建</strong>：自動在 CRM 中創建工單</li>
+                                <li><strong>客戶歷史查詢</strong>：查詢客戶的歷史互動記錄</li>
+                                <li><strong>客戶分類</strong>：根據客戶價值和需求進行分類</li>
+                                <li><strong>客戶旅程跟踪</strong>：跟踪客戶在不同階段的需求</li>
+                            </ul>
+
+                            <h4>4. 添加分析和報告</h4>
+                            <p>實現詳細的分析和報告功能：</p>
+                            <ul>
+                                <li><strong>使用情況分析</strong>：跟踪機器人的使用情況和效果</li>
+                                <li><strong>常見問題分析</strong>：識別用戶最常問的問題</li>
+                                <li><strong>滿意度分析</strong>：分析用戶滿意度和反饋</li>
+                                <li><strong>性能指標</strong>：跟踪關鍵性能指標（解決率、響應時間等）</li>
+                                <li><strong>定期報告</strong>：生成定期報告並發送給管理者</li>
+                            </ul>
+                        </section>
+
+                        <section id="troubleshooting" class="content-section">
+                            <h3>常見問題與解決方案</h3>
+                            <p>實施過程中可能遇到的常見問題及其解決方案：</p>
+
+                            <h4>1. 知識庫質量問題</h4>
+                            <p><strong>問題</strong>：知識庫內容不完整或過時，導致回答質量不佳。</p>
+                            <p><strong>解決方案</strong>：</p>
+                            <ul>
+                                <li>實施定期知識庫審核和更新機制</li>
+                                <li>添加知識缺口檢測功能，識別常見但無法回答的問題</li>
+                                <li>實施知識庫質量評分系統</li>
+                                <li>使用用戶反饋來改進知識庫內容</li>
+                            </ul>
+                            <pre><code class="language-javascript">// 創建新工作流：Knowledge Gap Detection
+// 添加 Schedule 節點
+// 設置為每週運行一次
+
+// 添加 PostgreSQL 節點
+// 操作：執行查詢
+// 查詢：
+SELECT 
+  ch.message,
+  COUNT(*) as frequency,
+  AVG(ch.confidence_score) as avg_confidence
+FROM 
+  conversation_history ch
+WHERE 
+  ch.is_bot = false
+  AND ch.timestamp > NOW() - INTERVAL '30 days'
+  AND EXISTS (
+    SELECT 1 FROM conversation_history ch2
+    WHERE ch2.session_id = ch.session_id
+    AND ch2.is_bot = true
+    AND ch2.confidence_score < 0.6
+    AND ch2.timestamp > ch.timestamp
+    ORDER BY ch2.timestamp
+    LIMIT 1
+  )
+GROUP BY 
+  ch.message
+HAVING 
+  COUNT(*) > 3
+  AND AVG(ch.confidence_score) < 0.7
+ORDER BY 
+  frequency DESC
+LIMIT 20;
+
+// 添加 Function 節點
+// 處理知識缺口
+return items.map(item => {
+  const knowledgeGaps = item.json.data || [];
+  
+  // 格式化為報告
+  const report = `# 知識庫缺口報告
+
+以下是系統識別出的知識庫缺口，這些是用戶經常詢問但機器人無法有效回答的問題：
+
+${knowledgeGaps.map((gap, index) => `
+## ${index + 1}. "${gap.message}"
+- 出現頻率: ${gap.frequency} 次
+- 平均信心分數: ${gap.avg_confidence.toFixed(2)}
+`).join('\n')}
+
+建議優先添加這些問題的相關知識到知識庫中。
+`;
+  
+  return {
+    json: {
+      report,
+      knowledgeGaps
+    }
+  };
+});
+
+// 添加 Send Email 節點
+// 收件人：your-email@example.com
+// 主題：客服機器人知識庫缺口報告
+// 內容：{{$json.report}}</code></pre>
+
+                            <h4>2. 意圖識別錯誤</h4>
+                            <p><strong>問題</strong>：機器人可能錯誤識別用戶意圖，導致不適當的回應。</p>
+                            <p><strong>解決方案</strong>：</p>
+                            <ul>
+                                <li>使用更高級的 LLM 模型進行意圖識別</li>
+                                <li>添加意圖確認步驟</li>
+                                <li>實施混合意圖識別方法（規則 + LLM）</li>
+                                <li>收集錯誤案例進行模型微調</li>
+                            </ul>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 混合意圖識別
+function ruleBasedIntentDetection(message) {
+  // 簡單規則匹配
+  if (/你好|嗨|哈囉|早安|午安|晚安|hi|hello/i.test(message)) {
+    return { intent: 'greeting', confidence: 0.9 };
+  }
+  
+  if (/訂單|訂購|購買|買了|下單/i.test(message) && /狀態|進度|何時|到貨|送達/i.test(message)) {
+    return { intent: 'order_status', confidence: 0.8 };
+  }
+  
+  if (/退款|退貨|換貨|取消訂單|不要了/i.test(message)) {
+    return { intent: 'refund_request', confidence: 0.8 };
+  }
+  
+  if (/價格|多少錢|費用|收費|價錢/i.test(message)) {
+    return { intent: 'price_inquiry', confidence: 0.8 };
+  }
+  
+  // 沒有匹配規則，返回 null
+  return null;
+}
+
+return items.map(item => {
+  const message = item.json.message;
+  
+  // 規則基礎意圖檢測
+  const ruleBasedResult = ruleBasedIntentDetection(message);
+  
+  // LLM 基礎意圖檢測
+  const llmBasedIntent = item.json.intent;
+  const llmConfidence = item.json.intentConfidence;
+  
+  // 混合決策
+  let finalIntent, finalConfidence;
+  
+  if (ruleBasedResult && ruleBasedResult.confidence > llmConfidence) {
+    finalIntent = ruleBasedResult.intent;
+    finalConfidence = ruleBasedResult.confidence;
+  } else {
+    finalIntent = llmBasedIntent;
+    finalConfidence = llmConfidence;
+  }
+  
+  // 如果信心度較低，添加確認步驟
+  const needsConfirmation = finalConfidence < 0.7;
+  
+  return {
+    json: {
+      ...item.json,
+      intent: finalIntent,
+      intentConfidence: finalConfidence,
+      originalIntent: llmBasedIntent,
+      ruleBasedIntent: ruleBasedResult?.intent,
+      needsIntentConfirmation: needsConfirmation
+    }
+  };
+});
+
+// 添加 IF 節點
+// 條件：{{$json.needsIntentConfirmation}}
+
+// 添加 Function 節點（True 分支）
+// 生成意圖確認問題
+return items.map(item => {
+  let confirmationQuestion;
+  
+  switch (item.json.intent) {
+    case 'order_status':
+      confirmationQuestion = '您是想查詢訂單狀態嗎？';
+      break;
+    case 'refund_request':
+      confirmationQuestion = '您是想申請退款或退貨嗎？';
+      break;
+    case 'price_inquiry':
+      confirmationQuestion = '您是想了解價格信息嗎？';
+      break;
+    default:
+      confirmationQuestion = `您是想${intentToQuestion(item.json.intent)}嗎？`;
+  }
+  
+  return {
+    json: {
+      ...item.json,
+      response: confirmationQuestion,
+      awaitingIntentConfirmation: true,
+      originalMessage: item.json.message
+    }
+  };
+});</code></pre>
+
+                            <h4>3. 對話上下文丟失</h4>
+                            <p><strong>問題</strong>：在多輪對話中，機器人可能丟失上下文，導致不連貫的對話體驗。</p>
+                            <p><strong>解決方案</strong>：</p>
+                            <ul>
+                                <li>優化對話歷史管理</li>
+                                <li>實施更智能的上下文窗口滑動</li>
+                                <li>添加對話摘要功能</li>
+                                <li>使用對話狀態追踪</li>
+                            </ul>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 智能上下文管理
+return items.map(item => {
+  const history = item.json.conversationHistory || [];
+  
+  // 如果歷史記錄太長，需要進行摘要
+  if (history.length > 10) {
+    // 保留最近的 3 條消息
+    const recentMessages = history.slice(-3);
+    
+    // 準備摘要請求
+    return {
+      json: {
+        ...item.json,
+        historyToSummarize: history.slice(0, -3),
+        recentMessages
+      }
+    };
+  }
+  
+  // 歷史記錄不長，直接使用
+  return item;
+});
+
+// 添加 IF 節點
+// 條件：{{!!$json.historyToSummarize}}
+
+// 添加 OpenAI 節點（True 分支）
+// 操作：Chat
+// 模型：gpt-3.5-turbo
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個對話摘要助手。你的任務是將一段對話歷史摘要為簡潔的要點，保留關鍵信息和上下文。"
+  },
+  {
+    "role": "user",
+    "content": "請將以下對話歷史摘要為簡潔的要點：\n\n{{$json.historyToSummarize.map(msg => `${msg.role === 'user' ? '用戶' : '助手'}: ${msg.content}`).join('\n\n')}}"
+  }
+]
+// 溫度：0.3
+// 最大令牌：300
+
+// 添加 Function 節點（True 分支）
+// 處理摘要結果
+return items.map(item => {
+  const summary = item.json.choices[0].message.content;
+  
+  // 創建新的對話歷史
+  const newHistory = [
+    { role: 'system', content: `對話摘要：${summary}` },
+    ...item.json.recentMessages
+  ];
+  
+  return {
+    json: {
+      ...item.json,
+      conversationHistory: newHistory,
+      conversationSummary: summary
+    }
+  };
+});</code></pre>
+
+                            <h4>4. 人工轉接流程問題</h4>
+                            <p><strong>問題</strong>：人工轉接流程可能不順暢，導致用戶體驗不佳。</p>
+                            <p><strong>解決方案</strong>：</p>
+                            <ul>
+                                <li>優化轉接決策邏輯</li>
+                                <li>添加轉接排隊和狀態更新</li>
+                                <li>實施客服可用性檢查</li>
+                                <li>添加轉接後的跟進機制</li>
+                            </ul>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 高級轉接決策
+return items.map(item => {
+  // 基本轉接條件
+  let requiresHumanReview = item.json.requiresHumanReview;
+  
+  // 添加更多轉接條件
+  // 1. 用戶明確請求人工客服
+  if (/人工|真人|客服|轉接|專員|服務人員/i.test(item.json.message)) {
+    requiresHumanReview = true;
+  }
+  
+  // 2. 用戶表達不滿或沮喪
+  if (/不滿意|不行|沒用|無法解決|氣死了|生氣|惱火|不幫忙/i.test(item.json.message)) {
+    requiresHumanReview = true;
+  }
+  
+  // 3. 多次重複相似問題
+  if (item.json.conversationHistory && item.json.conversationHistory.length >= 4) {
+    const recentUserMessages = item.json.conversationHistory
+      .filter(msg => msg.role === 'user')
+      .slice(-3)
+      .map(msg => msg.content);
+    
+    // 檢查最近三條用戶消息是否相似
+    if (areSimilarMessages(recentUserMessages)) {
+      requiresHumanReview = true;
+    }
+  }
+  
+  // 4. 處理敏感問題（如退款、投訴等）
+  if (item.json.intent === 'complaint' || 
+      item.json.intent === 'refund_request' || 
+      item.json.intent === 'account_issue') {
+    requiresHumanReview = true;
+  }
+  
+  return {
+    json: {
+      ...item.json,
+      requiresHumanReview
+    }
+  };
+});
+
+// 添加 IF 節點
+// 條件：{{$json.requiresHumanReview}}
+
+// 添加 PostgreSQL 節點（True 分支）
+// 操作：選擇
+// 表：customer_service_agents
+// 條件：
+// - status = 'available'
+// 排序：last_assigned_at ASC
+// 限制：1
+
+// 添加 Function 節點（True 分支）
+// 處理客服分配
+return items.map(item => {
+  const availableAgents = item.json.selectItems || [];
+  const hasAvailableAgent = availableAgents.length > 0;
+  
+  let transferMessage;
+  if (hasAvailableAgent) {
+    const agent = availableAgents[0];
+    transferMessage = `感謝您的耐心等待。您的問題將由客服專員 ${agent.name} 為您處理，請稍候。`;
+  } else {
+    transferMessage = `感謝您的耐心等待。目前所有客服專員都在忙線中，我們已將您的問題加入優先處理隊列，客服專員將盡快與您聯繫。`;
+  }
+  
+  return {
+    json: {
+      ...item.json,
+      transferToHuman: true,
+      humanTransferMessage: transferMessage,
+      assignedAgent: hasAvailableAgent ? availableAgents[0] : null,
+      inQueue: !hasAvailableAgent
+    }
+  };
+});
+
+// 添加 IF 節點（True 分支）
+// 條件：{{!!$json.assignedAgent}}
+
+// 添加 PostgreSQL 節點（True 分支 > True 分支）
+// 操作：更新
+// 表：customer_service_agents
+// 條件：
+// - id = {{$json.assignedAgent.id}}
+// 數據：
+// - status = 'busy'
+// - last_assigned_at = {{$now}}
+// - current_session_id = {{$json.sessionId}}
+
+// 添加 PostgreSQL 節點（True 分支 > False 分支）
+// 操作：插入
+// 表：support_queue
+// 數據：
+// - user_id = {{$json.userId}}
+// - session_id = {{$json.sessionId}}
+// - channel = {{$json.channel}}
+// - message = {{$json.message}}
+// - priority = {{$json.intent === 'complaint' ? 'high' : 'normal'}}
+// - queued_at = {{$now}}</code></pre>
+                        </section>
+
+                        <section id="conclusion" class="content-section">
+                            <h3>結論</h3>
+                            <p>通過本案例，我們創建了一個完整的自動客服機器人系統，該系統：</p>
+                            <ul>
+                                <li>結合了 LLM 的自然語言理解能力和自定義知識庫的專業領域知識</li>
+                                <li>支持多渠道接入，提供一致的用戶體驗</li>
+                                <li>能夠準確識別用戶意圖和提取關鍵實體</li>
+                                <li>基於檢索到的相關信息生成自然、準確的回答</li>
+                                <li>在無法解答或需要人工處理時，智能轉接真人客服</li>
+                                <li>支持多語言，能夠自動檢測語言並提供相應的回答</li>
+                                <li>具有自我學習和改進的能力</li>
+                            </ul>
+                            <p>這個自動化解決方案可以顯著提高客戶支持效率，降低成本，同時保持高質量的服務。通過減少人工客服處理簡單、重複性問題的時間，使他們能夠專注於更複雜、更有價值的任務。</p>
+                            <p>您可以根據自己的需求和行業特點自定義和擴展這個系統，添加更多功能和支持更多渠道。隨著時間的推移，通過不斷學習和改進，系統的性能和效果會越來越好。</p>
+                            <p>最重要的是，這個系統不僅僅是一個簡單的問答機器人，而是一個能夠理解用戶需求、提供個性化幫助，並在必要時無縫轉接人工客服的智能助手。它代表了客戶服務自動化的未來方向。</p>
+                            <p><a href="use-cases.html" class="btn">返回實用案例列表</a></p>
+                        </section>
+                    </section>
+                </div>
+
+                <aside class="sidebar">
+                    <div id="search-container">
+                        <h3>搜索</h3>
+                        <input type="text" id="search-input" placeholder="搜索內容...">
+                        <div id="search-results" style="display: none;"></div>
+                    </div>
+                    <div>
+                        <h3>目錄</h3>
+                        <ul>
+                            <li><a href="#customer-service-bot">案例概述</a></li>
+                            <li><a href="#use-case-overview">案例概述</a></li>
+                            <li><a href="#workflow-architecture">工作流架構</a></li>
+                            <li><a href="#implementation">實作步驟</a></li>
+                            <li><a href="#advanced-features">進階功能</a></li>
+                            <li><a href="#customization">自定義與擴展</a></li>
+                            <li><a href="#troubleshooting">常見問題與解決方案</a></li>
+                            <li><a href="#conclusion">結論</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>相關頁面</h3>
+                        <ul>
+                            <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                            <li><a href="advanced-tutorial.html">進階教學</a></li>
+                            <li><a href="use-case-social-media.html">案例：社群媒體自動化</a></li>
+                            <li><a href="use-case-immersive-translation.html">案例：沉浸式翻譯</a></li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>關於本站</h3>
+                    <p>n8n 自動化工作流學習指南是一個幫助您從零開始學習 n8n 的完整資源，提供從基礎到進階的教學內容和實用案例。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速鏈接</h3>
+                    <ul>
+                        <li><a href="index.html">首頁</a></li>
+                        <li><a href="learning-path.html">學習路徑</a></li>
+                        <li><a href="basic-tutorial.html">基礎教學</a></li>
+                        <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                        <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>相關資源</h3>
+                    <ul>
+                        <li><a href="https://n8n.io/" target="_blank">n8n 官方網站</a></li>
+                        <li><a href="https://docs.n8n.io/" target="_blank">n8n 官方文檔</a></li>
+                        <li><a href="https://community.n8n.io/" target="_blank">n8n 社區論壇</a></li>
+                        <li><a href="https://github.com/n8n-io/n8n" target="_blank">n8n GitHub 倉庫</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 n8n 自動化工作流學習指南 | 本網站內容僅供學習參考</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

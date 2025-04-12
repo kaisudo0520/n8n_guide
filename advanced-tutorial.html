@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8n 進階教學：LLM 整合與 AI 自動化應用 - n8n 自動化工作流學習指南</title>
+    <meta name="description" content="n8n 進階教學，探索 LLM 整合、RAG 系統和複雜自動化應用">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <img src="images/n8n-logo.png" alt="n8n Logo">
+                <h1>n8n 自動化工作流學習指南</h1>
+            </div>
+            <button class="mobile-menu-btn">☰</button>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">首頁</a></li>
+                    <li><a href="learning-path.html">學習路徑</a></li>
+                    <li><a href="basic-tutorial.html">基礎教學</a></li>
+                    <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                    <li><a href="advanced-tutorial.html" class="active">進階教學</a></li>
+                    <li><a href="use-cases.html">實用案例</a></li>
+                    <li><a href="resources.html">資源</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="two-column">
+                <div class="main-content">
+                    <section id="advanced-tutorial" class="content-section">
+                        <h2>n8n 進階教學：LLM 整合與 AI 自動化應用</h2>
+                        
+                        <p>本教學將探索 n8n 與人工智能技術的結合，特別是大型語言模型 (LLM) 的整合和應用。適合已經掌握 n8n 基礎和中級知識，希望進一步探索 AI 自動化可能性的用戶。通過本教學，您將學習如何利用 n8n 和 LLM 創建智能化的自動化工作流，實現更複雜、更強大的應用。</p>
+
+                        <section id="llm-integration" class="content-section">
+                            <h3>n8n 與 LLM 整合</h3>
+                            <p>大型語言模型 (LLM) 是當前 AI 領域最重要的技術之一，n8n 提供了多種方式與各種 LLM 服務整合。</p>
+
+                            <h4>連接 OpenAI 服務</h4>
+                            <p>OpenAI 提供了目前最流行的 LLM 服務之一，包括 GPT-4、GPT-3.5 等模型：</p>
+                            
+                            <h5>設置 OpenAI 節點</h5>
+                            <p>n8n 提供了原生的 OpenAI 節點：</p>
+                            <pre><code class="language-javascript">// OpenAI 節點設置
+// 操作：Chat
+// 模型：gpt-4 或 gpt-3.5-turbo
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個專業的客服助手，負責回答用戶關於我們產品的問題。"
+  },
+  {
+    "role": "user",
+    "content": "{{$json.userQuestion}}"
+  }
+]
+// 溫度：0.7
+// 最大令牌：1000</code></pre>
+
+                            <h5>使用 HTTP Request 節點</h5>
+                            <p>如果需要更多控制，也可以直接使用 HTTP Request 節點調用 OpenAI API：</p>
+                            <pre><code class="language-javascript">// HTTP Request 節點設置
+// 方法：POST
+// URL：https://api.openai.com/v1/chat/completions
+// 認證：Bearer Token
+// 令牌：{{$json.openaiApiKey}}
+// 請求格式：JSON
+// 請求數據：
+{
+  "model": "gpt-4",
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是一個專業的客服助手，負責回答用戶關於我們產品的問題。"
+    },
+    {
+      "role": "user",
+      "content": "{{$json.userQuestion}}"
+    }
+  ],
+  "temperature": 0.7,
+  "max_tokens": 1000
+}</code></pre>
+
+                            <h4>連接 Anthropic Claude</h4>
+                            <p>Anthropic 的 Claude 是另一個強大的 LLM 選擇：</p>
+                            
+                            <h5>使用 HTTP Request 節點</h5>
+                            <pre><code class="language-javascript">// HTTP Request 節點設置
+// 方法：POST
+// URL：https://api.anthropic.com/v1/messages
+// 請求頭：
+// - x-api-key: {{$json.anthropicApiKey}}
+// - anthropic-version: 2023-06-01
+// 請求格式：JSON
+// 請求數據：
+{
+  "model": "claude-3-opus-20240229",
+  "max_tokens": 1000,
+  "messages": [
+    {
+      "role": "user",
+      "content": "{{$json.userQuestion}}"
+    }
+  ]
+}</code></pre>
+
+                            <h4>使用 Ollama 進行本地 LLM 部署</h4>
+                            <p>對於需要數據隱私或離線使用的場景，可以使用 Ollama 在本地部署 LLM：</p>
+                            
+                            <h5>設置 Ollama</h5>
+                            <p>首先需要安裝和設置 Ollama：</p>
+                            <pre><code class="language-bash"># 安裝 Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# 拉取模型
+ollama pull llama3
+
+# 運行 Ollama 服務
+ollama serve</code></pre>
+
+                            <h5>使用 HTTP Request 節點連接 Ollama</h5>
+                            <pre><code class="language-javascript">// HTTP Request 節點設置
+// 方法：POST
+// URL：http://localhost:11434/api/generate
+// 請求格式：JSON
+// 請求數據：
+{
+  "model": "llama3",
+  "prompt": "{{$json.userQuestion}}",
+  "stream": false
+}</code></pre>
+
+                            <h4>LLM 輸出處理</h4>
+                            <p>處理 LLM 的輸出是整合過程中的重要部分：</p>
+                            
+                            <h5>解析 JSON 輸出</h5>
+                            <p>當要求 LLM 生成 JSON 格式的輸出時：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 解析 JSON 輸出
+return items.map(item => {
+  const response = item.json.choices[0].message.content;
+  
+  try {
+    // 嘗試直接解析 JSON
+    const parsedJson = JSON.parse(response);
+    return { json: parsedJson };
+  } catch (error) {
+    // 如果直接解析失敗，嘗試提取 JSON 部分
+    const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/) || 
+                      response.match(/\{[\s\S]*\}/);
+    
+    if (jsonMatch) {
+      try {
+        const extractedJson = JSON.parse(jsonMatch[0].replace(/```json\n|```/g, ''));
+        return { json: extractedJson };
+      } catch (e) {
+        // 如果提取的 JSON 也無法解析，返回原始響應
+        return { 
+          json: { 
+            error: 'Failed to parse JSON',
+            rawResponse: response 
+          } 
+        };
+      }
+    } else {
+      // 沒有找到 JSON 格式
+      return { 
+        json: { 
+          error: 'No JSON found in response',
+          rawResponse: response 
+        } 
+      };
+    }
+  }
+});</code></pre>
+
+                            <h5>提取結構化信息</h5>
+                            <p>從非結構化文本中提取信息：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 提取結構化信息
+return items.map(item => {
+  const response = item.json.choices[0].message.content;
+  
+  // 使用正則表達式提取信息
+  const nameMatch = response.match(/名稱[：:]\s*(.*?)[\n\r]/);
+  const emailMatch = response.match(/郵箱[：:]\s*(.*?)[\n\r]/);
+  const phoneMatch = response.match(/電話[：:]\s*(.*?)[\n\r]/);
+  
+  return {
+    json: {
+      name: nameMatch ? nameMatch[1].trim() : null,
+      email: emailMatch ? emailMatch[1].trim() : null,
+      phone: phoneMatch ? phoneMatch[1].trim() : null,
+      rawResponse: response
+    }
+  };
+});</code></pre>
+                        </section>
+
+                        <section id="prompt-engineering" class="content-section">
+                            <h3>提示工程與 LLM 優化</h3>
+                            <p>提示工程是有效使用 LLM 的關鍵，良好的提示可以顯著提高 LLM 輸出的質量。</p>
+
+                            <h4>提示模板設計</h4>
+                            <p>設計有效的提示模板：</p>
+                            
+                            <h5>角色定義</h5>
+                            <p>明確定義 LLM 的角色和任務：</p>
+                            <pre><code class="language-javascript">// 角色定義示例
+const systemPrompt = `你是一個專業的內容編輯，專注於將技術文章轉化為易於理解的內容。
+你的任務是：
+1. 簡化複雜的技術概念，使非技術讀者也能理解
+2. 保持文章的專業性和準確性
+3. 改進文章結構，使其更具邏輯性和可讀性
+4. 糾正語法和拼寫錯誤
+5. 確保內容符合目標受眾的需求
+
+請不要：
+- 添加未經驗證的信息
+- 改變文章的核心信息
+- 使用過於口語化的表達`;</code></pre>
+
+                            <h5>任務說明</h5>
+                            <p>清晰描述任務和期望輸出：</p>
+                            <pre><code class="language-javascript">// 任務說明示例
+const taskPrompt = `請將以下技術文章改寫為面向初學者的教學內容。
+保留所有重要概念，但使用更簡單的語言和更多的解釋。
+添加小標題和列表以提高可讀性。
+最終文章應該是原文長度的 1.5 倍左右，以容納更多解釋。
+
+原文：
+{{$json.originalArticle}}`;</code></pre>
+
+                            <h5>輸出格式指定</h5>
+                            <p>明確指定期望的輸出格式：</p>
+                            <pre><code class="language-javascript">// 輸出格式指定示例
+const formatPrompt = `請以以下 JSON 格式返回結果：
+{
+  "title": "文章標題",
+  "introduction": "簡短的介紹段落",
+  "sections": [
+    {
+      "heading": "第一個小標題",
+      "content": "該部分的內容",
+      "keyPoints": ["要點1", "要點2", "要點3"]
+    },
+    // 更多部分...
+  ],
+  "conclusion": "總結段落",
+  "targetAudience": "適合的目標受眾描述"
+}
+
+請確保返回的是有效的 JSON 格式，不要添加額外的文本或解釋。`;</code></pre>
+
+                            <h4>提示優化技巧</h4>
+                            <p>提高 LLM 輸出質量的技巧：</p>
+                            
+                            <h5>少樣本學習 (Few-shot Learning)</h5>
+                            <p>提供示例幫助 LLM 理解任務：</p>
+                            <pre><code class="language-javascript">// 少樣本學習示例
+const fewShotPrompt = `請將以下客戶反饋分類為正面、負面或中性，並提取關鍵問題。
+
+示例 1:
+客戶反饋: "我非常喜歡你們的產品，界面簡潔易用，但結帳過程有點複雜。"
+分類: 正面
+關鍵問題: 結帳過程複雜
+
+示例 2:
+客戶反饋: "網站總是崩潰，無法完成訂單，客服也聯繫不上，太糟糕了！"
+分類: 負面
+關鍵問題: 網站穩定性問題, 客服不可用
+
+示例 3:
+客戶反饋: "產品功能符合預期，但價格比競爭對手高一些。"
+分類: 中性
+關鍵問題: 價格競爭力
+
+現在，請分析以下客戶反饋:
+客戶反饋: "{{$json.customerFeedback}}"
+`;</code></pre>
+
+                            <h5>鏈式思考 (Chain-of-Thought)</h5>
+                            <p>引導 LLM 逐步思考問題：</p>
+                            <pre><code class="language-javascript">// 鏈式思考示例
+const chainOfThoughtPrompt = `請解決以下數學問題，並展示你的完整思考過程。
+
+問題: 一家商店銷售筆記本和鋼筆。筆記本的價格是鋼筆的 3 倍。如果一個顧客買了 2 本筆記本和 5 支鋼筆，總共花費了 330 元，那麼一本筆記本和一支鋼筆各自的價格是多少？
+
+請按照以下步驟思考:
+1. 定義變量
+2. 根據問題設置方程
+3. 解方程
+4. 驗證答案
+5. 給出最終結論
+
+請確保每一步都清晰可見，這樣我可以理解你的推理過程。`;</code></pre>
+
+                            <h5>思考框架 (Reasoning Framework)</h5>
+                            <p>提供結構化的思考框架：</p>
+                            <pre><code class="language-javascript">// 思考框架示例
+const reasoningFrameworkPrompt = `請使用 STAR 框架分析以下業務案例:
+
+情境 (Situation): 描述背景和上下文
+任務 (Task): 確定需要解決的問題或達成的目標
+行動 (Action): 提出可能的解決方案和行動步驟
+結果 (Result): 預測每個行動方案的可能結果和影響
+
+業務案例: {{$json.businessCase}}`;</code></pre>
+
+                            <h4>提示版本管理</h4>
+                            <p>在 n8n 中管理和優化提示模板：</p>
+                            
+                            <h5>使用工作流變量</h5>
+                            <p>將提示存儲為工作流變量：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 設置提示模板
+// 在工作流開始時執行
+$workflow.variables.systemPrompt = `你是一個專業的客服助手...`;
+$workflow.variables.userPromptTemplate = `用戶問題: {{question}}
+產品信息: {{productInfo}}
+相關知識庫: {{knowledgeBase}}`;
+
+return items;</code></pre>
+
+                            <h5>動態生成提示</h5>
+                            <p>根據上下文動態生成提示：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 動態生成提示
+return items.map(item => {
+  // 獲取基本模板
+  const basePrompt = $workflow.variables.userPromptTemplate;
+  
+  // 根據用戶類型調整提示
+  let customizedPrompt = basePrompt;
+  if (item.json.userType === 'technical') {
+    customizedPrompt += '\n請提供技術細節和專業解釋。';
+  } else if (item.json.userType === 'beginner') {
+    customizedPrompt += '\n請使用簡單的語言和類比解釋，避免技術術語。';
+  }
+  
+  // 填充模板變量
+  const filledPrompt = customizedPrompt
+    .replace('{{question}}', item.json.question)
+    .replace('{{productInfo}}', item.json.productInfo || '')
+    .replace('{{knowledgeBase}}', item.json.knowledgeBase || '');
+  
+  return {
+    json: {
+      ...item.json,
+      prompt: filledPrompt
+    }
+  };
+});</code></pre>
+
+                            <h5>A/B 測試提示</h5>
+                            <p>測試不同提示的效果：</p>
+                            <pre><code class="language-javascript">// Function 節點 - A/B 測試提示
+return items.map(item => {
+  // 定義多個提示變體
+  const promptVariants = [
+    `簡潔版: 請簡要總結以下文本的主要觀點: ${item.json.text}`,
+    `詳細版: 請詳細分析以下文本，包括主要觀點、支持證據和隱含假設: ${item.json.text}`,
+    `結構版: 請以大綱形式列出以下文本的主要觀點和子觀點: ${item.json.text}`
+  ];
+  
+  // 隨機選擇一個變體或根據測試計劃選擇
+  const selectedVariant = promptVariants[item.json.testGroup % promptVariants.length];
+  
+  return {
+    json: {
+      ...item.json,
+      prompt: selectedVariant,
+      promptVariant: item.json.testGroup % promptVariants.length
+    }
+  };
+});</code></pre>
+                        </section>
+
+                        <section id="rag-system" class="content-section">
+                            <h3>知識庫與 RAG 系統</h3>
+                            <p>檢索增強生成 (Retrieval-Augmented Generation, RAG) 是結合 LLM 與自定義知識庫的強大技術。</p>
+
+                            <h4>向量數據庫整合</h4>
+                            <p>向量數據庫是 RAG 系統的核心組件：</p>
+                            
+                            <h5>連接 PostgreSQL 與 pgvector</h5>
+                            <p>使用 PostgreSQL 和 pgvector 擴展建立向量數據庫：</p>
+                            <pre><code class="language-javascript">// PostgreSQL 節點 - 創建向量表
+// 操作：執行查詢
+// 查詢：
+CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE TABLE IF NOT EXISTS knowledge_base (
+  id SERIAL PRIMARY KEY,
+  content TEXT NOT NULL,
+  embedding VECTOR(1536) NOT NULL,
+  source TEXT,
+  category TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);</code></pre>
+
+                            <h5>連接 Supabase</h5>
+                            <p>使用 Supabase 的向量搜索功能：</p>
+                            <pre><code class="language-javascript">// HTTP Request 節點 - Supabase 向量搜索
+// 方法：POST
+// URL：https://your-project.supabase.co/rest/v1/rpc/match_documents
+// 請求頭：
+// - apikey: {{$json.supabaseKey}}
+// - Authorization: Bearer {{$json.supabaseKey}}
+// - Content-Type: application/json
+// - Prefer: return=representation
+// 請求數據：
+{
+  "query_embedding": {{$json.embedding}},
+  "match_threshold": 0.5,
+  "match_count": 5
+}</code></pre>
+
+                            <h5>連接 Pinecone</h5>
+                            <p>使用 Pinecone 專用向量數據庫：</p>
+                            <pre><code class="language-javascript">// HTTP Request 節點 - Pinecone 查詢
+// 方法：POST
+// URL：https://your-index-name.svc.your-region.pinecone.io/query
+// 請求頭：
+// - Api-Key: {{$json.pineconeApiKey}}
+// - Content-Type: application/json
+// 請求數據：
+{
+  "vector": {{$json.embedding}},
+  "topK": 5,
+  "includeMetadata": true
+}</code></pre>
+
+                            <h4>文檔處理和嵌入生成</h4>
+                            <p>處理文檔並生成嵌入向量：</p>
+                            
+                            <h5>文檔分割</h5>
+                            <p>將長文檔分割為適合嵌入的片段：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 文檔分割
+return items.map(item => {
+  const text = item.json.text;
+  const source = item.json.source || 'unknown';
+  const category = item.json.category || 'general';
+  
+  // 定義分割參數
+  const chunkSize = 1000; // 每個片段的最大字符數
+  const overlap = 200;    // 重疊字符數
+  
+  // 分割文本
+  const chunks = [];
+  for (let i = 0; i < text.length; i += chunkSize - overlap) {
+    const chunk = text.substring(i, i + chunkSize);
+    
+    // 只添加非空的有意義片段
+    if (chunk.trim().length > 100) {
+      chunks.push({
+        content: chunk,
+        source,
+        category,
+        position: i,
+        metadata: {
+          source,
+          category,
+          position: i,
+          length: chunk.length
+        }
+      });
+    }
+  }
+  
+  return {
+    json: {
+      chunks,
+      chunkCount: chunks.length,
+      originalSource: source
+    }
+  };
+});</code></pre>
+
+                            <h5>生成嵌入向量</h5>
+                            <p>使用 OpenAI 或其他服務生成嵌入向量：</p>
+                            <pre><code class="language-javascript">// OpenAI 節點 - 生成嵌入
+// 操作：Embedding
+// 輸入：{{$json.content}}
+// 模型：text-embedding-3-small</code></pre>
+
+                            <h5>批量處理和存儲</h5>
+                            <p>批量處理文檔並存儲嵌入：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 準備批量插入
+return items.map(item => {
+  const chunks = item.json.chunks;
+  const embeddings = item.json.embeddings;
+  
+  // 準備批量插入數據
+  const insertData = chunks.map((chunk, index) => ({
+    content: chunk.content,
+    embedding: embeddings[index],
+    source: chunk.source,
+    category: chunk.category,
+    metadata: JSON.stringify(chunk.metadata)
+  }));
+  
+  return {
+    json: {
+      insertData,
+      batchSize: insertData.length
+    }
+  };
+});</code></pre>
+
+                            <h4>相似度搜索和檢索</h4>
+                            <p>實現高效的相似度搜索：</p>
+                            
+                            <h5>生成查詢嵌入</h5>
+                            <p>將用戶查詢轉換為嵌入向量：</p>
+                            <pre><code class="language-javascript">// OpenAI 節點 - 生成查詢嵌入
+// 操作：Embedding
+// 輸入：{{$json.query}}
+// 模型：text-embedding-3-small</code></pre>
+
+                            <h5>向量相似度搜索</h5>
+                            <p>在向量數據庫中搜索相似內容：</p>
+                            <pre><code class="language-javascript">// PostgreSQL 節點 - 向量搜索
+// 操作：執行查詢
+// 查詢：
+SELECT 
+  id, 
+  content, 
+  source, 
+  category,
+  1 - (embedding <=> $1) AS similarity
+FROM 
+  knowledge_base
+WHERE 
+  category = $2
+ORDER BY 
+  embedding <=> $1
+LIMIT 5;
+// 查詢參數：
+// - $1: {{$json.embedding}}
+// - $2: {{$json.category || 'general'}}</code></pre>
+
+                            <h5>混合搜索策略</h5>
+                            <p>結合關鍵詞和向量搜索：</p>
+                            <pre><code class="language-javascript">// PostgreSQL 節點 - 混合搜索
+// 操作：執行查詢
+// 查詢：
+WITH keyword_matches AS (
+  SELECT 
+    id, 
+    content, 
+    source, 
+    category,
+    ts_rank(to_tsvector('english', content), to_tsquery('english', $1)) AS keyword_rank,
+    1 - (embedding <=> $2) AS vector_similarity
+  FROM 
+    knowledge_base
+  WHERE 
+    to_tsvector('english', content) @@ to_tsquery('english', $1)
+    OR category = $3
+),
+vector_matches AS (
+  SELECT 
+    id, 
+    content, 
+    source, 
+    category,
+    0 AS keyword_rank,
+    1 - (embedding <=> $2) AS vector_similarity
+  FROM 
+    knowledge_base
+  ORDER BY 
+    embedding <=> $2
+  LIMIT 10
+)
+SELECT 
+  id, 
+  content, 
+  source, 
+  category,
+  keyword_rank,
+  vector_similarity,
+  (keyword_rank * 0.4 + vector_similarity * 0.6) AS combined_score
+FROM 
+  (SELECT * FROM keyword_matches UNION SELECT * FROM vector_matches) AS combined
+ORDER BY 
+  combined_score DESC
+LIMIT 5;
+// 查詢參數：
+// - $1: {{$json.keywordQuery}}
+// - $2: {{$json.embedding}}
+// - $3: {{$json.category || 'general'}}</code></pre>
+
+                            <h4>上下文增強和回答生成</h4>
+                            <p>使用檢索到的內容增強 LLM 回答：</p>
+                            
+                            <h5>上下文組裝</h5>
+                            <p>將檢索到的內容組裝為 LLM 上下文：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 組裝上下文
+return items.map(item => {
+  const query = item.json.query;
+  const retrievedDocs = item.json.retrievedDocs || [];
+  
+  // 組裝上下文
+  let context = '';
+  if (retrievedDocs.length > 0) {
+    context = '以下是與問題相關的信息：\n\n';
+    
+    retrievedDocs.forEach((doc, index) => {
+      context += `[文檔 ${index + 1}] 來源: ${doc.source}\n`;
+      context += `${doc.content}\n\n`;
+    });
+  } else {
+    context = '沒有找到與問題直接相關的信息。';
+  }
+  
+  return {
+    json: {
+      ...item.json,
+      context,
+      hasRelevantContext: retrievedDocs.length > 0
+    }
+  };
+});</code></pre>
+
+                            <h5>生成增強回答</h5>
+                            <p>使用檢索到的上下文生成回答：</p>
+                            <pre><code class="language-javascript">// OpenAI 節點 - 生成回答
+// 操作：Chat
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個知識助手，負責根據提供的上下文信息回答用戶問題。如果上下文中沒有相關信息，請誠實地表明你不知道，不要編造答案。"
+  },
+  {
+    "role": "user",
+    "content": "問題：{{$json.query}}\n\n上下文信息：\n{{$json.context}}"
+  }
+]
+// 溫度：0.3
+// 最大令牌：1000</code></pre>
+
+                            <h5>回答評估和改進</h5>
+                            <p>評估回答質量並改進：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 評估回答
+return items.map(item => {
+  const answer = item.json.choices[0].message.content;
+  const query = item.json.query;
+  const hasRelevantContext = item.json.hasRelevantContext;
+  
+  // 檢查不確定性標記
+  const uncertaintyMarkers = [
+    "我不確定", "可能", "也許", "我猜", "不太清楚",
+    "需要更多信息", "無法確定", "難以判斷", "我不知道"
+  ];
+  
+  let confidenceScore = 0.9; // 默認高信心
+  
+  // 降低包含不確定性標記的回答的信心分數
+  for (const marker of uncertaintyMarkers) {
+    if (answer.toLowerCase().includes(marker.toLowerCase())) {
+      confidenceScore -= 0.2;
+      break;
+    }
+  }
+  
+  // 如果沒有相關上下文，降低信心分數
+  if (!hasRelevantContext) {
+    confidenceScore -= 0.3;
+  }
+  
+  // 檢查回答長度是否過短
+  if (answer.length < 50) {
+    confidenceScore -= 0.2;
+  }
+  
+  // 限制最終分數範圍
+  confidenceScore = Math.max(0, Math.min(1, confidenceScore));
+  
+  return {
+    json: {
+      ...item.json,
+      answer,
+      confidenceScore,
+      needsImprovement: confidenceScore < 0.6
+    }
+  };
+});</code></pre>
+                        </section>
+
+                        <section id="customer-service-bot" class="content-section">
+                            <h3>自動客服與聊天機器人</h3>
+                            <p>結合 LLM 和 RAG 系統創建智能客服機器人。</p>
+
+                            <h4>多渠道接入</h4>
+                            <p>從多個渠道接收用戶查詢：</p>
+                            
+                            <h5>Webhook 接入</h5>
+                            <p>通過 Webhook 接收網站查詢：</p>
+                            <pre><code class="language-javascript">// Webhook 節點設置
+// 方法：POST
+// 路徑：/chatbot
+// 響應模式：等待
+// 認證：可選（如需保護服務）</code></pre>
+
+                            <h5>Telegram 接入</h5>
+                            <p>接入 Telegram 機器人：</p>
+                            <pre><code class="language-javascript">// Telegram 節點設置
+// 操作：更新
+// 更新類型：消息</code></pre>
+
+                            <h5>統一消息格式</h5>
+                            <p>將不同渠道的消息統一為標準格式：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 統一消息格式
+return items.map(item => {
+  let channel, userId, message, threadId, userName;
+  
+  // 根據來源渠道處理
+  if (item.json.update) {
+    // Telegram
+    channel = 'telegram';
+    userId = item.json.update.message.from.id.toString();
+    userName = item.json.update.message.from.first_name;
+    message = item.json.update.message.text;
+    threadId = item.json.update.message.chat.id.toString();
+  } else if (item.json.body) {
+    // Webhook
+    channel = 'website';
+    userId = item.json.body.userId || item.json.body.sessionId;
+    userName = item.json.body.name || 'Website User';
+    message = item.json.body.message;
+    threadId = item.json.body.conversationId;
+  } else {
+    // 其他渠道
+    channel = 'unknown';
+    userId = item.json.userId || 'unknown';
+    userName = item.json.userName || 'Unknown User';
+    message = item.json.message || '';
+    threadId = item.json.threadId || userId;
+  }
+  
+  // 生成唯一對話 ID
+  const conversationId = `${channel}_${threadId}_${Date.now()}`;
+  
+  return {
+    json: {
+      channel,
+      userId,
+      userName,
+      message,
+      threadId,
+      conversationId,
+      timestamp: new Date().toISOString()
+    }
+  };
+});</code></pre>
+
+                            <h4>對話管理</h4>
+                            <p>管理用戶對話和上下文：</p>
+                            
+                            <h5>對話歷史獲取</h5>
+                            <p>獲取用戶的對話歷史：</p>
+                            <pre><code class="language-javascript">// PostgreSQL 節點 - 獲取對話歷史
+// 操作：選擇
+// 表：conversation_history
+// 條件：
+// - user_id = {{$json.userId}}
+// - thread_id = {{$json.threadId}}
+// 排序：timestamp ASC
+// 限制：10</code></pre>
+
+                            <h5>對話上下文組裝</h5>
+                            <p>將對話歷史組裝為 LLM 上下文：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 組裝對話上下文
+return items.map(item => {
+  const history = item.json.selectItems || [];
+  
+  // 格式化為對話格式
+  const formattedHistory = history.map(h => {
+    return {
+      role: h.is_bot ? 'assistant' : 'user',
+      content: h.message
+    };
+  });
+  
+  // 添加當前用戶消息
+  formattedHistory.push({
+    role: 'user',
+    content: item.json.message
+  });
+  
+  return {
+    json: {
+      ...item.json,
+      conversationHistory: formattedHistory
+    }
+  };
+});</code></pre>
+
+                            <h5>對話狀態管理</h5>
+                            <p>管理對話狀態和流程：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 對話狀態管理
+return items.map(item => {
+  // 獲取或初始化對話狀態
+  let conversationState = item.json.conversationState || {
+    stage: 'initial',
+    userData: {},
+    pendingActions: [],
+    lastInteractionTime: null
+  };
+  
+  // 更新對話狀態
+  conversationState.lastInteractionTime = new Date().toISOString();
+  
+  // 根據當前階段和用戶消息更新狀態
+  if (conversationState.stage === 'initial') {
+    // 初始階段，檢查是否是問候或特定意圖
+    if (isGreeting(item.json.message)) {
+      conversationState.stage = 'greeting';
+    } else if (isProductQuery(item.json.message)) {
+      conversationState.stage = 'product_query';
+    } else {
+      conversationState.stage = 'general_query';
+    }
+  } else if (conversationState.stage === 'waiting_for_details') {
+    // 等待用戶提供更多詳情
+    conversationState.userData.details = item.json.message;
+    conversationState.stage = 'processing_details';
+  }
+  
+  return {
+    json: {
+      ...item.json,
+      conversationState
+    }
+  };
+});</code></pre>
+
+                            <h4>意圖識別和實體提取</h4>
+                            <p>識別用戶意圖和提取關鍵實體：</p>
+                            
+                            <h5>使用 LLM 進行意圖識別</h5>
+                            <p>利用 LLM 識別用戶意圖：</p>
+                            <pre><code class="language-javascript">// OpenAI 節點 - 意圖識別
+// 操作：Chat
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個意圖識別助手。你的任務是分析用戶消息，識別其主要意圖和任何相關實體。請以 JSON 格式返回結果。"
+  },
+  {
+    "role": "user",
+    "content": "請分析以下用戶消息的意圖和實體：\n\n\"{{$json.message}}\""
+  }
+]
+// 溫度：0.3
+// 響應格式：JSON 對象
+// 響應架構：
+{
+  "intent": {
+    "type": "string",
+    "enum": ["greeting", "product_query", "support_request", "complaint", "feedback", "order_status", "account_issue", "general_question", "other"],
+    "description": "用戶消息的主要意圖"
+  },
+  "confidence": {
+    "type": "number",
+    "description": "意圖識別的置信度，範圍 0-1"
+  },
+  "entities": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "實體類型，如 product, order_id, date, location 等"
+        },
+        "value": {
+          "type": "string",
+          "description": "實體的實際值"
+        }
+      }
+    },
+    "description": "從用戶消息中提取的關鍵實體"
+  }
+}</code></pre>
+
+                            <h5>基於規則的意圖識別</h5>
+                            <p>使用規則和關鍵詞識別常見意圖：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 規則意圖識別
+function isGreeting(message) {
+  const greetings = ['你好', '嗨', '哈囉', '早安', '午安', '晚安', 'hi', 'hello'];
+  return greetings.some(g => message.toLowerCase().includes(g.toLowerCase()));
+}
+
+function isProductQuery(message) {
+  const productKeywords = ['產品', '商品', '購買', '價格', '多少錢', '功能', '規格'];
+  return productKeywords.some(k => message.includes(k));
+}
+
+function isOrderStatus(message) {
+  return message.includes('訂單') && 
+         (message.includes('狀態') || message.includes('進度') || message.includes('何時'));
+}
+
+return items.map(item => {
+  const message = item.json.message;
+  let intent = 'unknown';
+  let confidence = 0.5;
+  
+  // 簡單規則匹配
+  if (isGreeting(message)) {
+    intent = 'greeting';
+    confidence = 0.9;
+  } else if (isProductQuery(message)) {
+    intent = 'product_query';
+    confidence = 0.8;
+  } else if (isOrderStatus(message)) {
+    intent = 'order_status';
+    confidence = 0.8;
+  }
+  
+  return {
+    json: {
+      ...item.json,
+      ruleBasedIntent: intent,
+      ruleBasedConfidence: confidence
+    }
+  };
+});</code></pre>
+
+                            <h5>實體提取和規範化</h5>
+                            <p>提取和規範化關鍵實體：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 實體提取和規範化
+return items.map(item => {
+  const message = item.json.message;
+  const entities = item.json.entities || [];
+  
+  // 規範化產品名稱
+  const normalizedEntities = entities.map(entity => {
+    if (entity.type === 'product') {
+      // 產品名稱規範化
+      const normalizedValue = normalizeProductName(entity.value);
+      return {
+        ...entity,
+        normalizedValue,
+        productId: getProductIdByName(normalizedValue)
+      };
+    } else if (entity.type === 'order_id') {
+      // 訂單 ID 規範化
+      return {
+        ...entity,
+        normalizedValue: entity.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+      };
+    } else {
+      return entity;
+    }
+  });
+  
+  return {
+    json: {
+      ...item.json,
+      normalizedEntities
+    }
+  };
+});</code></pre>
+
+                            <h4>回答生成與評估</h4>
+                            <p>生成回答並評估質量：</p>
+                            
+                            <h5>基於 RAG 的回答生成</h5>
+                            <p>結合知識庫生成回答：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 準備 RAG 提示
+return items.map(item => {
+  const query = item.json.message;
+  const intent = item.json.intent;
+  const conversationHistory = item.json.conversationHistory || [];
+  const retrievedDocs = item.json.retrievedDocs || [];
+  
+  // 構建系統提示
+  let systemPrompt = `你是一個專業、友善的客服助手。`;
+  
+  // 根據意圖調整提示
+  if (intent === 'product_query') {
+    systemPrompt += `\n請提供準確的產品信息，包括功能、價格和可用性。`;
+  } else if (intent === 'support_request') {
+    systemPrompt += `\n請提供清晰的故障排除步驟和解決方案。`;
+  }
+  
+  systemPrompt += `\n請根據提供的知識庫信息回答用戶問題。如果知識庫中沒有相關信息，請誠實地表明你不知道，並提供聯繫人工客服的方式。`;
+  
+  // 構建知識庫上下文
+  let knowledgeContext = '';
+  if (retrievedDocs.length > 0) {
+    knowledgeContext = '以下是與問題相關的信息：\n\n';
+    
+    retrievedDocs.forEach((doc, index) => {
+      knowledgeContext += `[文檔 ${index + 1}] 來源: ${doc.source}\n`;
+      knowledgeContext += `${doc.content}\n\n`;
+    });
+  } else {
+    knowledgeContext = '沒有找到與問題直接相關的信息。';
+  }
+  
+  // 構建完整提示
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    ...conversationHistory,
+    { role: 'user', content: `問題：${query}\n\n知識庫信息：\n${knowledgeContext}` }
+  ];
+  
+  return {
+    json: {
+      ...item.json,
+      messages,
+      hasKnowledgeContext: retrievedDocs.length > 0
+    }
+  };
+});</code></pre>
+
+                            <h5>回答質量評估</h5>
+                            <p>評估回答的質量和可信度：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 回答評估
+return items.map(item => {
+  const response = item.json.choices[0].message.content;
+  const hasKnowledgeContext = item.json.hasKnowledgeContext;
+  
+  // 檢查不確定性標記
+  const uncertaintyMarkers = [
+    "我不確定", "可能", "也許", "我猜", "不太清楚",
+    "需要更多信息", "無法確定", "難以判斷", "我不知道"
+  ];
+  
+  let confidenceScore = 0.9; // 默認高信心
+  
+  // 降低包含不確定性標記的回答的信心分數
+  for (const marker of uncertaintyMarkers) {
+    if (response.toLowerCase().includes(marker.toLowerCase())) {
+      confidenceScore -= 0.2;
+      break;
+    }
+  }
+  
+  // 如果沒有相關知識庫上下文，降低信心分數
+  if (!hasKnowledgeContext) {
+    confidenceScore -= 0.3;
+  }
+  
+  // 檢查回答長度是否過短
+  if (response.length < 50) {
+    confidenceScore -= 0.2;
+  }
+  
+  // 限制最終分數範圍
+  confidenceScore = Math.max(0, Math.min(1, confidenceScore));
+  
+  return {
+    json: {
+      ...item.json,
+      response,
+      confidenceScore,
+      requiresHumanReview: confidenceScore < 0.6
+    }
+  };
+});</code></pre>
+
+                            <h5>人工轉接決策</h5>
+                            <p>決定是否需要轉接人工客服：</p>
+                            <pre><code class="language-javascript">// IF 節點 - 人工轉接決策
+// 條件：{{$json.requiresHumanReview}} || {{$json.intent === 'complaint' && $json.confidence > 0.7}}
+
+// True 分支：轉接人工客服
+// Slack 節點 - 發送通知
+// 頻道：#customer-support
+// 消息：
+/*
+需要人工處理的客服請求
+客戶: {{$json.userName}} ({{$json.userId}})
+渠道: {{$json.channel}}
+問題: {{$json.message}}
+意圖: {{$json.intent}} (置信度: {{$json.confidence}})
+AI回答: {{$json.response}}
+信心分數: {{$json.confidenceScore}}
+對話ID: {{$json.conversationId}}
+*/
+
+// False 分支：使用 AI 回答</code></pre>
+
+                            <h4>多渠道回覆</h4>
+                            <p>將回答發送到不同渠道：</p>
+                            
+                            <h5>Telegram 回覆</h5>
+                            <p>發送回覆到 Telegram：</p>
+                            <pre><code class="language-javascript">// Telegram 節點 - 發送消息
+// 操作：發送消息
+// 聊天 ID：{{$json.threadId}}
+// 內容：{{$json.requiresHumanReview ? $json.humanTransferMessage : $json.response}}</code></pre>
+
+                            <h5>Webhook 回覆</h5>
+                            <p>通過 Webhook 返回回覆：</p>
+                            <pre><code class="language-javascript">// Respond to Webhook 節點
+// 響應類型：JSON
+// 響應數據：
+{
+  "response": "{{$json.requiresHumanReview ? $json.humanTransferMessage : $json.response}}",
+  "requiresHumanReview": {{$json.requiresHumanReview}},
+  "conversationId": "{{$json.conversationId}}"
+}</code></pre>
+
+                            <h5>對話歷史記錄</h5>
+                            <p>記錄對話歷史：</p>
+                            <pre><code class="language-javascript">// PostgreSQL 節點 - 記錄對話
+// 操作：插入
+// 表：conversation_history
+// 數據：
+{
+  "user_id": "{{$json.userId}}",
+  "thread_id": "{{$json.threadId}}",
+  "conversation_id": "{{$json.conversationId}}",
+  "channel": "{{$json.channel}}",
+  "message": "{{$json.message}}",
+  "response": "{{$json.response}}",
+  "is_bot": false,
+  "intent": "{{$json.intent}}",
+  "confidence_score": {{$json.confidenceScore}},
+  "requires_human_review": {{$json.requiresHumanReview}},
+  "timestamp": "{{$json.timestamp}}"
+}</code></pre>
+                        </section>
+
+                        <section id="multilingual" class="content-section">
+                            <h3>多語言處理與翻譯</h3>
+                            <p>實現多語言支持和自動翻譯功能。</p>
+
+                            <h4>語言檢測</h4>
+                            <p>自動檢測用戶使用的語言：</p>
+                            
+                            <h5>使用 LLM 進行語言檢測</h5>
+                            <p>利用 LLM 檢測語言：</p>
+                            <pre><code class="language-javascript">// OpenAI 節點 - 語言檢測
+// 操作：Chat
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個語言檢測助手。你的任務是識別提供文本的語言，並返回 ISO 639-1 語言代碼。請只返回語言代碼，不要添加任何解釋或額外文本。"
+  },
+  {
+    "role": "user",
+    "content": "請識別以下文本的語言：\n\n\"{{$json.text}}\""
+  }
+]
+// 溫度：0.3
+// 最大令牌：20</code></pre>
+
+                            <h5>使用專門的語言檢測 API</h5>
+                            <p>使用專門的語言檢測服務：</p>
+                            <pre><code class="language-javascript">// HTTP Request 節點 - Google Cloud 語言檢測
+// 方法：POST
+// URL：https://translation.googleapis.com/language/translate/v2/detect
+// 查詢參數：
+// - key: {{$json.googleApiKey}}
+// 請求格式：JSON
+// 請求數據：
+{
+  "q": "{{$json.text}}"
+}</code></pre>
+
+                            <h4>文本翻譯</h4>
+                            <p>實現自動文本翻譯：</p>
+                            
+                            <h5>使用 DeepL API</h5>
+                            <p>使用 DeepL 進行高質量翻譯：</p>
+                            <pre><code class="language-javascript">// HTTP Request 節點 - DeepL 翻譯
+// 方法：POST
+// URL：https://api-free.deepl.com/v2/translate
+// 請求頭：
+// - Authorization: DeepL-Auth-Key {{$json.deeplApiKey}}
+// 請求格式：Form-Data
+// 請求數據：
+{
+  "text": "{{$json.text}}",
+  "source_lang": "{{$json.sourceLanguage}}",
+  "target_lang": "{{$json.targetLanguage}}"
+}</code></pre>
+
+                            <h5>使用 Google Translate API</h5>
+                            <p>使用 Google Translate 進行翻譯：</p>
+                            <pre><code class="language-javascript">// HTTP Request 節點 - Google Translate
+// 方法：POST
+// URL：https://translation.googleapis.com/language/translate/v2
+// 查詢參數：
+// - key: {{$json.googleApiKey}}
+// 請求格式：JSON
+// 請求數據：
+{
+  "q": "{{$json.text}}",
+  "source": "{{$json.sourceLanguage}}",
+  "target": "{{$json.targetLanguage}}",
+  "format": "text"
+}</code></pre>
+
+                            <h4>多語言客服系統</h4>
+                            <p>實現多語言客服系統：</p>
+                            
+                            <h5>語言檢測和翻譯流程</h5>
+                            <p>完整的多語言處理流程：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 多語言處理流程
+return items.map(item => {
+  const userMessage = item.json.message;
+  const detectedLanguage = item.json.detectedLanguage;
+  const systemLanguage = 'zh-TW'; // 系統默認語言
+  
+  // 決定是否需要翻譯
+  const needsTranslation = detectedLanguage !== systemLanguage && 
+                          detectedLanguage !== 'en';
+  
+  // 準備處理流程
+  const processingSteps = [];
+  
+  if (needsTranslation) {
+    processingSteps.push({
+      step: 'translate_to_system',
+      sourceLanguage: detectedLanguage,
+      targetLanguage: systemLanguage,
+      text: userMessage
+    });
+  }
+  
+  // 添加 RAG 和 LLM 處理步驟
+  processingSteps.push({
+    step: 'process_query',
+    language: needsTranslation ? systemLanguage : detectedLanguage,
+    text: needsTranslation ? '{{translatedText}}' : userMessage
+  });
+  
+  if (needsTranslation) {
+    processingSteps.push({
+      step: 'translate_to_user',
+      sourceLanguage: systemLanguage,
+      targetLanguage: detectedLanguage,
+      text: '{{processedResponse}}'
+    });
+  }
+  
+  return {
+    json: {
+      ...item.json,
+      needsTranslation,
+      processingSteps,
+      originalLanguage: detectedLanguage
+    }
+  };
+});</code></pre>
+
+                            <h5>多語言知識庫</h5>
+                            <p>管理多語言知識庫：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 多語言知識庫查詢
+return items.map(item => {
+  const query = item.json.query;
+  const language = item.json.language;
+  const embedding = item.json.embedding;
+  
+  // 決定使用哪個知識庫表
+  let knowledgeBaseTable;
+  if (language === 'zh-TW' || language === 'zh-CN') {
+    knowledgeBaseTable = 'knowledge_base_chinese';
+  } else if (language === 'en') {
+    knowledgeBaseTable = 'knowledge_base_english';
+  } else {
+    // 對於其他語言，使用英文知識庫
+    knowledgeBaseTable = 'knowledge_base_english';
+  }
+  
+  return {
+    json: {
+      ...item.json,
+      knowledgeBaseTable,
+      queryLanguage: language
+    }
+  };
+});</code></pre>
+
+                            <h5>多語言回答生成</h5>
+                            <p>生成多語言回答：</p>
+                            <pre><code class="language-javascript">// OpenAI 節點 - 多語言回答生成
+// 操作：Chat
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個多語言客服助手，能夠流利地使用{{$json.language}}。請使用{{$json.language}}回答用戶問題。"
+  },
+  {
+    "role": "user",
+    "content": "問題：{{$json.query}}\n\n知識庫信息：\n{{$json.context}}"
+  }
+]
+// 溫度：0.3
+// 最大令牌：1000</code></pre>
+                        </section>
+
+                        <section id="advanced-exercises" class="content-section">
+                            <h3>進階實戰練習</h3>
+                            <p>以下是一些進階實戰練習，幫助您應用所學知識：</p>
+
+                            <h4>練習 1：LLM 驅動的內容生成系統</h4>
+                            <p>創建一個工作流，從多個來源獲取信息，使用 LLM 生成原創內容，並發佈到多個平台。</p>
+                            <p>使用節點：HTTP Request, OpenAI, Function, WordPress/Medium/LinkedIn</p>
+
+                            <h4>練習 2：基於 RAG 的知識庫問答系統</h4>
+                            <p>創建一個工作流，建立向量化知識庫，實現基於 RAG 的問答系統，能夠回答特定領域的問題。</p>
+                            <p>使用節點：HTTP Request, OpenAI, PostgreSQL, Function, Webhook</p>
+
+                            <h4>練習 3：多渠道自動客服解決方案</h4>
+                            <p>創建一個工作流，實現多渠道（網站、Telegram、Email）的自動客服系統，能夠回答問題、處理簡單請求，並在需要時轉接人工客服。</p>
+                            <p>使用節點：Webhook, Telegram, Email, OpenAI, Function, PostgreSQL, Slack</p>
+
+                            <h4>練習 4：數據分析和報告自動化系統</h4>
+                            <p>創建一個工作流，從多個數據源收集數據，進行分析和可視化，使用 LLM 生成見解，並自動生成和發送報告。</p>
+                            <p>使用節點：HTTP Request, PostgreSQL, Function, OpenAI, Google Sheets, Send Email</p>
+                        </section>
+
+                        <section id="conclusion" class="content-section">
+                            <h3>結語</h3>
+                            <p>恭喜您完成了 n8n 的進階教學！現在您已經掌握了 n8n 與 LLM 整合、RAG 系統實現和複雜自動化應用的知識和技能。</p>
+                            <p>通過結合 n8n 的自動化能力和 LLM 的智能，您可以創建各種強大的應用，從智能客服系統到內容生成平台，從知識庫問答系統到多語言處理工具。</p>
+                            <p>隨著 AI 技術的不斷發展，n8n 與 LLM 的結合將為自動化帶來更多可能性。我們鼓勵您繼續探索和實驗，創建更加創新和實用的自動化解決方案。</p>
+                            <p>如果您想進一步學習和應用這些知識，請參考我們的實用案例，這些案例提供了完整的實際應用示例。</p>
+                            <p><a href="use-cases.html" class="btn">查看實用案例</a></p>
+                        </section>
+                    </section>
+                </div>
+
+                <aside class="sidebar">
+                    <div id="search-container">
+                        <h3>搜索</h3>
+                        <input type="text" id="search-input" placeholder="搜索內容...">
+                        <div id="search-results" style="display: none;"></div>
+                    </div>
+                    <div>
+                        <h3>目錄</h3>
+                        <ul>
+                            <li><a href="#advanced-tutorial">進階教學概述</a></li>
+                            <li><a href="#llm-integration">n8n 與 LLM 整合</a></li>
+                            <li><a href="#prompt-engineering">提示工程與 LLM 優化</a></li>
+                            <li><a href="#rag-system">知識庫與 RAG 系統</a></li>
+                            <li><a href="#customer-service-bot">自動客服與聊天機器人</a></li>
+                            <li><a href="#multilingual">多語言處理與翻譯</a></li>
+                            <li><a href="#advanced-exercises">進階實戰練習</a></li>
+                            <li><a href="#conclusion">結語</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>相關頁面</h3>
+                        <ul>
+                            <li><a href="learning-path.html">學習路徑</a></li>
+                            <li><a href="basic-tutorial.html">基礎教學</a></li>
+                            <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                            <li><a href="use-cases.html">實用案例</a></li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>關於本站</h3>
+                    <p>n8n 自動化工作流學習指南是一個幫助您從零開始學習 n8n 的完整資源，提供從基礎到進階的教學內容和實用案例。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速鏈接</h3>
+                    <ul>
+                        <li><a href="index.html">首頁</a></li>
+                        <li><a href="learning-path.html">學習路徑</a></li>
+                        <li><a href="basic-tutorial.html">基礎教學</a></li>
+                        <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                        <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>相關資源</h3>
+                    <ul>
+                        <li><a href="https://n8n.io/" target="_blank">n8n 官方網站</a></li>
+                        <li><a href="https://docs.n8n.io/" target="_blank">n8n 官方文檔</a></li>
+                        <li><a href="https://community.n8n.io/" target="_blank">n8n 社區論壇</a></li>
+                        <li><a href="https://github.com/n8n-io/n8n" target="_blank">n8n GitHub 倉庫</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 n8n 自動化工作流學習指南 | 本網站內容僅供學習參考</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

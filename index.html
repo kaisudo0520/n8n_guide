@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8n 自動化工作流學習指南</title>
+    <meta name="description" content="從基礎到進階的 n8n 自動化工作流學習指南，包含教學、範例和實用案例">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/accessibility.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <meta name="theme-color" content="#ff6d00">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://n8n-guide.example.com/">
+    <meta property="og:title" content="n8n 自動化工作流學習指南">
+    <meta property="og:description" content="從基礎到進階的 n8n 自動化工作流學習指南，包含教學、範例和實用案例">
+    <meta property="og:image" content="https://n8n-guide.example.com/images/og-image.jpg">
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://n8n-guide.example.com/">
+    <meta property="twitter:title" content="n8n 自動化工作流學習指南">
+    <meta property="twitter:description" content="從基礎到進階的 n8n 自動化工作流學習指南，包含教學、範例和實用案例">
+    <meta property="twitter:image" content="https://n8n-guide.example.com/images/og-image.jpg">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">跳到主要內容</a>
+    <div class="progress-bar"></div>
+    
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <img src="images/n8n-logo.png" alt="n8n Logo">
+                <h1>n8n 自動化工作流學習指南</h1>
+            </div>
+            <div class="header-right">
+                <div class="dark-mode-toggle">
+                    <label for="dark-mode-toggle-input">
+                        <span class="sr-only">切換暗黑模式</span>
+                        <input type="checkbox" id="dark-mode-toggle-input">
+                        <span class="toggle"></span>
+                    </label>
+                </div>
+                <button class="mobile-menu-btn" aria-label="開啟選單">☰</button>
+            </div>
+            <nav aria-label="主導航">
+                <ul class="nav-menu">
+                    <li><a href="index.html">首頁</a></li>
+                    <li><a href="learning-path.html">學習路徑</a></li>
+                    <li><a href="basic-tutorial.html">基礎教學</a></li>
+                    <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                    <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    <li><a href="use-cases.html">實用案例</a></li>
+                    <li><a href="resources.html">資源</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <div class="container">
+            <div class="breadcrumb-container" aria-label="麵包屑導航"></div>
+            
+            <div id="search-container">
+                <label for="search-input" class="sr-only">搜索</label>
+                <input type="text" id="search-input" placeholder="搜索內容... (Ctrl+K)" aria-label="搜索內容">
+                <div id="search-results" aria-live="polite"></div>
+            </div>
+            
+            <div class="hero">
+                <div class="hero-content">
+                    <h2>掌握 n8n 自動化工作流</h2>
+                    <p>從基礎到進階，學習如何使用 n8n 自動化處理重複性高又單調的工作，提高效率，釋放創造力。</p>
+                    <div>
+                        <a href="learning-path.html" class="btn btn-primary">開始學習</a>
+                        <a href="use-cases.html" class="btn btn-outline">探索實用案例</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div class="main-content">
+                    <section id="introduction" class="content-section fade-in">
+                        <h2>什麼是 n8n？</h2>
+                        <p>n8n 是一個強大的工作流自動化工具，允許您連接不同的服務和應用程序，創建自動化工作流程，無需編寫複雜的代碼。無論您是想自動發佈內容到社交媒體、處理數據、創建自動回覆系統，還是連接 AI 服務，n8n 都能幫助您實現。</p>
+                        
+                        <p>與其他自動化工具相比，n8n 的優勢在於：</p>
+                        <ul>
+                            <li><strong>開源且可自託管</strong>：完全控制您的數據和工作流</li>
+                            <li><strong>豐富的節點庫</strong>：支持數百種服務和應用的整合</li>
+                            <li><strong>靈活的工作流設計</strong>：支持複雜的條件邏輯和數據轉換</li>
+                            <li><strong>代碼節點</strong>：當內置功能不足時，可以使用 JavaScript 編寫自定義邏輯</li>
+                            <li><strong>活躍的社區</strong>：持續更新和豐富的社區資源</li>
+                        </ul>
+                    </section>
+
+                    <section id="guide-overview" class="content-section slide-in-up">
+                        <h2>本指南概述</h2>
+                        <p>本學習指南專為初學者到進階用戶設計，提供結構化的學習路徑和實用案例，幫助您快速掌握 n8n 並應用於實際工作中。</p>
+                        
+                        <div class="cards">
+                            <div class="card">
+                                <div class="card-content">
+                                    <h3 class="card-title">學習路徑</h3>
+                                    <p class="card-text">從基礎概念到進階應用的結構化學習計劃，幫助您循序漸進地掌握 n8n。</p>
+                                    <a href="learning-path.html" class="btn">查看學習路徑</a>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-content">
+                                    <h3 class="card-title">基礎教學</h3>
+                                    <p class="card-text">了解 n8n 的基本概念、界面操作和簡單工作流創建，適合初學者。</p>
+                                    <a href="basic-tutorial.html" class="btn">開始基礎學習</a>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-content">
+                                    <h3 class="card-title">中級教學</h3>
+                                    <p class="card-text">學習進階功能、數據處理和外部服務整合，提升自動化能力。</p>
+                                    <a href="intermediate-tutorial.html" class="btn">進入中級學習</a>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-content">
+                                    <h3 class="card-title">進階教學</h3>
+                                    <p class="card-text">掌握 LLM 整合、RAG 系統和複雜自動化應用，成為 n8n 專家。</p>
+                                    <a href="advanced-tutorial.html" class="btn">探索進階內容</a>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-content">
+                                    <h3 class="card-title">實用案例</h3>
+                                    <p class="card-text">探索實際應用案例，包括社群媒體自動化、沉浸式翻譯和自動客服機器人。</p>
+                                    <a href="use-cases.html" class="btn">查看實用案例</a>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-content">
+                                    <h3 class="card-title">資源</h3>
+                                    <p class="card-text">收集 n8n 相關的文檔、教學視頻、社區資源和實用工具。</p>
+                                    <a href="resources.html" class="btn">瀏覽資源</a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="featured-use-cases" class="content-section fade-in">
+                        <h2>精選實用案例</h2>
+                        <p>以下是本指南中詳細介紹的三個實用案例，這些案例涵蓋了不同的應用場景和技術難度。</p>
+                        
+                        <div class="use-case-cards">
+                            <div class="use-case-card">
+                                <div class="card-header">
+                                    <h4>社群媒體自動化</h4>
+                                    <span class="difficulty">難度：中級</span>
+                                </div>
+                                <div class="card-body">
+                                    <p>自動從多個來源收集內容，處理並發佈到各大社群媒體平台，實現內容營銷自動化。</p>
+                                    <a href="use-case-social-media.html" class="btn">查看詳情</a>
+                                </div>
+                            </div>
+                            
+                            <div class="use-case-card">
+                                <div class="card-header">
+                                    <h4>吳恩達三階段沉浸式翻譯</h4>
+                                    <span class="difficulty">難度：進階</span>
+                                </div>
+                                <div class="card-body">
+                                    <p>實現吳恩達提出的三階段沉浸式翻譯方法，通過直譯、意譯和優化三個階段，生成高質量的翻譯結果。</p>
+                                    <a href="use-case-immersive-translation.html" class="btn">查看詳情</a>
+                                </div>
+                            </div>
+                            
+                            <div class="use-case-card">
+                                <div class="card-header">
+                                    <h4>LLM 與知識庫的自動客服機器人</h4>
+                                    <span class="difficulty">難度：進階</span>
+                                </div>
+                                <div class="card-body">
+                                    <p>結合大型語言模型和自定義知識庫，創建智能客服機器人，自動回答用戶問題，必要時轉接真人客服。</p>
+                                    <a href="use-case-customer-service-bot.html" class="btn">查看詳情</a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="getting-started" class="content-section slide-in-up">
+                        <h2>快速開始</h2>
+                        <p>想要立即開始使用 n8n？以下是幾個快速入門的步驟：</p>
+                        
+                        <ol>
+                            <li>閱讀<a href="basic-tutorial.html">基礎教學</a>，了解 n8n 的基本概念和界面</li>
+                            <li>按照<a href="basic-tutorial.html#installation">安裝指南</a>在您的環境中設置 n8n</li>
+                            <li>嘗試創建您的<a href="basic-tutorial.html#first-workflow">第一個工作流</a></li>
+                            <li>探索<a href="use-cases.html">實用案例</a>，獲取靈感</li>
+                            <li>加入 n8n <a href="https://community.n8n.io/" target="_blank">社區</a>，與其他用戶交流</li>
+                        </ol>
+                        
+                        <div class="cta-container">
+                            <a href="learning-path.html" class="btn btn-primary">開始學習之旅</a>
+                        </div>
+                    </section>
+                </div>
+                
+                <aside class="sidebar">
+                    <div id="toc-container">
+                        <h3>目錄</h3>
+                        <!-- 目錄將由 JavaScript 自動生成 -->
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3>快速鏈接</h3>
+                        <ul>
+                            <li><a href="learning-path.html">學習路徑</a></li>
+                            <li><a href="basic-tutorial.html">基礎教學</a></li>
+                            <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                            <li><a href="advanced-tutorial.html">進階教學</a></li>
+                            <li><a href="use-cases.html">實用案例</a></li>
+                            <li><a href="resources.html">資源</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3>外部資源</h3>
+                        <ul>
+                            <li><a href="https://n8n.io/" target="_blank">n8n 官方網站</a></li>
+                            <li><a href="https://docs.n8n.io/" target="_blank">n8n 官方文檔</a></li>
+                            <li><a href="https://community.n8n.io/" target="_blank">n8n 社區論壇</a></li>
+                            <li><a href="https://github.com/n8n-io/n8n" target="_blank">n8n GitHub 倉庫</a></li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>關於本站</h3>
+                    <p>n8n 自動化工作流學習指南是一個幫助您從零開始學習 n8n 的完整資源，提供從基礎到進階的教學內容和實用案例。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速鏈接</h3>
+                    <ul>
+                        <li><a href="index.html">首頁</a></li>
+                        <li><a href="learning-path.html">學習路徑</a></li>
+                        <li><a href="basic-tutorial.html">基礎教學</a></li>
+                        <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                        <li><a href="advanced-tutorial.html">進階教學</a></li>
+                        <li><a href="use-cases.html">實用案例</a></li>
+                        <li><a href="resources.html">資源</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>相關資源</h3>
+                    <ul>
+                        <li><a href="https://n8n.io/" target="_blank">n8n 官方網站</a></li>
+                        <li><a href="https://docs.n8n.io/" target="_blank">n8n 官方文檔</a></li>
+                        <li><a href="https://community.n8n.io/" target="_blank">n8n 社區論壇</a></li>
+                        <li><a href="https://github.com/n8n-io/n8n" target="_blank">n8n GitHub 倉庫</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 n8n 自動化工作流學習指南 | 本網站內容僅供學習參考</p>
+            </div>
+        </div>
+    </footer>
+
+    <button class="back-to-top" aria-label="返回頂部">&#8679;</button>
+    <script src="js/main.js"></script>
+</body>
+</html>

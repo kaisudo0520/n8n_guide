@@ -1,0 +1,396 @@
+/* 無障礙樣式 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* 鍵盤焦點樣式 */
+:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* 跳過導航鏈接 */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--primary-color);
+  color: white;
+  padding: 8px;
+  z-index: 1000;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* 麵包屑導航 */
+.breadcrumb-container {
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.breadcrumb-container a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.breadcrumb-container a:hover {
+  text-decoration: underline;
+}
+
+/* 返回頂部按鈕 */
+.back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  z-index: 99;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.back-to-top.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.back-to-top:hover {
+  background-color: #e65c00;
+}
+
+/* 進度條 */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background-color: var(--primary-color);
+  width: 0;
+  z-index: 1000;
+  transition: width 0.2s;
+}
+
+/* 代碼複製按鈕 */
+.copy-code-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  padding: 5px 10px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.copy-code-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* 搜索結果高亮 */
+.search-highlight {
+  background-color: rgba(255, 109, 0, 0.2);
+  animation: highlight-pulse 2s;
+}
+
+@keyframes highlight-pulse {
+  0% { background-color: rgba(255, 109, 0, 0.5); }
+  100% { background-color: rgba(255, 109, 0, 0.2); }
+}
+
+/* 暗黑模式 */
+.dark-mode-toggle {
+  display: flex;
+  align-items: center;
+  margin-left: 1rem;
+}
+
+.dark-mode-toggle label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dark-mode-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.dark-mode-toggle .toggle {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  background-color: #ccc;
+  border-radius: 20px;
+  transition: background-color 0.3s;
+  margin-left: 8px;
+}
+
+.dark-mode-toggle .toggle:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+.dark-mode-toggle input:checked + .toggle {
+  background-color: var(--primary-color);
+}
+
+.dark-mode-toggle input:checked + .toggle:before {
+  transform: translateX(20px);
+}
+
+/* 暗黑模式樣式 */
+body.dark-mode {
+  --background-color: #121212;
+  --text-color: #e0e0e0;
+  --link-color: #64b5f6;
+  --border-color: #333;
+  --code-bg: #1e1e1e;
+  --card-bg: #1e1e1e;
+  --card-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+body.dark-mode header {
+  --header-bg: #000;
+}
+
+body.dark-mode footer {
+  --footer-bg: #000;
+}
+
+body.dark-mode .content-section {
+  background-color: #1e1e1e;
+}
+
+body.dark-mode .sidebar {
+  background-color: #1e1e1e;
+}
+
+body.dark-mode .card,
+body.dark-mode .use-case-card,
+body.dark-mode .resource-card,
+body.dark-mode .guide-item,
+body.dark-mode .tip,
+body.dark-mode .next-step,
+body.dark-mode .learning-path,
+body.dark-mode .faq-item,
+body.dark-mode .contact-info {
+  background-color: #2d2d2d;
+}
+
+body.dark-mode .card-header {
+  background-color: #333;
+}
+
+body.dark-mode table {
+  background-color: #1e1e1e;
+}
+
+body.dark-mode th {
+  background-color: #333;
+}
+
+body.dark-mode tr:hover {
+  background-color: #2d2d2d;
+}
+
+body.dark-mode .copy-code-btn {
+  background: rgba(60, 60, 60, 0.7);
+  color: #e0e0e0;
+}
+
+body.dark-mode .copy-code-btn:hover {
+  background: rgba(80, 80, 80, 0.9);
+}
+
+/* 頁面載入動畫 */
+body {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+body.loaded {
+  opacity: 1;
+}
+
+/* 目錄樣式 */
+.toc-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.toc-list ul {
+  list-style: none;
+  padding-left: 1.5rem;
+}
+
+.toc-list li {
+  margin-bottom: 0.5rem;
+}
+
+.toc-list a {
+  display: block;
+  padding: 0.25rem 0;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.toc-list a:hover {
+  color: var(--primary-color);
+}
+
+/* 移動設備優化 */
+@media (max-width: 768px) {
+  .back-to-top {
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
+    bottom: 15px;
+    right: 15px;
+  }
+  
+  .breadcrumb-container {
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+  
+  .content-section {
+    padding: 1.5rem;
+  }
+  
+  .dark-mode-toggle {
+    margin-top: 1rem;
+    margin-left: 0;
+  }
+  
+  .progress-bar {
+    height: 2px;
+  }
+}
+
+/* 高對比度模式 */
+@media (prefers-contrast: high) {
+  :root {
+    --primary-color: #ff0000;
+    --secondary-color: #0000ff;
+    --link-color: #0000ff;
+    --text-color: #000000;
+    --background-color: #ffffff;
+    --border-color: #000000;
+  }
+  
+  body {
+    line-height: 1.8;
+  }
+  
+  a {
+    text-decoration: underline;
+  }
+  
+  .btn {
+    border: 2px solid black;
+  }
+  
+  .card, .sidebar, .content-section {
+    border: 2px solid black;
+  }
+}
+
+/* 減少動畫 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .fade-in, .slide-in-up {
+    animation: none !important;
+  }
+  
+  body {
+    opacity: 1;
+    transition: none;
+  }
+}
+
+/* 觸控設備優化 */
+@media (hover: none) {
+  .btn, .card, .sidebar a, nav ul li a {
+    padding: 0.8rem;
+  }
+  
+  .sidebar a, nav ul li a {
+    margin-bottom: 0.5rem;
+  }
+  
+  .copy-code-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
+
+/* 列印優化 */
+@media print {
+  .progress-bar, .back-to-top, .copy-code-btn, .dark-mode-toggle {
+    display: none !important;
+  }
+  
+  a {
+    text-decoration: underline;
+  }
+  
+  a::after {
+    content: " (" attr(href) ")";
+    font-size: 0.9em;
+  }
+  
+  a[href^="#"]::after {
+    display: none;
+  }
+}

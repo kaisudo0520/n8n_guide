@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>實用案例 - n8n 自動化工作流學習指南</title>
+    <meta name="description" content="n8n 自動化工作流實用案例集合，包括社群媒體自動化、沉浸式翻譯和自動客服機器人">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <img src="images/n8n-logo.png" alt="n8n Logo">
+                <h1>n8n 自動化工作流學習指南</h1>
+            </div>
+            <button class="mobile-menu-btn">☰</button>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">首頁</a></li>
+                    <li><a href="learning-path.html">學習路徑</a></li>
+                    <li><a href="basic-tutorial.html">基礎教學</a></li>
+                    <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                    <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    <li><a href="use-cases.html" class="active">實用案例</a></li>
+                    <li><a href="resources.html">資源</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="page-title">
+                <h2>實用案例</h2>
+                <p>探索 n8n 的實際應用案例，從社群媒體自動化到 LLM 整合，這些案例將幫助您理解如何將 n8n 應用於實際工作中。</p>
+            </div>
+
+            <section id="use-cases-overview" class="content-section">
+                <h3>案例概述</h3>
+                <p>我們精心設計了三個實用案例，涵蓋了不同的應用場景和技術難度。每個案例都包含詳細的實作步驟、代碼示例和自定義選項，幫助您快速上手並根據自己的需求進行調整。</p>
+                
+                <div class="use-case-cards">
+                    <div class="use-case-card">
+                        <div class="card-header">
+                            <h4>社群媒體自動化</h4>
+                            <span class="difficulty">難度：中級</span>
+                        </div>
+                        <div class="card-body">
+                            <p>自動從多個來源收集內容，處理並發佈到各大社群媒體平台，實現內容營銷自動化。</p>
+                            <ul>
+                                <li>自動收集新聞和文章</li>
+                                <li>內容處理和優化</li>
+                                <li>多平台發佈排程</li>
+                                <li>數據分析和報告</li>
+                            </ul>
+                            <a href="use-case-social-media.html" class="btn">查看詳情</a>
+                        </div>
+                    </div>
+                    
+                    <div class="use-case-card">
+                        <div class="card-header">
+                            <h4>吳恩達三階段沉浸式翻譯</h4>
+                            <span class="difficulty">難度：進階</span>
+                        </div>
+                        <div class="card-body">
+                            <p>實現吳恩達提出的三階段沉浸式翻譯方法，通過直譯、意譯和優化三個階段，生成高質量的翻譯結果。</p>
+                            <ul>
+                                <li>多格式文本處理</li>
+                                <li>三階段翻譯流程</li>
+                                <li>專業術語處理</li>
+                                <li>多語言支持</li>
+                            </ul>
+                            <a href="use-case-immersive-translation.html" class="btn">查看詳情</a>
+                        </div>
+                    </div>
+                    
+                    <div class="use-case-card">
+                        <div class="card-header">
+                            <h4>LLM 與知識庫的自動客服機器人</h4>
+                            <span class="difficulty">難度：進階</span>
+                        </div>
+                        <div class="card-body">
+                            <p>結合大型語言模型和自定義知識庫，創建智能客服機器人，自動回答用戶問題，必要時轉接真人客服。</p>
+                            <ul>
+                                <li>向量數據庫知識庫</li>
+                                <li>多渠道接入</li>
+                                <li>LLM 驅動的回答生成</li>
+                                <li>智能人工轉接</li>
+                            </ul>
+                            <a href="use-case-customer-service-bot.html" class="btn">查看詳情</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="case-selection-guide" class="content-section">
+                <h3>案例選擇指南</h3>
+                <p>不確定從哪個案例開始？以下指南可以幫助您根據自己的需求和技能水平選擇合適的案例：</p>
+                
+                <div class="selection-guide">
+                    <div class="guide-item">
+                        <h4>適合初學者的選擇</h4>
+                        <p>如果您剛剛完成基礎教學，建議從<a href="use-case-social-media.html">社群媒體自動化</a>案例開始。這個案例使用了較為基礎的 n8n 功能，同時提供了實用的自動化解決方案。</p>
+                    </div>
+                    
+                    <div class="guide-item">
+                        <h4>適合內容創作者的選擇</h4>
+                        <p>如果您是內容創作者或營銷人員，<a href="use-case-social-media.html">社群媒體自動化</a>和<a href="use-case-immersive-translation.html">吳恩達三階段沉浸式翻譯</a>案例將特別有用，幫助您自動化內容發佈和翻譯流程。</p>
+                    </div>
+                    
+                    <div class="guide-item">
+                        <h4>適合開發者的選擇</h4>
+                        <p>如果您有開發經驗並對 AI 整合感興趣，<a href="use-case-customer-service-bot.html">LLM 與知識庫的自動客服機器人</a>案例將展示如何將 n8n 與先進的 AI 技術結合。</p>
+                    </div>
+                    
+                    <div class="guide-item">
+                        <h4>適合企業用戶的選擇</h4>
+                        <p>如果您尋找企業級解決方案，<a href="use-case-customer-service-bot.html">LLM 與知識庫的自動客服機器人</a>案例提供了可擴展的客戶支持自動化方案，可以顯著提高效率並降低成本。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="customization-tips" class="content-section">
+                <h3>自定義技巧</h3>
+                <p>每個案例都提供了詳細的自定義和擴展建議，但以下是一些通用的自定義技巧：</p>
+                
+                <div class="tips-container">
+                    <div class="tip">
+                        <h4>1. 從小處開始</h4>
+                        <p>先實現案例的核心功能，確保其正常工作，然後再逐步添加更多功能和自定義選項。</p>
+                    </div>
+                    
+                    <div class="tip">
+                        <h4>2. 使用環境變量</h4>
+                        <p>將 API 密鑰、URL 和其他配置信息存儲在 n8n 的環境變量中，使工作流更安全、更易於維護。</p>
+                    </div>
+                    
+                    <div class="tip">
+                        <h4>3. 添加錯誤處理</h4>
+                        <p>在關鍵節點添加錯誤處理邏輯，確保工作流在遇到問題時能夠優雅地處理並通知您。</p>
+                    </div>
+                    
+                    <div class="tip">
+                        <h4>4. 模塊化設計</h4>
+                        <p>將複雜的工作流拆分為多個子工作流，使其更易於管理和維護。使用 n8n 的子工作流功能實現模塊化。</p>
+                    </div>
+                    
+                    <div class="tip">
+                        <h4>5. 測試與監控</h4>
+                        <p>實施監控和日誌記錄，跟踪工作流的執行情況，及時發現和解決問題。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="next-steps" class="content-section">
+                <h3>下一步</h3>
+                <p>完成這些案例後，您可以：</p>
+                
+                <div class="next-steps-container">
+                    <div class="next-step">
+                        <h4>創建自己的案例</h4>
+                        <p>基於這些案例的經驗，開始設計和實現自己的自動化工作流，解決您特定的業務需求。</p>
+                    </div>
+                    
+                    <div class="next-step">
+                        <h4>探索更多整合</h4>
+                        <p>n8n 支持數百種服務和應用的整合。探索<a href="resources.html">資源</a>頁面，了解更多可能性。</p>
+                    </div>
+                    
+                    <div class="next-step">
+                        <h4>加入社區</h4>
+                        <p>加入 n8n 社區，分享您的經驗，學習他人的解決方案，並獲取最新的更新和技巧。</p>
+                    </div>
+                    
+                    <div class="next-step">
+                        <h4>貢獻您的案例</h4>
+                        <p>如果您創建了有用的工作流，考慮將其分享到 n8n 社區，幫助其他用戶學習和成長。</p>
+                    </div>
+                </div>
+                
+                <div class="cta-container">
+                    <a href="resources.html" class="btn btn-primary">探索更多資源</a>
+                    <a href="https://community.n8n.io/" target="_blank" class="btn btn-secondary">加入 n8n 社區</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>關於本站</h3>
+                    <p>n8n 自動化工作流學習指南是一個幫助您從零開始學習 n8n 的完整資源，提供從基礎到進階的教學內容和實用案例。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速鏈接</h3>
+                    <ul>
+                        <li><a href="index.html">首頁</a></li>
+                        <li><a href="learning-path.html">學習路徑</a></li>
+                        <li><a href="basic-tutorial.html">基礎教學</a></li>
+                        <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                        <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>相關資源</h3>
+                    <ul>
+                        <li><a href="https://n8n.io/" target="_blank">n8n 官方網站</a></li>
+                        <li><a href="https://docs.n8n.io/" target="_blank">n8n 官方文檔</a></li>
+                        <li><a href="https://community.n8n.io/" target="_blank">n8n 社區論壇</a></li>
+                        <li><a href="https://github.com/n8n-io/n8n" target="_blank">n8n GitHub 倉庫</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 n8n 自動化工作流學習指南 | 本網站內容僅供學習參考</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

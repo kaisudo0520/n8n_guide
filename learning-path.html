@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8n 學習路徑：從基礎到進階 - n8n 自動化工作流學習指南</title>
+    <meta name="description" content="n8n 自動化工作流的完整學習路徑，從基礎概念到進階應用的結構化學習計劃">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <img src="images/n8n-logo.png" alt="n8n Logo">
+                <h1>n8n 自動化工作流學習指南</h1>
+            </div>
+            <button class="mobile-menu-btn">☰</button>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">首頁</a></li>
+                    <li><a href="learning-path.html" class="active">學習路徑</a></li>
+                    <li><a href="basic-tutorial.html">基礎教學</a></li>
+                    <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                    <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    <li><a href="use-cases.html">實用案例</a></li>
+                    <li><a href="resources.html">資源</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="two-column">
+                <div class="main-content">
+                    <section id="learning-path" class="content-section">
+                        <h2>n8n 學習路徑：從基礎到進階</h2>
+                        
+                        <p>本文檔提供了一個結構化的 n8n 學習路徑，從基礎概念到進階應用，幫助您循序漸進地掌握 n8n 自動化工作流的各項技能。無論您是完全的初學者，還是已經有一些自動化經驗的用戶，這個學習路徑都能幫助您更有效地學習和應用 n8n。</p>
+
+                        <section id="overview" class="content-section">
+                            <h3>學習路徑概述</h3>
+                            <p>整個學習路徑分為三個主要階段：</p>
+                            <ol>
+                                <li><strong>基礎階段</strong>：了解 n8n 的基本概念、界面操作和簡單工作流的創建</li>
+                                <li><strong>中級階段</strong>：深入探討進階功能、數據處理和外部服務整合</li>
+                                <li><strong>進階階段</strong>：掌握 LLM 整合、RAG 系統和複雜自動化應用</li>
+                            </ol>
+                            <p>每個階段都包含理論知識和實踐練習，確保您能夠全面掌握 n8n 的功能並應用於實際工作中。</p>
+                        </section>
+
+                        <section id="stage1" class="content-section">
+                            <h3>第一階段：基礎知識（1-2 週）</h3>
+                            <h4>學習目標</h4>
+                            <ul>
+                                <li>了解 n8n 的基本概念和架構</li>
+                                <li>熟悉 n8n 的界面和基本操作</li>
+                                <li>創建和運行簡單的工作流</li>
+                                <li>使用常見的基礎節點</li>
+                            </ul>
+
+                            <h4>學習內容</h4>
+                            <ol>
+                                <li><strong>n8n 簡介</strong>
+                                    <ul>
+                                        <li>什麼是 n8n 及其主要功能</li>
+                                        <li>n8n 與其他自動化工具的比較</li>
+                                        <li>安裝和部署 n8n</li>
+                                    </ul>
+                                </li>
+                                <li><strong>基本概念</strong>
+                                    <ul>
+                                        <li>工作流 (Workflow)</li>
+                                        <li>節點 (Node)</li>
+                                        <li>連線 (Connection)</li>
+                                        <li>執行 (Execution)</li>
+                                    </ul>
+                                </li>
+                                <li><strong>界面導覽</strong>
+                                    <ul>
+                                        <li>工作流編輯器</li>
+                                        <li>節點面板</li>
+                                        <li>執行面板</li>
+                                        <li>設置面板</li>
+                                    </ul>
+                                </li>
+                                <li><strong>基礎節點使用</strong>
+                                    <ul>
+                                        <li>觸發節點 (Trigger Nodes)</li>
+                                        <li>HTTP Request 節點</li>
+                                        <li>Function 節點基礎</li>
+                                        <li>Set 節點</li>
+                                    </ul>
+                                </li>
+                            </ol>
+
+                            <h4>實踐練習</h4>
+                            <ol>
+                                <li>創建一個定時觸發的工作流，發送通知</li>
+                                <li>使用 HTTP Request 節點獲取外部 API 數據</li>
+                                <li>使用 Function 節點處理簡單數據</li>
+                                <li>創建一個基本的數據轉換工作流</li>
+                            </ol>
+
+                            <p><a href="basic-tutorial.html" class="btn">查看基礎教學</a></p>
+                        </section>
+
+                        <section id="stage2" class="content-section">
+                            <h3>第二階段：中級應用（2-4 週）</h3>
+                            <h4>學習目標</h4>
+                            <ul>
+                                <li>掌握進階工作流設計技巧</li>
+                                <li>學習複雜數據處理和轉換</li>
+                                <li>整合多種外部服務和 API</li>
+                                <li>實現錯誤處理和工作流優化</li>
+                            </ul>
+
+                            <h4>學習內容</h4>
+                            <ol>
+                                <li><strong>進階工作流設計</strong>
+                                    <ul>
+                                        <li>分支和條件執行</li>
+                                        <li>循環和批處理</li>
+                                        <li>子工作流和工作流組織</li>
+                                        <li>工作流變量和環境變量</li>
+                                    </ul>
+                                </li>
+                                <li><strong>數據處理與轉換</strong>
+                                    <ul>
+                                        <li>Function 節點進階用法</li>
+                                        <li>複雜 JSON 和 XML 處理</li>
+                                        <li>數據過濾和映射</li>
+                                        <li>數據聚合和分析</li>
+                                    </ul>
+                                </li>
+                                <li><strong>外部服務整合</strong>
+                                    <ul>
+                                        <li>數據庫連接和操作</li>
+                                        <li>文件存儲和處理</li>
+                                        <li>電子郵件和通訊服務</li>
+                                        <li>社交媒體和營銷平台</li>
+                                    </ul>
+                                </li>
+                                <li><strong>錯誤處理與優化</strong>
+                                    <ul>
+                                        <li>錯誤捕獲和處理</li>
+                                        <li>重試機制和備份策略</li>
+                                        <li>工作流性能優化</li>
+                                        <li>監控和日誌記錄</li>
+                                    </ul>
+                                </li>
+                            </ol>
+
+                            <h4>實踐練習</h4>
+                            <ol>
+                                <li>創建一個多分支條件工作流</li>
+                                <li>實現數據批處理和轉換</li>
+                                <li>連接數據庫並執行 CRUD 操作</li>
+                                <li>設計一個帶錯誤處理的完整工作流</li>
+                            </ol>
+
+                            <p><a href="intermediate-tutorial.html" class="btn">查看中級教學</a></p>
+                        </section>
+
+                        <section id="stage3" class="content-section">
+                            <h3>第三階段：進階應用（4-8 週）</h3>
+                            <h4>學習目標</h4>
+                            <ul>
+                                <li>掌握 n8n 與 LLM 的整合</li>
+                                <li>實現 RAG 系統和知識庫應用</li>
+                                <li>開發複雜的自動化解決方案</li>
+                                <li>優化和擴展 n8n 功能</li>
+                            </ul>
+
+                            <h4>學習內容</h4>
+                            <ol>
+                                <li><strong>LLM 整合</strong>
+                                    <ul>
+                                        <li>連接 OpenAI、Anthropic 等 LLM 服務</li>
+                                        <li>提示工程和 LLM 優化</li>
+                                        <li>使用 Ollama 進行本地 LLM 部署</li>
+                                        <li>LLM 輸出處理和後處理</li>
+                                    </ul>
+                                </li>
+                                <li><strong>RAG 系統與知識庫</strong>
+                                    <ul>
+                                        <li>向量數據庫整合</li>
+                                        <li>文檔處理和嵌入生成</li>
+                                        <li>相似度搜索和檢索</li>
+                                        <li>上下文增強和回答生成</li>
+                                    </ul>
+                                </li>
+                                <li><strong>複雜自動化應用</strong>
+                                    <ul>
+                                        <li>多渠道客服機器人</li>
+                                        <li>內容生成和發佈系統</li>
+                                        <li>數據分析和報告自動化</li>
+                                        <li>多語言處理和翻譯系統</li>
+                                    </ul>
+                                </li>
+                                <li><strong>擴展與優化</strong>
+                                    <ul>
+                                        <li>自定義節點開發</li>
+                                        <li>n8n API 使用</li>
+                                        <li>大規模部署和管理</li>
+                                        <li>安全性和隱私保護</li>
+                                    </ul>
+                                </li>
+                            </ol>
+
+                            <h4>實踐練習</h4>
+                            <ol>
+                                <li>創建一個 LLM 驅動的內容生成系統</li>
+                                <li>實現一個基於 RAG 的知識庫問答系統</li>
+                                <li>開發一個多渠道自動客服解決方案</li>
+                                <li>設計一個完整的數據分析和報告自動化系統</li>
+                            </ol>
+
+                            <p><a href="advanced-tutorial.html" class="btn">查看進階教學</a></p>
+                        </section>
+
+                        <section id="resources" class="content-section">
+                            <h3>學習資源</h3>
+                            <h4>官方資源</h4>
+                            <ul>
+                                <li><a href="https://docs.n8n.io/" target="_blank">n8n 官方文檔</a></li>
+                                <li><a href="https://community.n8n.io/" target="_blank">n8n 社區論壇</a></li>
+                                <li><a href="https://www.youtube.com/c/n8nio" target="_blank">n8n 官方 YouTube 頻道</a></li>
+                            </ul>
+
+                            <h4>本站教學</h4>
+                            <ul>
+                                <li><a href="basic-tutorial.html">基礎教學：入門指南</a></li>
+                                <li><a href="intermediate-tutorial.html">中級教學：進階工作流與整合</a></li>
+                                <li><a href="advanced-tutorial.html">進階教學：LLM 整合與 AI 自動化應用</a></li>
+                            </ul>
+
+                            <h4>實用案例</h4>
+                            <ul>
+                                <li><a href="use-case-social-media.html">自動發佈新聞到社群媒體</a></li>
+                                <li><a href="use-case-immersive-translation.html">吳恩達三階段沉浸式翻譯實作</a></li>
+                                <li><a href="use-case-customer-service-bot.html">連接 LLM 與知識庫的自動客服機器人</a></li>
+                            </ul>
+                        </section>
+
+                        <section id="tips" class="content-section">
+                            <h3>學習建議</h3>
+                            <ol>
+                                <li><strong>循序漸進</strong>：按照學習路徑的順序學習，確保掌握基礎知識後再進入更複雜的主題。</li>
+                                <li><strong>實踐為主</strong>：n8n 是一個實踐性很強的工具，多動手創建工作流，嘗試不同的節點和功能。</li>
+                                <li><strong>參考範例</strong>：學習和分析官方和社區提供的工作流範例，理解其設計思路和實現方法。</li>
+                                <li><strong>解決實際問題</strong>：嘗試使用 n8n 解決您工作或生活中的實際問題，這是最有效的學習方式。</li>
+                                <li><strong>參與社區</strong>：加入 n8n 社區，與其他用戶交流經驗，分享問題和解決方案。</li>
+                            </ol>
+                        </section>
+
+                        <section id="conclusion" class="content-section">
+                            <h3>結語</h3>
+                            <p>這個學習路徑提供了一個結構化的方法來掌握 n8n 自動化工作流的各項技能。根據您的學習進度和需求，您可以調整學習內容和時間安排。重要的是保持實踐和探索的態度，不斷嘗試新的功能和應用場景。</p>
+                            <p>隨著您對 n8n 的熟悉程度提高，您將能夠創建越來越複雜和強大的自動化工作流，大幅提高工作效率，減少重複性任務，讓您能夠專注於更有創意和價值的工作。</p>
+                            <p>祝您在 n8n 自動化之旅中取得成功！</p>
+                        </section>
+                    </section>
+                </div>
+
+                <aside class="sidebar">
+                    <div id="search-container">
+                        <h3>搜索</h3>
+                        <input type="text" id="search-input" placeholder="搜索內容...">
+                        <div id="search-results" style="display: none;"></div>
+                    </div>
+                    <div>
+                        <h3>目錄</h3>
+                        <ul>
+                            <li><a href="#learning-path">學習路徑概述</a></li>
+                            <li><a href="#stage1">第一階段：基礎知識</a></li>
+                            <li><a href="#stage2">第二階段：中級應用</a></li>
+                            <li><a href="#stage3">第三階段：進階應用</a></li>
+                            <li><a href="#resources">學習資源</a></li>
+                            <li><a href="#tips">學習建議</a></li>
+                            <li><a href="#conclusion">結語</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>相關頁面</h3>
+                        <ul>
+                            <li><a href="basic-tutorial.html">基礎教學</a></li>
+                            <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                            <li><a href="advanced-tutorial.html">進階教學</a></li>
+                            <li><a href="use-cases.html">實用案例</a></li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>關於本站</h3>
+                    <p>n8n 自動化工作流學習指南是一個幫助您從零開始學習 n8n 的完整資源，提供從基礎到進階的教學內容和實用案例。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速鏈接</h3>
+                    <ul>
+                        <li><a href="index.html">首頁</a></li>
+                        <li><a href="learning-path.html">學習路徑</a></li>
+                        <li><a href="basic-tutorial.html">基礎教學</a></li>
+                        <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                        <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>相關資源</h3>
+                    <ul>
+                        <li><a href="https://n8n.io/" target="_blank">n8n 官方網站</a></li>
+                        <li><a href="https://docs.n8n.io/" target="_blank">n8n 官方文檔</a></li>
+                        <li><a href="https://community.n8n.io/" target="_blank">n8n 社區論壇</a></li>
+                        <li><a href="https://github.com/n8n-io/n8n" target="_blank">n8n GitHub 倉庫</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 n8n 自動化工作流學習指南 | 本網站內容僅供學習參考</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

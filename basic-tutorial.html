@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8n 基礎教學：入門指南 - n8n 自動化工作流學習指南</title>
+    <meta name="description" content="n8n 基礎教學，幫助您了解 n8n 的基本概念、界面操作和簡單工作流的創建">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <img src="images/n8n-logo.png" alt="n8n Logo">
+                <h1>n8n 自動化工作流學習指南</h1>
+            </div>
+            <button class="mobile-menu-btn">☰</button>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">首頁</a></li>
+                    <li><a href="learning-path.html">學習路徑</a></li>
+                    <li><a href="basic-tutorial.html" class="active">基礎教學</a></li>
+                    <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                    <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    <li><a href="use-cases.html">實用案例</a></li>
+                    <li><a href="resources.html">資源</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="two-column">
+                <div class="main-content">
+                    <section id="basic-tutorial" class="content-section">
+                        <h2>n8n 基礎教學：入門指南</h2>
+                        
+                        <p>本教學將幫助您了解 n8n 的基本概念、界面操作和簡單工作流的創建。無論您是自動化新手還是有經驗的開發者，這份指南都能幫助您快速上手 n8n，開始創建您的第一個自動化工作流。</p>
+
+                        <section id="introduction" class="content-section">
+                            <h3>n8n 簡介</h3>
+                            <p>n8n（發音為 "n-eight-n"）是一個開源的工作流自動化平台，它允許您連接不同的應用程式和服務，並在它們之間自動化數據流動和任務執行。</p>
+
+                            <h4>主要特點</h4>
+                            <ul>
+                                <li><strong>開源免費</strong>：基本功能完全免費，可以自行部署</li>
+                                <li><strong>圖形化界面</strong>：直觀的拖拉式界面，無需編程即可創建複雜工作流</li>
+                                <li><strong>豐富的整合</strong>：支援 400+ 種第三方服務和應用</li>
+                                <li><strong>靈活可擴展</strong>：支援自定義 JavaScript 代碼和函數</li>
+                                <li><strong>原生 AI 功能</strong>：內建 AI 功能，可輕鬆整合各種 LLM 模型</li>
+                            </ul>
+
+                            <h4>與其他工具的比較</h4>
+                            <p>相比其他自動化工具（如 Zapier、IFTTT、Integromat 等），n8n 的主要優勢在於：</p>
+                            <ul>
+                                <li><strong>完全控制</strong>：自託管意味著您擁有數據和流程的完全控制權</li>
+                                <li><strong>無限制工作流</strong>：沒有工作流數量或執行次數的限制</li>
+                                <li><strong>高度自定義</strong>：可以使用 JavaScript 進行深度自定義</li>
+                                <li><strong>隱私保護</strong>：敏感數據不會離開您的基礎設施</li>
+                                <li><strong>社區支持</strong>：活躍的開源社區和持續更新</li>
+                            </ul>
+                        </section>
+
+                        <section id="installation" class="content-section">
+                            <h3>安裝和部署 n8n</h3>
+                            <p>n8n 提供多種安裝和部署方式，您可以根據自己的需求選擇最適合的方法：</p>
+
+                            <h4>使用 Docker 安裝（推薦）</h4>
+                            <pre><code class="language-bash">docker run -it --rm \
+  --name n8n \
+  -p 5678:5678 \
+  -v ~/.n8n:/home/node/.n8n \
+  n8nio/n8n</code></pre>
+
+                            <h4>使用 NPM 安裝</h4>
+                            <pre><code class="language-bash">npm install n8n -g
+n8n start</code></pre>
+
+                            <h4>使用桌面應用</h4>
+                            <p>n8n 也提供了桌面應用版本，您可以從 <a href="https://n8n.io/download/" target="_blank">官方網站</a> 下載適合您操作系統的版本。</p>
+
+                            <h4>雲端服務</h4>
+                            <p>如果您不想自行部署，也可以使用 n8n 提供的雲端服務 <a href="https://n8n.io/cloud/" target="_blank">n8n.cloud</a>。</p>
+                        </section>
+
+                        <section id="basic-concepts" class="content-section">
+                            <h3>基本概念</h3>
+                            <p>在開始使用 n8n 之前，了解以下基本概念將幫助您更好地理解 n8n 的工作原理：</p>
+
+                            <h4>工作流 (Workflow)</h4>
+                            <p>工作流是 n8n 中的核心概念，由多個節點組成，形成一個完整的自動化流程。每個工作流都有一個唯一的 ID 和名稱，可以手動觸發或設置自動觸發。</p>
+
+                            <h4>節點 (Node)</h4>
+                            <p>節點是工作流中的基本構建單元，每個節點代表一個特定的操作或服務。n8n 提供了豐富的內置節點，涵蓋了各種常見服務和功能。</p>
+                            <p>節點類型包括：</p>
+                            <ul>
+                                <li><strong>觸發節點 (Trigger Nodes)</strong>：啟動工作流的節點，如定時觸發、Webhook 等</li>
+                                <li><strong>常規節點 (Regular Nodes)</strong>：執行特定操作的節點，如 HTTP 請求、數據處理等</li>
+                                <li><strong>核心節點 (Core Nodes)</strong>：n8n 內置的基本功能節點</li>
+                                <li><strong>社區節點 (Community Nodes)</strong>：由社區開發的擴展節點</li>
+                            </ul>
+
+                            <h4>連線 (Connection)</h4>
+                            <p>連線表示節點之間的關係，定義了數據如何從一個節點流向另一個節點。在 n8n 的界面中，連線以線條的形式顯示。</p>
+
+                            <h4>執行 (Execution)</h4>
+                            <p>執行是工作流的運行過程，按照節點之間的連線順序依次執行。每次執行都會生成一個執行記錄，包含執行時間、狀態和結果。</p>
+
+                            <h4>憑證 (Credentials)</h4>
+                            <p>憑證用於安全地存儲連接外部服務所需的認證信息，如 API 密鑰、用戶名和密碼等。n8n 會加密存儲這些敏感信息。</p>
+                        </section>
+
+                        <section id="interface" class="content-section">
+                            <h3>界面導覽</h3>
+                            <p>n8n 提供了直觀的用戶界面，讓您可以輕鬆創建和管理工作流。以下是主要界面元素的介紹：</p>
+
+                            <h4>工作流列表</h4>
+                            <p>工作流列表顯示了所有已創建的工作流，您可以在這裡創建新工作流、搜索現有工作流、查看工作流狀態等。</p>
+
+                            <h4>工作流編輯器</h4>
+                            <p>工作流編輯器是您創建和編輯工作流的主要界面，包含以下部分：</p>
+                            <ul>
+                                <li><strong>畫布</strong>：拖放和連接節點的區域</li>
+                                <li><strong>節點面板</strong>：顯示所有可用的節點</li>
+                                <li><strong>節點設置面板</strong>：配置選中節點的參數</li>
+                                <li><strong>執行面板</strong>：顯示工作流執行結果</li>
+                            </ul>
+
+                            <h4>節點面板</h4>
+                            <p>節點面板列出了所有可用的節點，按類別分組。您可以使用搜索框快速找到需要的節點，然後將其拖到畫布上。</p>
+
+                            <h4>執行面板</h4>
+                            <p>執行面板顯示工作流的執行結果，包括每個節點的輸入和輸出數據。這對於調試和優化工作流非常有用。</p>
+
+                            <h4>設置面板</h4>
+                            <p>設置面板允許您配置 n8n 的全局設置，如 API 密鑰、數據庫連接、日誌級別等。</p>
+                        </section>
+
+                        <section id="first-workflow" class="content-section">
+                            <h3>創建第一個工作流</h3>
+                            <p>讓我們通過一個簡單的例子來創建您的第一個 n8n 工作流。這個工作流將定期獲取一個笑話，並通過電子郵件發送。</p>
+
+                            <h4>步驟 1：創建新工作流</h4>
+                            <ol>
+                                <li>點擊工作流列表頁面上的「+ 新工作流」按鈕</li>
+                                <li>輸入工作流名稱，如「每日笑話」</li>
+                                <li>點擊「創建」按鈕</li>
+                            </ol>
+
+                            <h4>步驟 2：添加觸發節點</h4>
+                            <ol>
+                                <li>在節點面板中搜索「Schedule」</li>
+                                <li>將 Schedule 節點拖到畫布上</li>
+                                <li>在節點設置面板中，選擇「每天」模式</li>
+                                <li>設置時間為您希望接收笑話的時間，如上午 9:00</li>
+                            </ol>
+
+                            <h4>步驟 3：添加 HTTP Request 節點</h4>
+                            <ol>
+                                <li>在節點面板中搜索「HTTP Request」</li>
+                                <li>將 HTTP Request 節點拖到畫布上</li>
+                                <li>連接 Schedule 節點到 HTTP Request 節點</li>
+                                <li>在節點設置面板中，設置以下參數：
+                                    <ul>
+                                        <li>方法：GET</li>
+                                        <li>URL：https://official-joke-api.appspot.com/random_joke</li>
+                                        <li>響應格式：JSON</li>
+                                    </ul>
+                                </li>
+                            </ol>
+
+                            <h4>步驟 4：添加 Function 節點</h4>
+                            <ol>
+                                <li>在節點面板中搜索「Function」</li>
+                                <li>將 Function 節點拖到畫布上</li>
+                                <li>連接 HTTP Request 節點到 Function 節點</li>
+                                <li>在節點設置面板中，添加以下代碼：</li>
+                            </ol>
+                            <pre><code class="language-javascript">// 格式化笑話
+return items.map(item => {
+  const joke = item.json;
+  return {
+    json: {
+      subject: "每日笑話",
+      text: `問題：${joke.setup}\n\n答案：${joke.punchline}`
+    }
+  };
+});</code></pre>
+
+                            <h4>步驟 5：添加 Send Email 節點</h4>
+                            <ol>
+                                <li>在節點面板中搜索「Send Email」</li>
+                                <li>將 Send Email 節點拖到畫布上</li>
+                                <li>連接 Function 節點到 Send Email 節點</li>
+                                <li>在節點設置面板中，設置以下參數：
+                                    <ul>
+                                        <li>收件人：您的電子郵件地址</li>
+                                        <li>主題：使用表達式 <code>{{$json.subject}}</code></li>
+                                        <li>內容：使用表達式 <code>{{$json.text}}</code></li>
+                                    </ul>
+                                </li>
+                                <li>點擊「添加憑證」按鈕，設置您的電子郵件服務器信息</li>
+                            </ol>
+
+                            <h4>步驟 6：保存和激活工作流</h4>
+                            <ol>
+                                <li>點擊工具欄上的「保存」按鈕</li>
+                                <li>點擊工作流名稱旁的開關，將其設置為「活動」</li>
+                            </ol>
+
+                            <p>恭喜！您已經創建了第一個 n8n 工作流。這個工作流將在每天指定時間獲取一個笑話，並通過電子郵件發送給您。</p>
+                        </section>
+
+                        <section id="basic-nodes" class="content-section">
+                            <h3>常用基礎節點介紹</h3>
+                            <p>n8n 提供了豐富的內置節點，以下是一些最常用的基礎節點：</p>
+
+                            <h4>觸發節點</h4>
+                            <ul>
+                                <li><strong>Schedule</strong>：按照設定的時間表定期觸發工作流</li>
+                                <li><strong>Webhook</strong>：通過 HTTP 請求觸發工作流</li>
+                                <li><strong>Cron</strong>：使用 Cron 表達式設置複雜的時間觸發規則</li>
+                                <li><strong>Manual</strong>：手動觸發工作流</li>
+                            </ul>
+
+                            <h4>核心節點</h4>
+                            <ul>
+                                <li><strong>HTTP Request</strong>：發送 HTTP 請求到外部 API</li>
+                                <li><strong>Function</strong>：使用 JavaScript 代碼處理數據</li>
+                                <li><strong>Set</strong>：設置或修改數據項的值</li>
+                                <li><strong>IF</strong>：根據條件執行不同的分支</li>
+                                <li><strong>Switch</strong>：根據多個條件執行不同的分支</li>
+                                <li><strong>Merge</strong>：合併來自多個節點的數據</li>
+                                <li><strong>Split In Batches</strong>：將數據分批處理</li>
+                            </ul>
+
+                            <h4>服務節點</h4>
+                            <ul>
+                                <li><strong>Send Email</strong>：發送電子郵件</li>
+                                <li><strong>Telegram</strong>：發送 Telegram 消息</li>
+                                <li><strong>Slack</strong>：發送 Slack 消息</li>
+                                <li><strong>Google Sheets</strong>：讀取和寫入 Google 表格</li>
+                                <li><strong>Airtable</strong>：讀取和寫入 Airtable 數據</li>
+                                <li><strong>Notion</strong>：讀取和寫入 Notion 數據</li>
+                            </ul>
+
+                            <h4>文件節點</h4>
+                            <ul>
+                                <li><strong>Read Binary File</strong>：讀取二進制文件</li>
+                                <li><strong>Write Binary File</strong>：寫入二進制文件</li>
+                                <li><strong>Read PDF</strong>：讀取 PDF 文件內容</li>
+                                <li><strong>Spreadsheet File</strong>：處理電子表格文件</li>
+                            </ul>
+                        </section>
+
+                        <section id="basic-exercises" class="content-section">
+                            <h3>基礎實戰練習</h3>
+                            <p>以下是一些基礎實戰練習，幫助您鞏固所學知識：</p>
+
+                            <h4>練習 1：定時天氣通知</h4>
+                            <p>創建一個工作流，每天早上獲取您所在城市的天氣預報，並通過 Telegram 或電子郵件發送通知。</p>
+                            <p>使用節點：Schedule, HTTP Request, Function, Send Email/Telegram</p>
+
+                            <h4>練習 2：網站監控</h4>
+                            <p>創建一個工作流，定期檢查指定網站是否可訪問，如果無法訪問則發送警報通知。</p>
+                            <p>使用節點：Schedule, HTTP Request, IF, Send Email/Telegram</p>
+
+                            <h4>練習 3：RSS 訂閱摘要</h4>
+                            <p>創建一個工作流，從多個 RSS 源獲取最新文章，合併並發送每日摘要。</p>
+                            <p>使用節點：Schedule, RSS Read, Function, Merge, Send Email</p>
+
+                            <h4>練習 4：文件備份</h4>
+                            <p>創建一個工作流，定期將指定文件夾中的文件備份到雲存儲服務（如 Google Drive 或 Dropbox）。</p>
+                            <p>使用節點：Schedule, Read Binary File, Google Drive/Dropbox</p>
+                        </section>
+
+                        <section id="next-steps" class="content-section">
+                            <h3>下一步學習</h3>
+                            <p>恭喜您完成了 n8n 的基礎教學！現在您已經了解了 n8n 的基本概念和操作，可以開始創建簡單的自動化工作流了。</p>
+                            <p>接下來，您可以：</p>
+                            <ul>
+                                <li>嘗試完成上述實戰練習，鞏固所學知識</li>
+                                <li>探索更多 n8n 節點和功能</li>
+                                <li>學習中級教學，了解更高級的功能和技巧</li>
+                                <li>參考實用案例，學習如何解決實際問題</li>
+                            </ul>
+                            <p><a href="intermediate-tutorial.html" class="btn">繼續學習中級教學</a></p>
+                        </section>
+                    </section>
+                </div>
+
+                <aside class="sidebar">
+                    <div id="search-container">
+                        <h3>搜索</h3>
+                        <input type="text" id="search-input" placeholder="搜索內容...">
+                        <div id="search-results" style="display: none;"></div>
+                    </div>
+                    <div>
+                        <h3>目錄</h3>
+                        <ul>
+                            <li><a href="#basic-tutorial">基礎教學概述</a></li>
+                            <li><a href="#introduction">n8n 簡介</a></li>
+                            <li><a href="#installation">安裝和部署</a></li>
+                            <li><a href="#basic-concepts">基本概念</a></li>
+                            <li><a href="#interface">界面導覽</a></li>
+                            <li><a href="#first-workflow">創建第一個工作流</a></li>
+                            <li><a href="#basic-nodes">常用基礎節點</a></li>
+                            <li><a href="#basic-exercises">基礎實戰練習</a></li>
+                            <li><a href="#next-steps">下一步學習</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>相關頁面</h3>
+                        <ul>
+                            <li><a href="learning-path.html">學習路徑</a></li>
+                            <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                            <li><a href="advanced-tutorial.html">進階教學</a></li>
+                            <li><a href="use-cases.html">實用案例</a></li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>關於本站</h3>
+                    <p>n8n 自動化工作流學習指南是一個幫助您從零開始學習 n8n 的完整資源，提供從基礎到進階的教學內容和實用案例。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速鏈接</h3>
+                    <ul>
+                        <li><a href="index.html">首頁</a></li>
+                        <li><a href="learning-path.html">學習路徑</a></li>
+                        <li><a href="basic-tutorial.html">基礎教學</a></li>
+                        <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                        <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>相關資源</h3>
+                    <ul>
+                        <li><a href="https://n8n.io/" target="_blank">n8n 官方網站</a></li>
+                        <li><a href="https://docs.n8n.io/" target="_blank">n8n 官方文檔</a></li>
+                        <li><a href="https://community.n8n.io/" target="_blank">n8n 社區論壇</a></li>
+                        <li><a href="https://github.com/n8n-io/n8n" target="_blank">n8n GitHub 倉庫</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 n8n 自動化工作流學習指南 | 本網站內容僅供學習參考</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

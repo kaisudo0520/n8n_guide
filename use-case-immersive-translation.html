@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8n 實用案例：吳恩達三階段沉浸式翻譯實作 - n8n 自動化工作流學習指南</title>
+    <meta name="description" content="使用 n8n 實現吳恩達三階段沉浸式翻譯方法的完整實作指南">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <img src="images/n8n-logo.png" alt="n8n Logo">
+                <h1>n8n 自動化工作流學習指南</h1>
+            </div>
+            <button class="mobile-menu-btn">☰</button>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">首頁</a></li>
+                    <li><a href="learning-path.html">學習路徑</a></li>
+                    <li><a href="basic-tutorial.html">基礎教學</a></li>
+                    <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                    <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    <li><a href="use-cases.html" class="active">實用案例</a></li>
+                    <li><a href="resources.html">資源</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="two-column">
+                <div class="main-content">
+                    <section id="immersive-translation" class="content-section">
+                        <h2>實用案例：吳恩達三階段沉浸式翻譯實作</h2>
+                        
+                        <p>本案例將指導您如何使用 n8n 實現吳恩達（Andrew Ng）提出的三階段沉浸式翻譯方法。這種方法特別適合學習外語和處理專業文獻，能夠在保留原文精確含義的同時，生成流暢自然的譯文。通過 n8n 自動化這一過程，您可以高效處理大量文本，並獲得高質量的翻譯結果。</p>
+
+                        <section id="use-case-overview" class="content-section">
+                            <h3>案例概述</h3>
+                            <p>吳恩達三階段沉浸式翻譯方法是一種結合人工智能和語言學原理的翻譯方法，分為三個階段：</p>
+                            <ol>
+                                <li><strong>直譯階段</strong>：逐字逐句翻譯，保留原文結構</li>
+                                <li><strong>意譯階段</strong>：調整語序和表達，使譯文更符合目標語言習慣</li>
+                                <li><strong>優化階段</strong>：進一步優化譯文，使其更加流暢自然</li>
+                            </ol>
+                            <p>這種方法特別適合處理專業文獻、學術論文和技術文檔，能夠在保留原文精確含義的同時，生成流暢自然的譯文。</p>
+
+                            <h4>主要功能</h4>
+                            <ul>
+                                <li>自動化三階段翻譯流程</li>
+                                <li>支持多種語言之間的翻譯</li>
+                                <li>處理各種格式的文本（純文本、Markdown、HTML等）</li>
+                                <li>保留原文格式和結構</li>
+                                <li>生成對照版本，方便學習和比較</li>
+                                <li>批量處理多個文件</li>
+                            </ul>
+
+                            <h4>技術要求</h4>
+                            <ul>
+                                <li>n8n 實例（自託管或雲端）</li>
+                                <li>OpenAI API 密鑰（用於 GPT 模型）</li>
+                                <li>（可選）其他翻譯 API（如 DeepL、Google Translate）</li>
+                                <li>（可選）文件存儲服務（如 Google Drive、Dropbox）</li>
+                            </ul>
+                        </section>
+
+                        <section id="workflow-architecture" class="content-section">
+                            <h3>工作流架構</h3>
+                            <p>我們的自動化工作流將分為四個主要部分：</p>
+
+                            <h4>1. 文本預處理</h4>
+                            <p>這部分負責準備待翻譯的文本：</p>
+                            <ul>
+                                <li>文本輸入：支持多種輸入方式（直接輸入、文件上傳、URL）</li>
+                                <li>格式檢測：識別文本格式（純文本、Markdown、HTML等）</li>
+                                <li>文本分割：將長文本分割為適合翻譯的片段</li>
+                                <li>格式保留：提取和保存需要在翻譯後恢復的格式標記</li>
+                            </ul>
+
+                            <h4>2. 三階段翻譯</h4>
+                            <p>這部分實現核心的三階段翻譯流程：</p>
+                            <ul>
+                                <li>直譯階段：使用 LLM 或翻譯 API 進行逐字逐句翻譯</li>
+                                <li>意譯階段：調整語序和表達，使譯文更符合目標語言習慣</li>
+                                <li>優化階段：進一步優化譯文，使其更加流暢自然</li>
+                                <li>專業術語處理：確保專業術語的準確翻譯</li>
+                            </ul>
+
+                            <h4>3. 後處理與格式恢復</h4>
+                            <p>這部分處理翻譯後的文本：</p>
+                            <ul>
+                                <li>格式恢復：恢復原文的格式標記</li>
+                                <li>片段合併：將分割的文本片段重新組合</li>
+                                <li>一致性檢查：確保術語和表達的一致性</li>
+                                <li>對照版本生成：創建原文和譯文的對照版本</li>
+                            </ul>
+
+                            <h4>4. 輸出與存儲</h4>
+                            <p>這部分處理最終的翻譯結果：</p>
+                            <ul>
+                                <li>多格式輸出：支持多種輸出格式（純文本、Markdown、HTML、PDF等）</li>
+                                <li>文件存儲：將結果保存到本地或雲存儲</li>
+                                <li>通知與分享：通過電子郵件或消息通知用戶，提供分享選項</li>
+                                <li>歷史記錄：保存翻譯歷史，方便後續查詢和使用</li>
+                            </ul>
+                        </section>
+
+                        <section id="implementation" class="content-section">
+                            <h3>實作步驟</h3>
+                            <p>讓我們逐步實作這個自動化工作流：</p>
+
+                            <h4>步驟 1：設置文本輸入工作流</h4>
+                            <p>首先，我們創建一個工作流來接收和預處理待翻譯的文本：</p>
+
+                            <h5>1.1 設置 Webhook 接收文本</h5>
+                            <pre><code class="language-javascript">// 創建新工作流：Immersive Translation
+// 添加 Webhook 節點
+// 方法：POST
+// 路徑：/translate
+// 響應模式：等待
+// 認證：可選（如需保護服務）</code></pre>
+
+                            <h5>1.2 設置文本格式檢測</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 檢測文本格式
+return items.map(item => {
+  const data = item.json.body || item.json;
+  
+  // 獲取文本內容
+  let text = data.text || '';
+  const url = data.url || '';
+  const fileContent = data.fileContent || '';
+  
+  // 如果提供了 URL，則從 URL 獲取內容
+  if (url && !text) {
+    // URL 處理將在後續 HTTP Request 節點中進行
+    return {
+      json: {
+        ...data,
+        inputType: 'url',
+        url,
+        sourceLanguage: data.sourceLanguage || 'auto',
+        targetLanguage: data.targetLanguage || 'zh-TW'
+      }
+    };
+  }
+  
+  // 如果提供了文件內容，則使用文件內容
+  if (fileContent && !text) {
+    text = fileContent;
+  }
+  
+  // 檢測文本格式
+  let format = data.format || 'plain';
+  
+  if (!data.format) {
+    // 自動檢測格式
+    if (text.includes('<html') || text.includes('</div>') || text.includes('<p>')) {
+      format = 'html';
+    } else if (text.includes('# ') || text.includes('## ') || 
+               text.includes('**') || text.includes('```')) {
+      format = 'markdown';
+    }
+  }
+  
+  return {
+    json: {
+      ...data,
+      text,
+      format,
+      inputType: fileContent ? 'file' : 'text',
+      sourceLanguage: data.sourceLanguage || 'auto',
+      targetLanguage: data.targetLanguage || 'zh-TW'
+    }
+  };
+});</code></pre>
+
+                            <h5>1.3 處理 URL 輸入</h5>
+                            <pre><code class="language-javascript">// 添加 IF 節點
+// 條件：{{$json.inputType === 'url'}}
+
+// 添加 HTTP Request 節點（True 分支）
+// 方法：GET
+// URL：{{$json.url}}
+// 響應格式：String
+
+// 添加 Function 節點（True 分支）
+// 處理 URL 響應
+return items.map(item => {
+  const data = item.json;
+  const text = item.json.data || '';
+  
+  // 檢測文本格式
+  let format = data.format || 'plain';
+  
+  if (!data.format) {
+    // 自動檢測格式
+    if (text.includes('<html') || text.includes('</div>') || text.includes('<p>')) {
+      format = 'html';
+    } else if (text.includes('# ') || text.includes('## ') || 
+               text.includes('**') || text.includes('```')) {
+      format = 'markdown';
+    }
+  }
+  
+  return {
+    json: {
+      ...data,
+      text,
+      format,
+      inputType: 'url'
+    }
+  };
+});</code></pre>
+
+                            <h5>1.4 檢測源語言（如果未指定）</h5>
+                            <pre><code class="language-javascript">// 添加 Merge 節點
+// 模式：合併所有
+
+// 添加 IF 節點
+// 條件：{{$json.sourceLanguage === 'auto'}}
+
+// 添加 OpenAI 節點（True 分支）
+// 操作：Chat
+// 模型：gpt-3.5-turbo
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個語言檢測助手。你的任務是識別提供文本的語言，並返回 ISO 639-1 語言代碼。請只返回語言代碼，不要添加任何解釋或額外文本。"
+  },
+  {
+    "role": "user",
+    "content": "請識別以下文本的語言：\n\n{{$json.text.substring(0, 500)}}"
+  }
+]
+// 溫度：0.3
+// 最大令牌：20
+
+// 添加 Function 節點（True 分支）
+// 處理語言檢測結果
+return items.map(item => {
+  const detectedLanguage = item.json.choices[0].message.content.trim();
+  
+  return {
+    json: {
+      ...item.json,
+      sourceLanguage: detectedLanguage,
+      detectedLanguage: true
+    }
+  };
+});</code></pre>
+
+                            <h5>1.5 文本分割</h5>
+                            <pre><code class="language-javascript">// 添加 Merge 節點
+// 模式：合併所有
+
+// 添加 Function 節點
+// 分割文本為適合翻譯的片段
+return items.map(item => {
+  const text = item.json.text;
+  const format = item.json.format;
+  
+  // 根據格式選擇分割策略
+  let segments = [];
+  
+  if (format === 'plain') {
+    // 純文本按段落分割
+    segments = text.split(/\n\s*\n/).filter(s => s.trim().length > 0);
+  } else if (format === 'markdown') {
+    // Markdown 按標題和段落分割
+    // 這是一個簡化的實現，實際應用可能需要更複雜的解析
+    const lines = text.split('\n');
+    let currentSegment = '';
+    
+    for (const line of lines) {
+      // 如果是標題行或空行，開始新的片段
+      if (line.startsWith('#') || line.trim() === '') {
+        if (currentSegment.trim().length > 0) {
+          segments.push(currentSegment.trim());
+          currentSegment = '';
+        }
+        
+        if (line.trim() !== '') {
+          segments.push(line);
+        }
+      } else {
+        currentSegment += line + '\n';
+      }
+    }
+    
+    // 添加最後一個片段
+    if (currentSegment.trim().length > 0) {
+      segments.push(currentSegment.trim());
+    }
+  } else if (format === 'html') {
+    // HTML 需要更複雜的處理，這裡使用簡化的方法
+    // 實際應用可能需要使用 HTML 解析庫
+    segments = text.split(/<\/(p|h1|h2|h3|h4|h5|h6|div|section|article)>/)
+                  .filter(s => s.trim().length > 0)
+                  .map(s => s + (s.match(/<(p|h1|h2|h3|h4|h5|h6|div|section|article)/) ? '' : '</p>'));
+  }
+  
+  // 合併過小的片段
+  const maxSegmentLength = 1000; // 每個片段的最大字符數
+  const consolidatedSegments = [];
+  let currentSegment = '';
+  
+  for (const segment of segments) {
+    if (currentSegment.length + segment.length > maxSegmentLength) {
+      consolidatedSegments.push(currentSegment);
+      currentSegment = segment;
+    } else {
+      currentSegment += (currentSegment ? '\n\n' : '') + segment;
+    }
+  }
+  
+  if (currentSegment) {
+    consolidatedSegments.push(currentSegment);
+  }
+  
+  return {
+    json: {
+      ...item.json,
+      segments: consolidatedSegments,
+      segmentCount: consolidatedSegments.length
+    }
+  };
+});</code></pre>
+
+                            <h4>步驟 2：實現三階段翻譯</h4>
+                            <p>接下來，我們實現核心的三階段翻譯流程：</p>
+
+                            <h5>2.1 設置直譯階段</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 準備片段翻譯
+return items.flatMap(item => {
+  const segments = item.json.segments || [];
+  
+  // 為每個片段創建一個項目
+  return segments.map((segment, index) => {
+    return {
+      json: {
+        ...item.json,
+        segment,
+        segmentIndex: index,
+        totalSegments: segments.length,
+        stage: 'literal',
+        literalTranslation: '',
+        adaptedTranslation: '',
+        polishedTranslation: ''
+      }
+    };
+  });
+});
+
+// 添加 OpenAI 節點
+// 操作：Chat
+// 模型：gpt-4
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個專業翻譯助手，專注於{{$json.sourceLanguage}}到{{$json.targetLanguage}}的翻譯。現在，你需要執行直譯階段，提供逐字逐句的翻譯，盡量保留原文的結構和表達方式。請確保專業術語的準確性，但不要過多調整語序和表達方式。"
+  },
+  {
+    "role": "user",
+    "content": "請將以下{{$json.sourceLanguage}}文本直譯為{{$json.targetLanguage}}：\n\n{{$json.segment}}"
+  }
+]
+// 溫度：0.3
+// 最大令牌：2000
+
+// 添加 Function 節點
+// 處理直譯結果
+return items.map(item => {
+  const literalTranslation = item.json.choices[0].message.content;
+  
+  return {
+    json: {
+      ...item.json,
+      literalTranslation,
+      stage: 'adapted'
+    }
+  };
+});</code></pre>
+
+                            <h5>2.2 設置意譯階段</h5>
+                            <pre><code class="language-javascript">// 添加 OpenAI 節點
+// 操作：Chat
+// 模型：gpt-4
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個專業翻譯助手，專注於{{$json.sourceLanguage}}到{{$json.targetLanguage}}的翻譯。現在，你需要執行意譯階段，基於已有的直譯結果，調整語序和表達方式，使譯文更符合{{$json.targetLanguage}}的語言習慣，但仍然要保持原文的全部含義和專業術語的準確性。"
+  },
+  {
+    "role": "user",
+    "content": "以下是原文和直譯結果：\n\n原文({{$json.sourceLanguage}})：\n{{$json.segment}}\n\n直譯結果：\n{{$json.literalTranslation}}\n\n請基於直譯結果進行意譯，使其更符合{{$json.targetLanguage}}的表達習慣："
+  }
+]
+// 溫度：0.4
+// 最大令牌：2000
+
+// 添加 Function 節點
+// 處理意譯結果
+return items.map(item => {
+  const adaptedTranslation = item.json.choices[0].message.content;
+  
+  return {
+    json: {
+      ...item.json,
+      adaptedTranslation,
+      stage: 'polished'
+    }
+  };
+});</code></pre>
+
+                            <h5>2.3 設置優化階段</h5>
+                            <pre><code class="language-javascript">// 添加 OpenAI 節點
+// 操作：Chat
+// 模型：gpt-4
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個專業翻譯助手，專注於{{$json.sourceLanguage}}到{{$json.targetLanguage}}的翻譯。現在，你需要執行優化階段，基於已有的意譯結果，進一步優化譯文，使其更加流暢自然，就像{{$json.targetLanguage}}的母語者所寫的一樣。請確保專業術語的準確性，並保持原文的全部含義。"
+  },
+  {
+    "role": "user",
+    "content": "以下是原文、直譯結果和意譯結果：\n\n原文({{$json.sourceLanguage}})：\n{{$json.segment}}\n\n直譯結果：\n{{$json.literalTranslation}}\n\n意譯結果：\n{{$json.adaptedTranslation}}\n\n請基於意譯結果進行最終優化，使其更加流暢自然："
+  }
+]
+// 溫度：0.5
+// 最大令牌：2000
+
+// 添加 Function 節點
+// 處理優化結果
+return items.map(item => {
+  const polishedTranslation = item.json.choices[0].message.content;
+  
+  return {
+    json: {
+      ...item.json,
+      polishedTranslation,
+      stage: 'completed'
+    }
+  };
+});</code></pre>
+
+                            <h4>步驟 3：設置後處理與格式恢復</h4>
+                            <p>現在，我們處理翻譯後的文本，恢復格式並合併片段：</p>
+
+                            <h5>3.1 合併翻譯片段</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 準備合併
+return [
+  {
+    json: {
+      requestId: items[0].json.requestId || Date.now().toString(),
+      sourceLanguage: items[0].json.sourceLanguage,
+      targetLanguage: items[0].json.targetLanguage,
+      format: items[0].json.format,
+      segments: items.sort((a, b) => a.json.segmentIndex - b.json.segmentIndex)
+                     .map(item => ({
+                       original: item.json.segment,
+                       literal: item.json.literalTranslation,
+                       adapted: item.json.adaptedTranslation,
+                       polished: item.json.polishedTranslation,
+                       index: item.json.segmentIndex
+                     }))
+    }
+  }
+];
+
+// 添加 Function 節點
+// 合併翻譯結果
+return items.map(item => {
+  const segments = item.json.segments || [];
+  
+  // 合併各階段的翻譯結果
+  const originalText = segments.map(s => s.original).join('\n\n');
+  const literalText = segments.map(s => s.literal).join('\n\n');
+  const adaptedText = segments.map(s => s.adapted).join('\n\n');
+  const polishedText = segments.map(s => s.polished).join('\n\n');
+  
+  // 創建對照版本
+  const comparisonText = segments.map(s => 
+    `原文：\n${s.original}\n\n直譯：\n${s.literal}\n\n意譯：\n${s.adapted}\n\n優化：\n${s.polished}\n\n---\n\n`
+  ).join('');
+  
+  // 創建雙語對照版本
+  const bilingualText = segments.map(s => 
+    `原文：\n${s.original}\n\n譯文：\n${s.polished}\n\n---\n\n`
+  ).join('');
+  
+  return {
+    json: {
+      ...item.json,
+      originalText,
+      literalText,
+      adaptedText,
+      polishedText,
+      comparisonText,
+      bilingualText
+    }
+  };
+});</code></pre>
+
+                            <h5>3.2 格式恢復</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 恢復格式
+return items.map(item => {
+  const format = item.json.format;
+  const polishedText = item.json.polishedText;
+  const originalText = item.json.originalText;
+  
+  let formattedText = polishedText;
+  
+  // 根據原始格式處理
+  if (format === 'markdown') {
+    // 對於 Markdown，我們需要確保標題、列表等格式正確
+    // 這裡假設翻譯過程中已經保留了 Markdown 格式
+    // 如果需要，可以添加更複雜的 Markdown 處理邏輯
+  } else if (format === 'html') {
+    // 對於 HTML，我們需要確保標籤正確
+    // 這裡假設翻譯過程中已經保留了 HTML 標籤
+    // 如果需要，可以添加更複雜的 HTML 處理邏輯
+  }
+  
+  return {
+    json: {
+      ...item.json,
+      formattedText
+    }
+  };
+});</code></pre>
+
+                            <h5>3.3 生成最終輸出</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 生成最終輸出
+return items.map(item => {
+  // 準備各種輸出格式
+  const outputs = {
+    original: item.json.originalText,
+    literal: item.json.literalText,
+    adapted: item.json.adaptedText,
+    polished: item.json.polishedText || item.json.formattedText,
+    comparison: item.json.comparisonText,
+    bilingual: item.json.bilingualText
+  };
+  
+  // 添加時間戳和元數據
+  const metadata = {
+    requestId: item.json.requestId,
+    sourceLanguage: item.json.sourceLanguage,
+    targetLanguage: item.json.targetLanguage,
+    format: item.json.format,
+    timestamp: new Date().toISOString(),
+    segmentCount: item.json.segments.length
+  };
+  
+  return {
+    json: {
+      ...item.json,
+      outputs,
+      metadata,
+      translationCompleted: true
+    }
+  };
+});</code></pre>
+
+                            <h4>步驟 4：設置輸出與存儲</h4>
+                            <p>最後，我們處理翻譯結果的輸出和存儲：</p>
+
+                            <h5>4.1 保存翻譯結果</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 準備文件名
+return items.map(item => {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const sourceLanguage = item.json.sourceLanguage;
+  const targetLanguage = item.json.targetLanguage;
+  
+  // 生成文件名
+  const baseFileName = `translation_${sourceLanguage}_to_${targetLanguage}_${timestamp}`;
+  
+  return {
+    json: {
+      ...item.json,
+      fileNames: {
+        original: `${baseFileName}_original.txt`,
+        polished: `${baseFileName}_translated.txt`,
+        bilingual: `${baseFileName}_bilingual.txt`,
+        comparison: `${baseFileName}_comparison.txt`
+      }
+    }
+  };
+});
+
+// 添加 Write Binary File 節點
+// 文件路徑：/data/translations/{{$json.fileNames.polished}}
+// 數據：{{$json.outputs.polished}}
+// 選項：創建目錄
+
+// 添加 Write Binary File 節點
+// 文件路徑：/data/translations/{{$json.fileNames.bilingual}}
+// 數據：{{$json.outputs.bilingual}}
+// 選項：創建目錄
+
+// 添加 Write Binary File 節點
+// 文件路徑：/data/translations/{{$json.fileNames.comparison}}
+// 數據：{{$json.outputs.comparison}}
+// 選項：創建目錄</code></pre>
+
+                            <h5>4.2 生成 Markdown 報告</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 生成 Markdown 報告
+return items.map(item => {
+  const metadata = item.json.metadata;
+  const fileNames = item.json.fileNames;
+  
+  // 創建 Markdown 報告
+  const report = `# 翻譯報告
+
+## 元數據
+
+- **源語言**: ${metadata.sourceLanguage}
+- **目標語言**: ${metadata.targetLanguage}
+- **格式**: ${metadata.format}
+- **片段數**: ${metadata.segmentCount}
+- **時間戳**: ${metadata.timestamp}
+- **請求 ID**: ${metadata.requestId}
+
+## 文件
+
+- [譯文](${fileNames.polished})
+- [雙語對照版](${fileNames.bilingual})
+- [三階段對照版](${fileNames.comparison})
+
+## 翻譯樣本
+
+### 原文樣本
+
+\`\`\`
+${item.json.outputs.original.substring(0, 300)}...
+\`\`\`
+
+### 譯文樣本
+
+\`\`\`
+${item.json.outputs.polished.substring(0, 300)}...
+\`\`\`
+
+## 三階段翻譯示例
+
+### 直譯示例
+
+\`\`\`
+${item.json.outputs.literal.substring(0, 200)}...
+\`\`\`
+
+### 意譯示例
+
+\`\`\`
+${item.json.outputs.adapted.substring(0, 200)}...
+\`\`\`
+
+### 優化示例
+
+\`\`\`
+${item.json.outputs.polished.substring(0, 200)}...
+\`\`\`
+`;
+  
+  return {
+    json: {
+      ...item.json,
+      report,
+      reportFileName: `${fileNames.polished.replace('.txt', '')}_report.md`
+    }
+  };
+});
+
+// 添加 Write Binary File 節點
+// 文件路徑：/data/translations/{{$json.reportFileName}}
+// 數據：{{$json.report}}
+// 選項：創建目錄</code></pre>
+
+                            <h5>4.3 返回結果</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 準備響應
+return items.map(item => {
+  // 準備下載鏈接
+  const baseUrl = 'http://your-server.com/downloads/';
+  const downloadLinks = {
+    polished: `${baseUrl}${item.json.fileNames.polished}`,
+    bilingual: `${baseUrl}${item.json.fileNames.bilingual}`,
+    comparison: `${baseUrl}${item.json.fileNames.comparison}`,
+    report: `${baseUrl}${item.json.reportFileName}`
+  };
+  
+  return {
+    json: {
+      success: true,
+      message: '翻譯完成',
+      metadata: item.json.metadata,
+      downloadLinks,
+      samples: {
+        original: item.json.outputs.original.substring(0, 300) + '...',
+        translated: item.json.outputs.polished.substring(0, 300) + '...'
+      }
+    }
+  };
+});
+
+// 添加 Respond to Webhook 節點
+// 響應類型：JSON
+// 響應數據：
+{
+  "success": {{$json.success}},
+  "message": "{{$json.message}}",
+  "metadata": {{$json.metadata}},
+  "downloadLinks": {{$json.downloadLinks}},
+  "samples": {{$json.samples}}
+}</code></pre>
+                        </section>
+
+                        <section id="advanced-features" class="content-section">
+                            <h3>進階功能</h3>
+                            <p>以下是一些可以添加到基本工作流的進階功能：</p>
+
+                            <h4>1. 專業術語處理</h4>
+                            <p>為特定領域的翻譯添加專業術語處理：</p>
+                            <pre><code class="language-javascript">// 創建新工作流：Terminology Management
+// 添加 Function 節點
+// 提取專業術語
+return items.map(item => {
+  const text = item.json.originalText;
+  const sourceLanguage = item.json.sourceLanguage;
+  const targetLanguage = item.json.targetLanguage;
+  
+  return {
+    json: {
+      ...item.json,
+      extractTerminology: true
+    }
+  };
+});
+
+// 添加 OpenAI 節點
+// 操作：Chat
+// 模型：gpt-4
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個專業術語提取助手。你的任務是從提供的文本中提取專業術語，並提供其在目標語言中的標準翻譯。請以 JSON 格式返回結果。"
+  },
+  {
+    "role": "user",
+    "content": "請從以下{{$json.sourceLanguage}}文本中提取專業術語，並提供其在{{$json.targetLanguage}}中的標準翻譯：\n\n{{$json.originalText.substring(0, 2000)}}"
+  }
+]
+// 溫度：0.3
+// 響應格式：JSON 對象
+// 響應架構：
+{
+  "terms": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "源語言中的術語"
+        },
+        "target": {
+          "type": "string",
+          "description": "目標語言中的標準翻譯"
+        },
+        "domain": {
+          "type": "string",
+          "description": "術語所屬領域"
+        },
+        "definition": {
+          "type": "string",
+          "description": "術語的簡短定義"
+        }
+      }
+    }
+  }
+}
+
+// 添加 Function 節點
+// 處理術語表
+return items.map(item => {
+  const terms = item.json.terms || [];
+  
+  // 創建術語表
+  const glossary = {};
+  terms.forEach(term => {
+    glossary[term.source.toLowerCase()] = term.target;
+  });
+  
+  // 創建術語表 Markdown
+  const glossaryMarkdown = `# 術語表
+
+| ${item.json.sourceLanguage} | ${item.json.targetLanguage} | 領域 | 定義 |
+|------------|------------|--------|----------|
+${terms.map(term => `| ${term.source} | ${term.target} | ${term.domain} | ${term.definition} |`).join('\n')}
+`;
+  
+  return {
+    json: {
+      ...item.json,
+      glossary,
+      glossaryMarkdown,
+      glossaryFileName: `glossary_${item.json.sourceLanguage}_${item.json.targetLanguage}_${Date.now()}.md`
+    }
+  };
+});
+
+// 添加 Write Binary File 節點
+// 文件路徑：/data/translations/{{$json.glossaryFileName}}
+// 數據：{{$json.glossaryMarkdown}}
+// 選項：創建目錄
+
+// 修改主翻譯工作流
+// 在三階段翻譯前添加術語處理
+// 添加 Function 節點
+// 添加術語指導
+return items.map(item => {
+  const glossary = item.json.glossary || {};
+  
+  // 如果有術語表，添加到系統提示
+  let terminologyGuidance = '';
+  if (Object.keys(glossary).length > 0) {
+    terminologyGuidance = `
+請使用以下術語表進行翻譯：
+
+${Object.entries(glossary).map(([source, target]) => `- ${source} → ${target}`).join('\n')}
+`;
+  }
+  
+  return {
+    json: {
+      ...item.json,
+      terminologyGuidance
+    }
+  };
+});</code></pre>
+
+                            <h4>2. 批量處理功能</h4>
+                            <p>添加批量處理多個文件的功能：</p>
+                            <pre><code class="language-javascript">// 創建新工作流：Batch Translation
+// 添加 Webhook 節點
+// 方法：POST
+// 路徑：/batch-translate
+// 響應模式：等待
+
+// 添加 Function 節點
+// 處理批量請求
+return items.map(item => {
+  const data = item.json.body || item.json;
+  const files = data.files || [];
+  const sourceLanguage = data.sourceLanguage || 'auto';
+  const targetLanguage = data.targetLanguage || 'zh-TW';
+  
+  return {
+    json: {
+      ...data,
+      files,
+      sourceLanguage,
+      targetLanguage,
+      batchId: Date.now().toString(),
+      totalFiles: files.length,
+      processedFiles: 0,
+      results: []
+    }
+  };
+});
+
+// 添加 Loop 節點
+// 輸入：files
+// 輸出：每個文件的處理結果
+
+// 添加 HTTP Request 節點（循環內）
+// 方法：POST
+// URL：http://localhost:5678/webhook/translate
+// 請求格式：JSON
+// 請求數據：
+{
+  "text": "{{$json.content}}",
+  "sourceLanguage": "{{$parent.json.sourceLanguage}}",
+  "targetLanguage": "{{$parent.json.targetLanguage}}",
+  "format": "{{$json.format}}",
+  "fileName": "{{$json.fileName}}",
+  "batchId": "{{$parent.json.batchId}}"
+}
+
+// 添加 Function 節點（循環後）
+// 合併結果
+return items.map(item => {
+  return {
+    json: {
+      ...item.json,
+      processedFiles: item.json.processedFiles + 1,
+      results: [...item.json.results, {
+        fileName: item.json.fileName,
+        status: 'success',
+        downloadLinks: item.json.downloadLinks
+      }]
+    }
+  };
+});
+
+// 添加 Wait 節點
+// 等待所有文件處理完成
+
+// 添加 Function 節點
+// 生成批量報告
+return items.map(item => {
+  // 創建批量報告
+  const batchReport = `# 批量翻譯報告
+
+## 概述
+
+- **批次 ID**: ${item.json.batchId}
+- **源語言**: ${item.json.sourceLanguage}
+- **目標語言**: ${item.json.targetLanguage}
+- **總文件數**: ${item.json.totalFiles}
+- **處理文件數**: ${item.json.processedFiles}
+- **時間戳**: ${new Date().toISOString()}
+
+## 文件列表
+
+${item.json.results.map((result, index) => `
+### ${index + 1}. ${result.fileName}
+
+- **狀態**: ${result.status}
+- **下載鏈接**:
+  - [譯文](${result.downloadLinks.polished})
+  - [雙語對照版](${result.downloadLinks.bilingual})
+  - [三階段對照版](${result.downloadLinks.comparison})
+`).join('\n')}
+`;
+  
+  return {
+    json: {
+      ...item.json,
+      batchReport,
+      batchReportFileName: `batch_report_${item.json.batchId}.md`
+    }
+  };
+});
+
+// 添加 Write Binary File 節點
+// 文件路徑：/data/translations/{{$json.batchReportFileName}}
+// 數據：{{$json.batchReport}}
+// 選項：創建目錄
+
+// 添加 Respond to Webhook 節點
+// 響應類型：JSON
+// 響應數據：
+{
+  "success": true,
+  "message": "批量翻譯完成",
+  "batchId": "{{$json.batchId}}",
+  "totalFiles": {{$json.totalFiles}},
+  "processedFiles": {{$json.processedFiles}},
+  "batchReportUrl": "http://your-server.com/downloads/{{$json.batchReportFileName}}",
+  "results": {{$json.results}}
+}</code></pre>
+
+                            <h4>3. 翻譯記憶庫</h4>
+                            <p>實現翻譯記憶庫功能，重用之前的翻譯：</p>
+                            <pre><code class="language-javascript">// 創建新工作流：Translation Memory
+// 添加 PostgreSQL 節點
+// 操作：執行查詢
+// 查詢：
+CREATE TABLE IF NOT EXISTS translation_memory (
+  id SERIAL PRIMARY KEY,
+  source_text TEXT NOT NULL,
+  target_text TEXT NOT NULL,
+  source_language VARCHAR(10) NOT NULL,
+  target_language VARCHAR(10) NOT NULL,
+  context TEXT,
+  domain VARCHAR(50),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  last_used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  use_count INTEGER DEFAULT 1
+);
+
+CREATE INDEX IF NOT EXISTS idx_translation_memory_source ON translation_memory(source_language, target_language, source_text);
+
+// 修改主翻譯工作流
+// 在翻譯前添加記憶庫查詢
+// 添加 Function 節點
+// 準備記憶庫查詢
+return items.map(item => {
+  const segment = item.json.segment;
+  const sourceLanguage = item.json.sourceLanguage;
+  const targetLanguage = item.json.targetLanguage;
+  
+  return {
+    json: {
+      ...item.json,
+      checkTranslationMemory: true
+    }
+  };
+});
+
+// 添加 PostgreSQL 節點
+// 操作：選擇
+// 表：translation_memory
+// 條件：
+// - source_language = {{$json.sourceLanguage}}
+// - target_language = {{$json.targetLanguage}}
+// - source_text = {{$json.segment}}
+
+// 添加 IF 節點
+// 條件：{{$json.selectItems && $json.selectItems.length > 0}}
+
+// 添加 Function 節點（True 分支）
+// 使用記憶庫結果
+return items.map(item => {
+  const memoryItem = item.json.selectItems[0];
+  
+  return {
+    json: {
+      ...item.json,
+      literalTranslation: memoryItem.target_text,
+      adaptedTranslation: memoryItem.target_text,
+      polishedTranslation: memoryItem.target_text,
+      fromTranslationMemory: true,
+      stage: 'completed'
+    }
+  };
+});
+
+// 添加 PostgreSQL 節點（True 分支）
+// 操作：更新
+// 表：translation_memory
+// 條件：
+// - id = {{$json.selectItems[0].id}}
+// 數據：
+// - last_used_at = {{$now}}
+// - use_count = {{$json.selectItems[0].use_count + 1}}
+
+// 添加 Function 節點（False 分支）
+// 繼續正常翻譯流程
+return items.map(item => {
+  return {
+    json: {
+      ...item.json,
+      fromTranslationMemory: false
+    }
+  };
+});
+
+// 在翻譯完成後添加記憶庫存儲
+// 添加 IF 節點
+// 條件：{{!$json.fromTranslationMemory}}
+
+// 添加 PostgreSQL 節點（True 分支）
+// 操作：插入
+// 表：translation_memory
+// 數據：
+// - source_text = {{$json.segment}}
+// - target_text = {{$json.polishedTranslation}}
+// - source_language = {{$json.sourceLanguage}}
+// - target_language = {{$json.targetLanguage}}
+// - context = {{$json.context || ''}}
+// - domain = {{$json.domain || 'general'}}</code></pre>
+
+                            <h4>4. 多模型比較</h4>
+                            <p>使用多個 LLM 模型進行翻譯並比較結果：</p>
+                            <pre><code class="language-javascript">// 修改主翻譯工作流
+// 添加多模型翻譯
+// 添加 Function 節點
+// 準備多模型翻譯
+return items.map(item => {
+  return {
+    json: {
+      ...item.json,
+      models: ['gpt-4', 'gpt-3.5-turbo', 'claude-3-opus']
+    }
+  };
+});
+
+// 添加 Loop 節點
+// 輸入：models
+// 輸出：每個模型的翻譯結果
+
+// 添加 IF 節點（循環內）
+// 條件：{{$json === 'gpt-4' || $json === 'gpt-3.5-turbo'}}
+
+// 添加 OpenAI 節點（True 分支）
+// 操作：Chat
+// 模型：{{$json}}
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個專業翻譯助手，專注於{{$parent.json.sourceLanguage}}到{{$parent.json.targetLanguage}}的翻譯。請提供高質量的翻譯，保持原文的全部含義和專業術語的準確性，同時使譯文流暢自然。"
+  },
+  {
+    "role": "user",
+    "content": "請將以下{{$parent.json.sourceLanguage}}文本翻譯為{{$parent.json.targetLanguage}}：\n\n{{$parent.json.segment}}"
+  }
+]
+
+// 添加 HTTP Request 節點（False 分支）
+// 方法：POST
+// URL：https://api.anthropic.com/v1/messages
+// 請求頭：
+// - x-api-key: your-anthropic-api-key
+// - anthropic-version: 2023-06-01
+// 請求格式：JSON
+// 請求數據：
+{
+  "model": "claude-3-opus-20240229",
+  "max_tokens": 2000,
+  "messages": [
+    {
+      "role": "user",
+      "content": "你是一個專業翻譯助手，專注於{{$parent.json.sourceLanguage}}到{{$parent.json.targetLanguage}}的翻譯。請提供高質量的翻譯，保持原文的全部含義和專業術語的準確性，同時使譯文流暢自然。\n\n請將以下{{$parent.json.sourceLanguage}}文本翻譯為{{$parent.json.targetLanguage}}：\n\n{{$parent.json.segment}}"
+    }
+  ]
+}
+
+// 添加 Function 節點（循環內）
+// 處理模型結果
+return items.map(item => {
+  let translation;
+  
+  if (item.json.choices) {
+    // OpenAI 響應
+    translation = item.json.choices[0].message.content;
+  } else if (item.json.content) {
+    // Claude 響應
+    translation = item.json.content[0].text;
+  }
+  
+  return {
+    json: {
+      model: item.json.model || $parent.json,
+      translation
+    }
+  };
+});
+
+// 添加 Function 節點（循環後）
+// 合併模型結果
+return items.map(item => {
+  const modelResults = {};
+  
+  // 收集所有模型的結果
+  item.json.forEach(result => {
+    modelResults[result.json.model] = result.json.translation;
+  });
+  
+  return {
+    json: {
+      ...item.json,
+      modelResults
+    }
+  };
+});
+
+// 添加 OpenAI 節點
+// 操作：Chat
+// 模型：gpt-4
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個翻譯評估專家。你的任務是比較不同模型的翻譯結果，並選擇最佳翻譯。請考慮準確性、流暢性、專業術語的處理等因素。"
+  },
+  {
+    "role": "user",
+    "content": "以下是原文和不同模型的翻譯結果：\n\n原文({{$json.sourceLanguage}})：\n{{$json.segment}}\n\nGPT-4 翻譯：\n{{$json.modelResults['gpt-4']}}\n\nGPT-3.5 翻譯：\n{{$json.modelResults['gpt-3.5-turbo']}}\n\nClaude 翻譯：\n{{$json.modelResults['claude-3-opus']}}\n\n請評估這些翻譯，選擇最佳翻譯，並解釋你的選擇。"
+  }
+]
+
+// 添加 Function 節點
+// 處理評估結果
+return items.map(item => {
+  const evaluation = item.json.choices[0].message.content;
+  
+  return {
+    json: {
+      ...item.json,
+      evaluation,
+      modelComparison: true
+    }
+  };
+});</code></pre>
+                        </section>
+
+                        <section id="customization" class="content-section">
+                            <h3>自定義與擴展</h3>
+                            <p>以下是一些自定義和擴展工作流的建議：</p>
+
+                            <h4>1. 針對特定領域調整</h4>
+                            <p>根據您的特定領域調整工作流：</p>
+                            <ul>
+                                <li><strong>專業術語庫</strong>：為特定領域（如醫學、法律、技術）建立專業術語庫</li>
+                                <li><strong>領域特定提示</strong>：調整翻譯提示以反映特定領域的要求</li>
+                                <li><strong>參考資料整合</strong>：整合領域特定的參考資料和標準</li>
+                                <li><strong>風格指南</strong>：實施特定領域的風格指南和規範</li>
+                            </ul>
+
+                            <h4>2. 添加更多輸入和輸出格式</h4>
+                            <p>擴展支持的文件格式：</p>
+                            <ul>
+                                <li><strong>PDF 處理</strong>：添加 PDF 文件的輸入和輸出支持</li>
+                                <li><strong>Word 文檔</strong>：支持 Microsoft Word 文檔的處理</li>
+                                <li><strong>字幕文件</strong>：支持 SRT、VTT 等字幕文件的翻譯</li>
+                                <li><strong>電子書格式</strong>：支持 EPUB、MOBI 等電子書格式</li>
+                                <li><strong>簡報文件</strong>：支持 PowerPoint 等簡報文件的翻譯</li>
+                            </ul>
+
+                            <h4>3. 整合其他翻譯服務</h4>
+                            <p>添加更多翻譯服務選項：</p>
+                            <ul>
+                                <li><strong>DeepL</strong>：整合 DeepL 翻譯 API</li>
+                                <li><strong>Google Translate</strong>：添加 Google 翻譯支持</li>
+                                <li><strong>Microsoft Translator</strong>：整合 Microsoft 翻譯服務</li>
+                                <li><strong>本地 LLM</strong>：支持本地部署的 LLM 模型</li>
+                                <li><strong>專業翻譯服務</strong>：整合人工翻譯服務</li>
+                            </ul>
+
+                            <h4>4. 添加協作功能</h4>
+                            <p>添加團隊協作和審校功能：</p>
+                            <ul>
+                                <li><strong>審校工作流</strong>：添加人工審校和修訂步驟</li>
+                                <li><strong>評論和反饋</strong>：允許對翻譯進行評論和提供反饋</li>
+                                <li><strong>版本控制</strong>：實現翻譯版本控制和歷史記錄</li>
+                                <li><strong>任務分配</strong>：支持將翻譯任務分配給團隊成員</li>
+                                <li><strong>質量評估</strong>：實施翻譯質量評估和報告</li>
+                            </ul>
+                        </section>
+
+                        <section id="troubleshooting" class="content-section">
+                            <h3>常見問題與解決方案</h3>
+                            <p>實施過程中可能遇到的常見問題及其解決方案：</p>
+
+                            <h4>1. API 限制和成本控制</h4>
+                            <p><strong>問題</strong>：LLM API 的使用限制和成本可能成為問題。</p>
+                            <p><strong>解決方案</strong>：</p>
+                            <ul>
+                                <li>實施令牌計數和成本估算</li>
+                                <li>使用較小的模型進行初步翻譯，只在必要時使用大型模型</li>
+                                <li>實施緩存機制，避免重複翻譯相同內容</li>
+                                <li>設置使用限制和預算控制</li>
+                            </ul>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 估算令牌數和成本
+function estimateTokens(text) {
+  // 簡單估算：平均每 4 個字符約 1 個令牌
+  return Math.ceil(text.length / 4);
+}
+
+function estimateCost(tokens, model) {
+  // 簡化的成本估算（美元）
+  const rates = {
+    'gpt-4': {
+      input: 0.00003,
+      output: 0.00006
+    },
+    'gpt-3.5-turbo': {
+      input: 0.000001,
+      output: 0.000002
+    }
+  };
+  
+  const rate = rates[model] || rates['gpt-3.5-turbo'];
+  
+  // 假設輸出令牌約為輸入的 1.5 倍
+  const inputCost = tokens * rate.input;
+  const outputCost = tokens * 1.5 * rate.output;
+  
+  return inputCost + outputCost;
+}
+
+return items.map(item => {
+  const text = item.json.segment;
+  const tokens = estimateTokens(text);
+  const cost = estimateCost(tokens, 'gpt-4');
+  
+  return {
+    json: {
+      ...item.json,
+      estimatedTokens: tokens,
+      estimatedCost: cost
+    }
+  };
+});</code></pre>
+
+                            <h4>2. 長文本處理</h4>
+                            <p><strong>問題</strong>：處理長文本時可能遇到 API 限制和上下文丟失。</p>
+                            <p><strong>解決方案</strong>：</p>
+                            <ul>
+                                <li>實施更智能的文本分割策略</li>
+                                <li>保持段落和章節的完整性</li>
+                                <li>使用重疊分割，確保上下文連續性</li>
+                                <li>實施段落間的一致性檢查</li>
+                            </ul>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 智能文本分割
+function smartTextSplit(text, maxLength = 1000, overlap = 200) {
+  // 如果文本足夠短，直接返回
+  if (text.length <= maxLength) {
+    return [text];
+  }
+  
+  // 按段落分割
+  const paragraphs = text.split(/\n\s*\n/);
+  const segments = [];
+  let currentSegment = '';
+  
+  for (const paragraph of paragraphs) {
+    // 如果添加這個段落會超出最大長度，先保存當前片段
+    if (currentSegment.length + paragraph.length > maxLength && currentSegment.length > 0) {
+      segments.push(currentSegment);
+      
+      // 保留一部分重疊內容
+      const lastParagraphs = currentSegment.split(/\n\s*\n/).slice(-2);
+      currentSegment = lastParagraphs.join('\n\n');
+    }
+    
+    // 添加當前段落
+    currentSegment += (currentSegment ? '\n\n' : '') + paragraph;
+  }
+  
+  // 添加最後一個片段
+  if (currentSegment) {
+    segments.push(currentSegment);
+  }
+  
+  return segments;
+}
+
+return items.map(item => {
+  const text = item.json.text;
+  const segments = smartTextSplit(text);
+  
+  return {
+    json: {
+      ...item.json,
+      segments,
+      segmentCount: segments.length
+    }
+  };
+});</code></pre>
+
+                            <h4>3. 格式保留問題</h4>
+                            <p><strong>問題</strong>：翻譯過程中可能丟失原文格式。</p>
+                            <p><strong>解決方案</strong>：</p>
+                            <ul>
+                                <li>使用標記系統保護格式元素</li>
+                                <li>分離內容和格式，分別處理</li>
+                                <li>使用專門的格式處理庫</li>
+                                <li>實施格式驗證和修復</li>
+                            </ul>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 格式保護和恢復
+function protectFormat(text, format) {
+  if (format === 'markdown') {
+    // 保護 Markdown 格式
+    // 替換 Markdown 標記為佔位符
+    let protected = text;
+    const markers = [];
+    
+    // 保護代碼塊
+    protected = protected.replace(/```[\s\S]*?```/g, (match) => {
+      markers.push({ type: 'code_block', content: match });
+      return `[FORMAT_MARKER_${markers.length - 1}]`;
+    });
+    
+    // 保護行內代碼
+    protected = protected.replace(/`[^`]*`/g, (match) => {
+      markers.push({ type: 'inline_code', content: match });
+      return `[FORMAT_MARKER_${markers.length - 1}]`;
+    });
+    
+    // 保護鏈接
+    protected = protected.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+      markers.push({ type: 'link', content: match, text, url });
+      return `[FORMAT_MARKER_${markers.length - 1}]`;
+    });
+    
+    // 保護圖片
+    protected = protected.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, src) => {
+      markers.push({ type: 'image', content: match, alt, src });
+      return `[FORMAT_MARKER_${markers.length - 1}]`;
+    });
+    
+    return { protected, markers };
+  }
+  
+  // 其他格式的處理...
+  
+  return { protected: text, markers: [] };
+}
+
+function restoreFormat(text, markers) {
+  let restored = text;
+  
+  // 恢復所有標記
+  for (let i = 0; i < markers.length; i++) {
+    restored = restored.replace(`[FORMAT_MARKER_${i}]`, markers[i].content);
+  }
+  
+  return restored;
+}
+
+return items.map(item => {
+  const text = item.json.segment;
+  const format = item.json.format;
+  
+  const { protected, markers } = protectFormat(text, format);
+  
+  return {
+    json: {
+      ...item.json,
+      originalSegment: text,
+      protectedSegment: protected,
+      formatMarkers: markers
+    }
+  };
+});</code></pre>
+
+                            <h4>4. 專業術語不一致</h4>
+                            <p><strong>問題</strong>：不同片段中的專業術語可能翻譯不一致。</p>
+                            <p><strong>解決方案</strong>：</p>
+                            <ul>
+                                <li>建立和維護術語表</li>
+                                <li>實施術語一致性檢查</li>
+                                <li>使用術語提取和標準化</li>
+                                <li>添加術語審校步驟</li>
+                            </ul>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 術語一致性檢查
+return items.map(item => {
+  const segments = item.json.segments || [];
+  const translations = item.json.translations || [];
+  
+  // 提取所有可能的術語對
+  const termPairs = {};
+  
+  // 從每個片段中提取術語對
+  segments.forEach((segment, index) => {
+    const translation = translations[index] || '';
+    
+    // 這裡使用簡化的方法，實際應用可能需要更複雜的術語提取
+    const sourceTerms = segment.match(/\b[A-Z][a-z]*(?:\s+[A-Z][a-z]*)*\b/g) || [];
+    
+    sourceTerms.forEach(term => {
+      if (!termPairs[term]) {
+        termPairs[term] = new Set();
+      }
+      
+      // 嘗試在翻譯中找到對應術語
+      // 這是一個簡化的方法，實際應用需要更準確的術語對齊
+      const termRegex = new RegExp(`\\b[^\\s]{${term.length - 2},${term.length + 2}}\\b`, 'g');
+      const matches = translation.match(termRegex) || [];
+      
+      matches.forEach(match => {
+        termPairs[term].add(match);
+      });
+    });
+  });
+  
+  // 檢查術語一致性
+  const inconsistentTerms = {};
+  
+  Object.entries(termPairs).forEach(([sourceTerm, targetTerms]) => {
+    if (targetTerms.size > 1) {
+      inconsistentTerms[sourceTerm] = Array.from(targetTerms);
+    }
+  });
+  
+  return {
+    json: {
+      ...item.json,
+      termPairs,
+      inconsistentTerms,
+      hasInconsistentTerms: Object.keys(inconsistentTerms).length > 0
+    }
+  };
+});</code></pre>
+                        </section>
+
+                        <section id="conclusion" class="content-section">
+                            <h3>結論</h3>
+                            <p>通過本案例，我們創建了一個完整的自動化工作流，實現了吳恩達三階段沉浸式翻譯方法：</p>
+                            <ul>
+                                <li>自動化處理各種格式的文本輸入</li>
+                                <li>實現直譯、意譯和優化三個翻譯階段</li>
+                                <li>保留原文格式並生成多種輸出版本</li>
+                                <li>提供專業術語處理和一致性檢查</li>
+                                <li>支持批量處理和翻譯記憶庫功能</li>
+                            </ul>
+                            <p>這個自動化解決方案可以顯著提高翻譯效率和質量，特別適合處理專業文獻、學術論文和技術文檔。通過三階段翻譯方法，您可以獲得既準確又流暢的譯文，同時保留原文的全部含義和專業術語的準確性。</p>
+                            <p>您可以根據自己的需求和偏好自定義和擴展這個工作流，添加更多功能和支持更多格式。隨著時間的推移，通過不斷優化和擴展，您可以建立一個強大的翻譯系統，滿足各種翻譯需求。</p>
+                            <p>接下來，您可以探索其他實用案例，或者開始實施這個自動化工作流。</p>
+                            <p><a href="use-case-customer-service-bot.html" class="btn">查看下一個案例：連接 LLM 與知識庫的自動客服機器人</a></p>
+                        </section>
+                    </section>
+                </div>
+
+                <aside class="sidebar">
+                    <div id="search-container">
+                        <h3>搜索</h3>
+                        <input type="text" id="search-input" placeholder="搜索內容...">
+                        <div id="search-results" style="display: none;"></div>
+                    </div>
+                    <div>
+                        <h3>目錄</h3>
+                        <ul>
+                            <li><a href="#immersive-translation">案例概述</a></li>
+                            <li><a href="#use-case-overview">案例概述</a></li>
+                            <li><a href="#workflow-architecture">工作流架構</a></li>
+                            <li><a href="#implementation">實作步驟</a></li>
+                            <li><a href="#advanced-features">進階功能</a></li>
+                            <li><a href="#customization">自定義與擴展</a></li>
+                            <li><a href="#troubleshooting">常見問題與解決方案</a></li>
+                            <li><a href="#conclusion">結論</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>相關頁面</h3>
+                        <ul>
+                            <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                            <li><a href="advanced-tutorial.html">進階教學</a></li>
+                            <li><a href="use-case-social-media.html">案例：社群媒體自動化</a></li>
+                            <li><a href="use-case-customer-service-bot.html">案例：自動客服機器人</a></li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>關於本站</h3>
+                    <p>n8n 自動化工作流學習指南是一個幫助您從零開始學習 n8n 的完整資源，提供從基礎到進階的教學內容和實用案例。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速鏈接</h3>
+                    <ul>
+                        <li><a href="index.html">首頁</a></li>
+                        <li><a href="learning-path.html">學習路徑</a></li>
+                        <li><a href="basic-tutorial.html">基礎教學</a></li>
+                        <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                        <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>相關資源</h3>
+                    <ul>
+                        <li><a href="https://n8n.io/" target="_blank">n8n 官方網站</a></li>
+                        <li><a href="https://docs.n8n.io/" target="_blank">n8n 官方文檔</a></li>
+                        <li><a href="https://community.n8n.io/" target="_blank">n8n 社區論壇</a></li>
+                        <li><a href="https://github.com/n8n-io/n8n" target="_blank">n8n GitHub 倉庫</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 n8n 自動化工作流學習指南 | 本網站內容僅供學習參考</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

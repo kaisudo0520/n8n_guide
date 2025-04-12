@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8n 實用案例：自動發佈新聞到社群媒體 - n8n 自動化工作流學習指南</title>
+    <meta name="description" content="使用 n8n 自動化收集新聞並發佈到社群媒體平台的完整實作指南">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <img src="images/n8n-logo.png" alt="n8n Logo">
+                <h1>n8n 自動化工作流學習指南</h1>
+            </div>
+            <button class="mobile-menu-btn">☰</button>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">首頁</a></li>
+                    <li><a href="learning-path.html">學習路徑</a></li>
+                    <li><a href="basic-tutorial.html">基礎教學</a></li>
+                    <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                    <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    <li><a href="use-cases.html" class="active">實用案例</a></li>
+                    <li><a href="resources.html">資源</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="two-column">
+                <div class="main-content">
+                    <section id="social-media-automation" class="content-section">
+                        <h2>實用案例：自動發佈新聞到社群媒體</h2>
+                        
+                        <p>本案例將指導您如何使用 n8n 創建一個自動化工作流，定期從多個來源收集新聞和文章，進行處理和篩選，然後自動發佈到各種社群媒體平台。這個解決方案特別適合需要保持社群媒體活躍度，但又希望減少手動操作的個人、內容創作者和企業。</p>
+
+                        <section id="use-case-overview" class="content-section">
+                            <h3>案例概述</h3>
+                            <p>在當今數位時代，保持社群媒體的活躍度對於個人品牌和企業來說至關重要。然而，持續手動發佈高質量內容既耗時又費力。本案例將展示如何使用 n8n 自動化整個流程，從內容收集到發佈，讓您能夠專注於更有價值的工作。</p>
+
+                            <h4>主要功能</h4>
+                            <ul>
+                                <li>從多個來源（RSS 訂閱、新聞 API、網站爬蟲）自動收集內容</li>
+                                <li>使用關鍵詞和 AI 篩選相關內容</li>
+                                <li>使用 LLM 生成吸引人的社群媒體貼文</li>
+                                <li>自動發佈到多個社群媒體平台（Twitter/X、Facebook、LinkedIn、Instagram）</li>
+                                <li>根據最佳發佈時間安排貼文</li>
+                                <li>追蹤發佈結果和互動數據</li>
+                            </ul>
+
+                            <h4>技術要求</h4>
+                            <ul>
+                                <li>n8n 實例（自託管或雲端）</li>
+                                <li>各社群媒體平台的開發者帳號和 API 密鑰</li>
+                                <li>（可選）OpenAI API 密鑰用於內容生成和優化</li>
+                                <li>（可選）新聞 API 服務（如 NewsAPI、GDELT）的 API 密鑰</li>
+                            </ul>
+                        </section>
+
+                        <section id="workflow-architecture" class="content-section">
+                            <h3>工作流架構</h3>
+                            <p>我們的自動化工作流將分為四個主要部分：</p>
+
+                            <h4>1. 內容收集</h4>
+                            <p>這部分負責從各種來源收集潛在的內容：</p>
+                            <ul>
+                                <li>RSS 訂閱：從選定的博客、新聞網站和出版物獲取最新文章</li>
+                                <li>新聞 API：使用 NewsAPI、GDELT 等服務獲取特定主題的新聞</li>
+                                <li>網站爬蟲：從不提供 RSS 的特定網站抓取內容</li>
+                                <li>社群媒體監控：追蹤特定主題的熱門討論</li>
+                            </ul>
+
+                            <h4>2. 內容處理與篩選</h4>
+                            <p>這部分處理和篩選收集到的內容：</p>
+                            <ul>
+                                <li>關鍵詞篩選：根據預定義的關鍵詞和主題篩選內容</li>
+                                <li>重複檢測：避免發佈重複內容</li>
+                                <li>內容評分：使用 AI 評估內容相關性和質量</li>
+                                <li>摘要生成：提取或生成內容摘要</li>
+                            </ul>
+
+                            <h4>3. 貼文生成</h4>
+                            <p>這部分為每個平台生成優化的貼文：</p>
+                            <ul>
+                                <li>平台特定格式：根據每個平台的特性調整內容格式</li>
+                                <li>標題優化：使用 AI 生成吸引人的標題</li>
+                                <li>圖片處理：獲取或生成適合的配圖</li>
+                                <li>標籤生成：自動生成相關標籤</li>
+                            </ul>
+
+                            <h4>4. 發佈與監控</h4>
+                            <p>這部分處理內容發佈和結果追蹤：</p>
+                            <ul>
+                                <li>發佈排程：根據最佳時間安排貼文</li>
+                                <li>多平台發佈：同時或依序發佈到多個平台</li>
+                                <li>結果追蹤：收集互動數據（點讚、分享、評論）</li>
+                                <li>報告生成：定期生成效果報告</li>
+                            </ul>
+                        </section>
+
+                        <section id="implementation" class="content-section">
+                            <h3>實作步驟</h3>
+                            <p>讓我們逐步實作這個自動化工作流：</p>
+
+                            <h4>步驟 1：設置內容收集工作流</h4>
+                            <p>首先，我們創建一個定期運行的工作流來收集內容：</p>
+
+                            <h5>1.1 設置 RSS 訂閱</h5>
+                            <pre><code class="language-javascript">// 創建新工作流：Content Collection
+// 添加 Schedule 節點
+// 設置為每 6 小時運行一次
+
+// 添加 RSS Feed 節點
+// 操作：獲取項目
+// URL：https://example-news-site.com/feed
+// 最大項目數：20
+
+// 添加第二個 RSS Feed 節點（可添加多個）
+// 操作：獲取項目
+// URL：https://another-news-site.com/rss
+// 最大項目數：20</code></pre>
+
+                            <h5>1.2 設置新聞 API 收集</h5>
+                            <pre><code class="language-javascript">// 添加 HTTP Request 節點
+// 方法：GET
+// URL：https://newsapi.org/v2/everything
+// 查詢參數：
+// - q: your keywords (e.g., "artificial intelligence" OR "machine learning")
+// - language: zh
+// - sortBy: publishedAt
+// - apiKey: your-api-key
+// - from: {{$today.minus({days: 1}).format()}}
+
+// 添加 Function 節點處理 NewsAPI 響應
+return items.map(item => {
+  // 提取文章
+  const articles = item.json.articles || [];
+  
+  // 將每篇文章轉換為單獨的項目
+  return articles.map(article => ({
+    json: {
+      title: article.title,
+      description: article.description,
+      content: article.content,
+      url: article.url,
+      publishedAt: article.publishedAt,
+      source: article.source.name,
+      imageUrl: article.urlToImage,
+      type: 'news_api'
+    }
+  }));
+}).flat();</code></pre>
+
+                            <h5>1.3 設置網站爬蟲（對於不提供 RSS 的網站）</h5>
+                            <pre><code class="language-javascript">// 添加 HTTP Request 節點
+// 方法：GET
+// URL：https://website-to-scrape.com/news
+
+// 添加 Function 節點處理 HTML
+return items.map(item => {
+  const html = item.json.data || item.json;
+  
+  // 使用正則表達式提取文章
+  // 注意：實際實現可能需要更複雜的 HTML 解析
+  const articleRegex = /<article>([\s\S]*?)<\/article>/g;
+  const titleRegex = /<h2>([\s\S]*?)<\/h2>/;
+  const linkRegex = /<a href="([^"]*)">/;
+  
+  const articles = [];
+  let match;
+  
+  while ((match = articleRegex.exec(html)) !== null) {
+    const articleHtml = match[1];
+    
+    const titleMatch = titleRegex.exec(articleHtml);
+    const linkMatch = linkRegex.exec(articleHtml);
+    
+    if (titleMatch && linkMatch) {
+      articles.push({
+        json: {
+          title: titleMatch[1].trim(),
+          url: linkMatch[1],
+          source: 'Website Scraper',
+          publishedAt: new Date().toISOString(),
+          type: 'scraped'
+        }
+      });
+    }
+  }
+  
+  return articles;
+}).flat();</code></pre>
+
+                            <h5>1.4 合併所有來源</h5>
+                            <pre><code class="language-javascript">// 添加 Merge 節點
+// 模式：合併所有
+
+// 添加 Function 節點標準化數據格式
+return items.map(item => {
+  const data = item.json;
+  
+  // 確保所有必要字段都存在
+  return {
+    json: {
+      title: data.title || '',
+      description: data.description || data.summary || '',
+      content: data.content || data.description || '',
+      url: data.url || data.link || '',
+      publishedAt: data.publishedAt || data.pubDate || new Date().toISOString(),
+      source: data.source || data.feed?.title || 'Unknown',
+      imageUrl: data.imageUrl || data.image?.url || '',
+      type: data.type || 'rss',
+      processed: false,
+      published: false
+    }
+  };
+});</code></pre>
+
+                            <h5>1.5 存儲收集的內容</h5>
+                            <pre><code class="language-javascript">// 添加 PostgreSQL 節點
+// 操作：插入
+// 表：collected_content
+// 選項：跳過重複項
+// 數據：
+// - title: {{$json.title}}
+// - description: {{$json.description}}
+// - content: {{$json.content}}
+// - url: {{$json.url}}
+// - published_at: {{$json.publishedAt}}
+// - source: {{$json.source}}
+// - image_url: {{$json.imageUrl}}
+// - type: {{$json.type}}
+// - processed: {{$json.processed}}
+// - published: {{$json.published}}
+// - collected_at: {{$now}}
+
+// 添加 Slack 節點（可選，用於通知）
+// 操作：發送消息
+// 頻道：#content-collection
+// 消息：收集了 {{$json.insertItems.length}} 個新內容項目</code></pre>
+
+                            <h4>步驟 2：設置內容篩選工作流</h4>
+                            <p>接下來，我們創建一個工作流來處理和篩選收集到的內容：</p>
+
+                            <h5>2.1 獲取未處理的內容</h5>
+                            <pre><code class="language-javascript">// 創建新工作流：Content Filtering
+// 添加 Schedule 節點
+// 設置為每天運行一次
+
+// 添加 PostgreSQL 節點
+// 操作：選擇
+// 表：collected_content
+// 條件：
+// - processed = false
+// 排序：published_at DESC
+// 限制：50</code></pre>
+
+                            <h5>2.2 關鍵詞篩選</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點進行關鍵詞篩選
+// 定義關鍵詞列表
+const keywords = [
+  '人工智能', 'AI', '機器學習', '深度學習', 
+  '自動化', 'n8n', '工作流', 'workflow',
+  '數據科學', '大數據', '雲計算'
+];
+
+// 定義排除詞列表
+const excludeWords = [
+  '廣告', '贊助', '促銷'
+];
+
+return items.filter(item => {
+  const data = item.json;
+  const text = `${data.title} ${data.description} ${data.content}`.toLowerCase();
+  
+  // 檢查是否包含任何關鍵詞
+  const hasKeyword = keywords.some(keyword => 
+    text.includes(keyword.toLowerCase())
+  );
+  
+  // 檢查是否包含任何排除詞
+  const hasExcludeWord = excludeWords.some(word => 
+    text.includes(word.toLowerCase())
+  );
+  
+  // 只保留包含關鍵詞且不包含排除詞的內容
+  return hasKeyword && !hasExcludeWord;
+});</code></pre>
+
+                            <h5>2.3 使用 AI 評估內容相關性</h5>
+                            <pre><code class="language-javascript">// 添加 OpenAI 節點
+// 操作：Chat
+// 模型：gpt-3.5-turbo
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個內容評估助手。你的任務是評估提供的內容與特定主題的相關性和質量。請根據以下標準評分：\n1. 相關性（0-10）：內容與主題的相關程度\n2. 質量（0-10）：內容的深度、準確性和價值\n3. 時效性（0-10）：內容的時效性和新鮮度\n\n請以 JSON 格式返回評分和簡短理由。"
+  },
+  {
+    "role": "user",
+    "content": "主題：人工智能、自動化和工作流\n\n標題：{{$json.title}}\n\n描述：{{$json.description}}\n\n內容：{{$json.content}}"
+  }
+]
+// 溫度：0.3
+// 響應格式：JSON 對象
+// 響應架構：
+{
+  "relevance": {
+    "type": "number",
+    "description": "相關性評分（0-10）"
+  },
+  "quality": {
+    "type": "number",
+    "description": "質量評分（0-10）"
+  },
+  "timeliness": {
+    "type": "number",
+    "description": "時效性評分（0-10）"
+  },
+  "totalScore": {
+    "type": "number",
+    "description": "總評分（0-30）"
+  },
+  "reason": {
+    "type": "string",
+    "description": "評分理由"
+  },
+  "recommendation": {
+    "type": "string",
+    "enum": ["highly_recommended", "recommended", "not_recommended"],
+    "description": "是否推薦發佈"
+  }
+}</code></pre>
+
+                            <h5>2.4 篩選高質量內容</h5>
+                            <pre><code class="language-javascript">// 添加 IF 節點
+// 條件：{{$json.totalScore >= 20 && $json.recommendation !== 'not_recommended'}}
+
+// 添加 Function 節點（True 分支）
+// 處理通過篩選的內容
+return items.map(item => {
+  return {
+    json: {
+      ...item.json,
+      aiScore: item.json.totalScore,
+      aiRecommendation: item.json.recommendation,
+      aiReason: item.json.reason,
+      passedFiltering: true
+    }
+  };
+});
+
+// 添加 Function 節點（False 分支）
+// 處理未通過篩選的內容
+return items.map(item => {
+  return {
+    json: {
+      ...item.json,
+      aiScore: item.json.totalScore,
+      aiRecommendation: item.json.recommendation,
+      aiReason: item.json.reason,
+      passedFiltering: false
+    }
+  };
+});</code></pre>
+
+                            <h5>2.5 更新數據庫</h5>
+                            <pre><code class="language-javascript">// 添加 Merge 節點
+// 模式：合併所有
+
+// 添加 PostgreSQL 節點
+// 操作：更新
+// 表：collected_content
+// 條件：
+// - id = {{$json.id}}
+// 數據：
+// - processed = true
+// - ai_score = {{$json.aiScore}}
+// - ai_recommendation = {{$json.aiRecommendation}}
+// - ai_reason = {{$json.aiReason}}
+// - passed_filtering = {{$json.passedFiltering}}
+// - processed_at = {{$now}}</code></pre>
+
+                            <h4>步驟 3：設置貼文生成工作流</h4>
+                            <p>現在，我們創建一個工作流來為篩選後的內容生成社群媒體貼文：</p>
+
+                            <h5>3.1 獲取通過篩選的內容</h5>
+                            <pre><code class="language-javascript">// 創建新工作流：Post Generation
+// 添加 Schedule 節點
+// 設置為每天運行一次
+
+// 添加 PostgreSQL 節點
+// 操作：選擇
+// 表：collected_content
+// 條件：
+// - processed = true
+// - passed_filtering = true
+// - post_generated = false
+// 排序：ai_score DESC
+// 限制：10</code></pre>
+
+                            <h5>3.2 獲取內容圖片</h5>
+                            <pre><code class="language-javascript">// 添加 IF 節點
+// 條件：{{!!$json.image_url}}
+
+// 添加 HTTP Request 節點（True 分支）
+// 方法：GET
+// URL：{{$json.image_url}}
+// 響應格式：File
+// 二進制屬性：image
+
+// 添加 HTTP Request 節點（False 分支）
+// 方法：GET
+// URL：https://api.unsplash.com/photos/random
+// 查詢參數：
+// - query: {{$json.title.split(' ').slice(0, 3).join(' ')}}
+// - client_id: your-unsplash-api-key
+// 請求頭：
+// - Accept-Version: v1
+
+// 添加 Function 節點（False 分支）
+// 處理 Unsplash 響應
+return items.map(item => {
+  const imageUrl = item.json.urls?.regular || 
+                  'https://via.placeholder.com/800x600?text=No+Image';
+  
+  return {
+    json: {
+      ...item.json,
+      image_url: imageUrl
+    }
+  };
+});
+
+// 添加 HTTP Request 節點（False 分支）
+// 方法：GET
+// URL：{{$json.image_url}}
+// 響應格式：File
+// 二進制屬性：image</code></pre>
+
+                            <h5>3.3 使用 AI 生成社群媒體貼文</h5>
+                            <pre><code class="language-javascript">// 添加 Merge 節點
+// 模式：合併所有
+
+// 添加 OpenAI 節點
+// 操作：Chat
+// 模型：gpt-4
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個社群媒體內容專家。你的任務是為提供的文章生成引人入勝的社群媒體貼文，針對不同平台進行優化。請確保貼文簡潔、吸引人，並包含相關標籤。"
+  },
+  {
+    "role": "user",
+    "content": "請為以下文章生成社群媒體貼文：\n\n標題：{{$json.title}}\n\n描述：{{$json.description}}\n\n來源：{{$json.source}}\n\n請為以下平台生成貼文：\n1. Twitter/X（最多 280 字元）\n2. Facebook（100-250 字）\n3. LinkedIn（專業語調，200-300 字）\n4. Instagram（輕鬆語調，包含 5-8 個相關標籤）\n\n每個平台的貼文都應包含文章的 URL：{{$json.url}}"
+  }
+]
+// 溫度：0.7
+// 響應格式：JSON 對象
+// 響應架構：
+{
+  "twitter": {
+    "type": "string",
+    "description": "Twitter/X 貼文內容"
+  },
+  "facebook": {
+    "type": "string",
+    "description": "Facebook 貼文內容"
+  },
+  "linkedin": {
+    "type": "string",
+    "description": "LinkedIn 貼文內容"
+  },
+  "instagram": {
+    "type": "string",
+    "description": "Instagram 貼文內容"
+  },
+  "hashtags": {
+    "type": "array",
+    "items": {
+      "type": "string"
+    },
+    "description": "相關標籤列表"
+  }
+}</code></pre>
+
+                            <h5>3.4 更新數據庫</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 處理生成的貼文
+return items.map(item => {
+  return {
+    json: {
+      ...item.json,
+      twitter_post: item.json.twitter,
+      facebook_post: item.json.facebook,
+      linkedin_post: item.json.linkedin,
+      instagram_post: item.json.instagram,
+      hashtags: item.json.hashtags.join(','),
+      post_generated: true,
+      post_generated_at: new Date().toISOString()
+    }
+  };
+});
+
+// 添加 PostgreSQL 節點
+// 操作：更新
+// 表：collected_content
+// 條件：
+// - id = {{$json.id}}
+// 數據：
+// - twitter_post = {{$json.twitter_post}}
+// - facebook_post = {{$json.facebook_post}}
+// - linkedin_post = {{$json.linkedin_post}}
+// - instagram_post = {{$json.instagram_post}}
+// - hashtags = {{$json.hashtags}}
+// - post_generated = true
+// - post_generated_at = {{$json.post_generated_at}}</code></pre>
+
+                            <h4>步驟 4：設置社群媒體發佈工作流</h4>
+                            <p>最後，我們創建一個工作流來發佈生成的貼文：</p>
+
+                            <h5>4.1 獲取待發佈的內容</h5>
+                            <pre><code class="language-javascript">// 創建新工作流：Social Media Publishing
+// 添加 Schedule 節點
+// 設置為每天運行三次（例如 9:00, 13:00, 17:00）
+
+// 添加 PostgreSQL 節點
+// 操作：選擇
+// 表：collected_content
+// 條件：
+// - post_generated = true
+// - published = false
+// 排序：ai_score DESC
+// 限制：3 // 每次運行發佈 3 篇</code></pre>
+
+                            <h5>4.2 發佈到 Twitter/X</h5>
+                            <pre><code class="language-javascript">// 添加 Twitter 節點
+// 操作：創建推文
+// 內容：{{$json.twitter_post}}
+// 媒體：{{$binary.image}}</code></pre>
+
+                            <h5>4.3 發佈到 Facebook</h5>
+                            <pre><code class="language-javascript">// 添加 Facebook 節點
+// 操作：創建貼文
+// 頁面 ID：your-page-id
+// 內容：{{$json.facebook_post}}
+// 媒體：{{$binary.image}}</code></pre>
+
+                            <h5>4.4 發佈到 LinkedIn</h5>
+                            <pre><code class="language-javascript">// 添加 LinkedIn 節點
+// 操作：創建貼文
+// 個人資料/頁面：選擇目標
+// 內容：{{$json.linkedin_post}}
+// 媒體：{{$binary.image}}</code></pre>
+
+                            <h5>4.5 發佈到 Instagram</h5>
+                            <pre><code class="language-javascript">// 添加 HTTP Request 節點（Instagram API）
+// 方法：POST
+// URL：https://graph.facebook.com/v17.0/{{your-instagram-account-id}}/media
+// 請求格式：Form-Data
+// 請求數據：
+// - caption: {{$json.instagram_post}}
+// - image_url: {{$json.image_url}}
+// - access_token: {{$json.instagram_access_token}}
+
+// 添加 Function 節點
+// 處理 Instagram 響應
+return items.map(item => {
+  return {
+    json: {
+      ...item.json,
+      instagram_media_id: item.json.id
+    }
+  };
+});
+
+// 添加 HTTP Request 節點（發佈 Instagram 媒體）
+// 方法：POST
+// URL：https://graph.facebook.com/v17.0/{{your-instagram-account-id}}/media_publish
+// 請求格式：Form-Data
+// 請求數據：
+// - creation_id: {{$json.instagram_media_id}}
+// - access_token: {{$json.instagram_access_token}}</code></pre>
+
+                            <h5>4.6 更新發佈狀態</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 處理發佈結果
+return items.map(item => {
+  return {
+    json: {
+      ...item.json,
+      published: true,
+      published_at: new Date().toISOString(),
+      twitter_post_id: item.json.twitter?.id_str,
+      facebook_post_id: item.json.facebook?.id,
+      linkedin_post_id: item.json.linkedin?.id,
+      instagram_post_id: item.json.instagram?.id
+    }
+  };
+});
+
+// 添加 PostgreSQL 節點
+// 操作：更新
+// 表：collected_content
+// 條件：
+// - id = {{$json.id}}
+// 數據：
+// - published = true
+// - published_at = {{$json.published_at}}
+// - twitter_post_id = {{$json.twitter_post_id}}
+// - facebook_post_id = {{$json.facebook_post_id}}
+// - linkedin_post_id = {{$json.linkedin_post_id}}
+// - instagram_post_id = {{$json.instagram_post_id}}</code></pre>
+
+                            <h5>4.7 發送報告通知</h5>
+                            <pre><code class="language-javascript">// 添加 Function 節點
+// 生成報告摘要
+return [
+  {
+    json: {
+      summary: `已發佈 ${items.length} 篇內容到社群媒體`,
+      publishedItems: items.map(item => ({
+        title: item.json.title,
+        url: item.json.url,
+        platforms: [
+          item.json.twitter_post_id ? 'Twitter/X' : null,
+          item.json.facebook_post_id ? 'Facebook' : null,
+          item.json.linkedin_post_id ? 'LinkedIn' : null,
+          item.json.instagram_post_id ? 'Instagram' : null
+        ].filter(Boolean)
+      }))
+    }
+  }
+];
+
+// 添加 Slack 節點
+// 操作：發送消息
+// 頻道：#social-media-updates
+// 消息：
+/*
+:rocket: *社群媒體發佈報告*
+
+{{$json.summary}}
+
+發佈的內容：
+{{#each $json.publishedItems}}
+- *{{this.title}}*
+  平台: {{this.platforms.join(', ')}}
+  原始連結: {{this.url}}
+{{/each}}
+*/</code></pre>
+                        </section>
+
+                        <section id="advanced-features" class="content-section">
+                            <h3>進階功能</h3>
+                            <p>以下是一些可以添加到基本工作流的進階功能：</p>
+
+                            <h4>1. 內容性能分析</h4>
+                            <p>創建一個工作流來收集和分析已發佈內容的性能數據：</p>
+                            <pre><code class="language-javascript">// 創建新工作流：Performance Analysis
+// 添加 Schedule 節點
+// 設置為每週運行一次
+
+// 添加 PostgreSQL 節點
+// 操作：選擇
+// 表：collected_content
+// 條件：
+// - published = true
+// - published_at > {{$today.minus({days: 7}).format()}}
+
+// 添加 Function 節點
+// 準備社群媒體 API 請求
+return items.map(item => {
+  return {
+    json: {
+      ...item.json,
+      platformIds: {
+        twitter: item.json.twitter_post_id,
+        facebook: item.json.facebook_post_id,
+        linkedin: item.json.linkedin_post_id,
+        instagram: item.json.instagram_post_id
+      }
+    }
+  };
+});
+
+// 添加多個 HTTP Request 節點
+// 獲取各平台的互動數據
+
+// 添加 Function 節點
+// 合併和分析數據
+return items.map(item => {
+  // 計算總互動數
+  const totalEngagement = 
+    (item.json.twitter_stats?.likes || 0) + 
+    (item.json.twitter_stats?.retweets || 0) +
+    (item.json.facebook_stats?.likes || 0) + 
+    (item.json.facebook_stats?.shares || 0) +
+    (item.json.linkedin_stats?.likes || 0) + 
+    (item.json.linkedin_stats?.shares || 0) +
+    (item.json.instagram_stats?.likes || 0) + 
+    (item.json.instagram_stats?.comments || 0);
+  
+  return {
+    json: {
+      ...item.json,
+      total_engagement: totalEngagement,
+      engagement_rate: totalEngagement / item.json.total_followers * 100,
+      best_platform: getBestPlatform(item.json)
+    }
+  };
+});
+
+// 添加 Google Sheets 節點
+// 操作：添加行
+// 工作表 ID：your-sheet-id
+// 工作表名稱：Performance Data
+// 數據：多個字段映射</code></pre>
+
+                            <h4>2. 內容策略優化</h4>
+                            <p>使用收集的性能數據來優化內容策略：</p>
+                            <pre><code class="language-javascript">// 創建新工作流：Strategy Optimization
+// 添加 Schedule 節點
+// 設置為每月運行一次
+
+// 添加 Google Sheets 節點
+// 操作：讀取行
+// 工作表 ID：your-sheet-id
+// 工作表名稱：Performance Data
+// 範圍：A:Z
+
+// 添加 Function 節點
+// 分析性能數據
+return [
+  {
+    json: {
+      topPerformingContent: getTopContent(items),
+      bestPublishingTimes: analyzePublishingTimes(items),
+      bestPlatforms: analyzePlatformPerformance(items),
+      topKeywords: analyzeKeywords(items),
+      recommendedStrategy: generateRecommendations(items)
+    }
+  }
+];
+
+// 添加 OpenAI 節點
+// 操作：Chat
+// 模型：gpt-4
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個社群媒體策略專家。你的任務是分析內容性能數據，並提供策略優化建議。"
+  },
+  {
+    "role": "user",
+    "content": "請根據以下性能數據分析，提供詳細的社群媒體策略優化建議：\n\n表現最佳的內容：\n{{$json.topPerformingContent}}\n\n最佳發佈時間：\n{{$json.bestPublishingTimes}}\n\n平台表現：\n{{$json.bestPlatforms}}\n\n熱門關鍵詞：\n{{$json.topKeywords}}"
+  }
+]
+
+// 添加 Send Email 節點
+// 收件人：your-email@example.com
+// 主題：月度社群媒體策略報告
+// 內容：包含 AI 生成的策略建議</code></pre>
+
+                            <h4>3. 自適應內容篩選</h4>
+                            <p>根據歷史性能數據自動調整內容篩選標準：</p>
+                            <pre><code class="language-javascript">// 修改 Content Filtering 工作流
+// 添加 PostgreSQL 節點
+// 操作：選擇
+// 表：collected_content
+// 條件：
+// - published = true
+// - published_at > {{$today.minus({days: 30}).format()}}
+// 排序：total_engagement DESC
+// 限制：50
+
+// 添加 Function 節點
+// 分析高互動內容的特徵
+return [
+  {
+    json: {
+      highEngagementKeywords: extractKeywords(items),
+      highEngagementSources: extractSources(items),
+      highEngagementTopics: extractTopics(items)
+    }
+  }
+];
+
+// 修改關鍵詞篩選 Function 節點
+// 使用從高互動內容中提取的關鍵詞
+const dynamicKeywords = $workflow.variables.highEngagementKeywords || [];
+const staticKeywords = [
+  '人工智能', 'AI', '機器學習', '深度學習', 
+  '自動化', 'n8n', '工作流', 'workflow'
+];
+
+// 合併關鍵詞列表，優先使用動態關鍵詞
+const keywords = [...new Set([...dynamicKeywords, ...staticKeywords])];
+
+// 其餘篩選邏輯保持不變</code></pre>
+
+                            <h4>4. 互動回應自動化</h4>
+                            <p>自動回應社群媒體上的評論和提問：</p>
+                            <pre><code class="language-javascript">// 創建新工作流：Engagement Response
+// 添加 Schedule 節點
+// 設置為每 4 小時運行一次
+
+// 添加 Twitter 節點
+// 操作：獲取提及
+// 自上次檢查以來
+
+// 添加 Function 節點
+// 過濾需要回應的提及
+return items.filter(item => {
+  const tweet = item.json;
+  
+  // 檢查是否是問題或需要回應的評論
+  return tweet.text.includes('?') || 
+         tweet.text.toLowerCase().includes('how') ||
+         tweet.text.toLowerCase().includes('what') ||
+         tweet.text.toLowerCase().includes('when') ||
+         tweet.text.toLowerCase().includes('where') ||
+         tweet.text.toLowerCase().includes('why');
+});
+
+// 添加 OpenAI 節點
+// 操作：Chat
+// 模型：gpt-3.5-turbo
+// 消息：
+[
+  {
+    "role": "system",
+    "content": "你是一個友善、專業的社群媒體管理員。你的任務是回應用戶的問題和評論。保持回應簡短、有幫助且友善。"
+  },
+  {
+    "role": "user",
+    "content": "請回應以下推文：\n\n用戶：@{{$json.user.screen_name}}\n推文：{{$json.text}}"
+  }
+]
+// 溫度：0.7
+// 最大令牌：100
+
+// 添加 Twitter 節點
+// 操作：創建推文
+// 內容：@{{$json.user.screen_name}} {{$json.choices[0].message.content}}
+// 回覆 ID：{{$json.id_str}}</code></pre>
+                        </section>
+
+                        <section id="customization" class="content-section">
+                            <h3>自定義與擴展</h3>
+                            <p>以下是一些自定義和擴展工作流的建議：</p>
+
+                            <h4>1. 針對特定行業或主題調整</h4>
+                            <p>根據您的特定行業或興趣調整工作流：</p>
+                            <ul>
+                                <li><strong>自定義關鍵詞</strong>：更新關鍵詞列表以匹配您的行業或主題</li>
+                                <li><strong>特定來源</strong>：添加與您的行業相關的特定 RSS 訂閱和網站</li>
+                                <li><strong>內容評估標準</strong>：調整 AI 評估提示以反映您的內容標準</li>
+                                <li><strong>平台選擇</strong>：根據您的目標受眾選擇最相關的社群媒體平台</li>
+                            </ul>
+
+                            <h4>2. 添加更多內容來源</h4>
+                            <p>擴展內容收集範圍：</p>
+                            <ul>
+                                <li><strong>YouTube</strong>：從相關頻道獲取視頻內容</li>
+                                <li><strong>Podcast</strong>：從播客 RSS 訂閱獲取內容</li>
+                                <li><strong>Reddit</strong>：從相關子版塊獲取熱門討論</li>
+                                <li><strong>學術論文</strong>：從學術資料庫獲取最新研究</li>
+                                <li><strong>產品發布</strong>：從產品發布平台獲取最新產品信息</li>
+                            </ul>
+
+                            <h4>3. 整合其他平台</h4>
+                            <p>擴展到更多社群媒體和內容平台：</p>
+                            <ul>
+                                <li><strong>Medium</strong>：發佈完整文章到 Medium</li>
+                                <li><strong>Pinterest</strong>：創建和發佈圖片內容</li>
+                                <li><strong>TikTok</strong>：生成短視頻腳本和內容</li>
+                                <li><strong>Discord</strong>：在相關社區分享內容</li>
+                                <li><strong>Telegram 頻道</strong>：發佈到 Telegram 頻道</li>
+                            </ul>
+
+                            <h4>4. 添加內容轉換</h4>
+                            <p>將一種內容格式轉換為另一種：</p>
+                            <ul>
+                                <li><strong>文章到視頻腳本</strong>：將文章轉換為視頻腳本</li>
+                                <li><strong>文章到播客腳本</strong>：將文章轉換為播客腳本</li>
+                                <li><strong>長文到推文線程</strong>：將長文章拆分為推文線程</li>
+                                <li><strong>文章到信息圖表</strong>：提取關鍵點生成信息圖表</li>
+                                <li><strong>多語言翻譯</strong>：將內容翻譯成多種語言</li>
+                            </ul>
+                        </section>
+
+                        <section id="troubleshooting" class="content-section">
+                            <h3>常見問題與解決方案</h3>
+                            <p>實施過程中可能遇到的常見問題及其解決方案：</p>
+
+                            <h4>1. API 限制和速率限制</h4>
+                            <p><strong>問題</strong>：社群媒體平台的 API 限制可能導致發佈失敗。</p>
+                            <p><strong>解決方案</strong>：</p>
+                            <ul>
+                                <li>實施指數退避重試機制</li>
+                                <li>使用多個 API 密鑰輪換使用</li>
+                                <li>分散發佈時間，避免短時間內大量請求</li>
+                                <li>監控 API 使用情況，在接近限制時暫停操作</li>
+                            </ul>
+                            <pre><code class="language-javascript">// 添加 Function 節點實現重試機制
+async function makeRequestWithRetry(url, options, maxRetries = 3, delay = 1000) {
+  let lastError;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+      
+      if (!response.ok) {
+        // 檢查是否是速率限制錯誤
+        if (response.status === 429) {
+          const retryAfter = parseInt(response.headers.get('Retry-After') || '60');
+          console.log(`Rate limited. Waiting ${retryAfter} seconds...`);
+          await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+          continue;
+        }
+        
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error(`Attempt ${attempt} failed: ${error.message}`);
+      lastError = error;
+      
+      // 如果還有重試次數，等待後重試
+      if (attempt < maxRetries) {
+        console.log(`Waiting ${delay}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        
+        // 指數退避策略
+        delay *= 2;
+      }
+    }
+  }
+  
+  throw new Error(`Failed after ${maxRetries} attempts: ${lastError.message}`);
+}</code></pre>
+
+                            <h4>2. 內容質量問題</h4>
+                            <p><strong>問題</strong>：自動生成的貼文可能質量不一致。</p>
+                            <p><strong>解決方案</strong>：</p>
+                            <ul>
+                                <li>使用更高級的 LLM 模型（如 GPT-4）</li>
+                                <li>提供更詳細的提示和示例</li>
+                                <li>實施人工審核步驟</li>
+                                <li>分析高性能貼文的特徵並調整生成策略</li>
+                            </ul>
+                            <pre><code class="language-javascript">// 添加人工審核步驟
+// 修改 Post Generation 工作流
+
+// 添加 Slack 節點
+// 操作：發送消息
+// 頻道：#content-review
+// 消息：
+/*
+:memo: *需要審核的社群媒體貼文*
+
+原始文章：[{{$json.title}}]({{$json.url}})
+
+Twitter 貼文：
+```
+{{$json.twitter_post}}
+```
+
+Facebook 貼文：
+```
+{{$json.facebook_post}}
+```
+
+LinkedIn 貼文：
+```
+{{$json.linkedin_post}}
+```
+
+Instagram 貼文：
+```
+{{$json.instagram_post}}
+```
+
+請使用以下工作流觸發器審核：
+- 批准：workflow_trigger/approve_post?id={{$json.id}}
+- 拒絕：workflow_trigger/reject_post?id={{$json.id}}
+- 編輯：workflow_trigger/edit_post?id={{$json.id}}&platform=twitter|facebook|linkedin|instagram
+*/
+
+// 添加 Webhook 節點
+// 方法：GET
+// 路徑：/workflow_trigger/approve_post
+// 響應模式：等待
+
+// 添加 PostgreSQL 節點
+// 操作：更新
+// 表：collected_content
+// 條件：
+// - id = {{$json.query.id}}
+// 數據：
+// - approved = true
+// - approved_at = {{$now}}
+// - approved_by = 'human_reviewer'</code></pre>
+
+                            <h4>3. 重複內容問題</h4>
+                            <p><strong>問題</strong>：可能會收集和發佈重複內容。</p>
+                            <p><strong>解決方案</strong>：</p>
+                            <ul>
+                                <li>實施更強大的重複檢測機制</li>
+                                <li>使用內容指紋或哈希值</li>
+                                <li>跟踪已處理的 URL</li>
+                                <li>使用文本相似度算法檢測相似內容</li>
+                            </ul>
+                            <pre><code class="language-javascript">// 添加 Function 節點進行重複檢測
+// 修改 Content Collection 工作流
+
+// 添加 Function 節點
+function generateContentFingerprint(content) {
+  // 提取關鍵詞和短語
+  const text = `${content.title} ${content.description}`.toLowerCase();
+  const words = text.split(/\W+/).filter(word => word.length > 3);
+  
+  // 排序並連接以創建指紋
+  return words.sort().join('|');
+}
+
+return items.map(item => {
+  const data = item.json;
+  
+  // 生成內容指紋
+  const fingerprint = generateContentFingerprint({
+    title: data.title || '',
+    description: data.description || ''
+  });
+  
+  return {
+    json: {
+      ...data,
+      content_fingerprint: fingerprint
+    }
+  };
+});
+
+// 修改 PostgreSQL 節點
+// 操作：插入
+// 表：collected_content
+// 選項：跳過重複項
+// 數據：
+// - 添加 content_fingerprint 字段
+// 衝突檢測：
+// - url
+// - content_fingerprint</code></pre>
+
+                            <h4>4. 圖片和媒體問題</h4>
+                            <p><strong>問題</strong>：獲取和處理圖片可能會失敗。</p>
+                            <p><strong>解決方案</strong>：</p>
+                            <ul>
+                                <li>實施備用圖片來源</li>
+                                <li>使用圖片生成 API 創建相關圖片</li>
+                                <li>建立圖片庫作為備用</li>
+                                <li>添加圖片處理和優化步驟</li>
+                            </ul>
+                            <pre><code class="language-javascript">// 修改圖片獲取邏輯
+// 修改 Post Generation 工作流
+
+// 添加 Function 節點
+return items.map(item => {
+  const data = item.json;
+  
+  // 定義多個可能的圖片來源
+  const possibleImageSources = [
+    data.image_url,
+    data.source_image_url,
+    `https://api.screenshotmachine.com?key=your-key&url=${encodeURIComponent(data.url)}&dimension=1200x630`,
+    `https://picsum.photos/seed/${encodeURIComponent(data.title)}/1200/630`,
+    'https://via.placeholder.com/1200x630?text=Default+Image'
+  ].filter(Boolean);
+  
+  return {
+    json: {
+      ...data,
+      image_sources: possibleImageSources
+    }
+  };
+});
+
+// 添加 Loop 節點
+// 輸入：image_sources
+// 輸出：成功獲取的圖片</code></pre>
+                        </section>
+
+                        <section id="conclusion" class="content-section">
+                            <h3>結論</h3>
+                            <p>通過本案例，我們創建了一個完整的自動化工作流，可以：</p>
+                            <ul>
+                                <li>從多個來源自動收集相關內容</li>
+                                <li>使用關鍵詞和 AI 篩選高質量內容</li>
+                                <li>為不同社群媒體平台生成優化的貼文</li>
+                                <li>自動發佈到多個社群媒體平台</li>
+                                <li>追蹤發佈結果和互動數據</li>
+                            </ul>
+                            <p>這個自動化解決方案可以顯著節省時間，保持社群媒體的活躍度，並確保發佈的內容與您的目標受眾相關。您可以根據自己的需求和偏好自定義和擴展這個工作流。</p>
+                            <p>隨著時間的推移，通過分析性能數據和調整策略，您可以不斷優化工作流，提高社群媒體的參與度和影響力。</p>
+                            <p>接下來，您可以探索其他實用案例，或者開始實施這個自動化工作流。</p>
+                            <p><a href="use-case-immersive-translation.html" class="btn">查看下一個案例：吳恩達三階段沉浸式翻譯實作</a></p>
+                        </section>
+                    </section>
+                </div>
+
+                <aside class="sidebar">
+                    <div id="search-container">
+                        <h3>搜索</h3>
+                        <input type="text" id="search-input" placeholder="搜索內容...">
+                        <div id="search-results" style="display: none;"></div>
+                    </div>
+                    <div>
+                        <h3>目錄</h3>
+                        <ul>
+                            <li><a href="#social-media-automation">案例概述</a></li>
+                            <li><a href="#use-case-overview">案例概述</a></li>
+                            <li><a href="#workflow-architecture">工作流架構</a></li>
+                            <li><a href="#implementation">實作步驟</a></li>
+                            <li><a href="#advanced-features">進階功能</a></li>
+                            <li><a href="#customization">自定義與擴展</a></li>
+                            <li><a href="#troubleshooting">常見問題與解決方案</a></li>
+                            <li><a href="#conclusion">結論</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>相關頁面</h3>
+                        <ul>
+                            <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                            <li><a href="advanced-tutorial.html">進階教學</a></li>
+                            <li><a href="use-case-immersive-translation.html">案例：沉浸式翻譯</a></li>
+                            <li><a href="use-case-customer-service-bot.html">案例：自動客服機器人</a></li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>關於本站</h3>
+                    <p>n8n 自動化工作流學習指南是一個幫助您從零開始學習 n8n 的完整資源，提供從基礎到進階的教學內容和實用案例。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速鏈接</h3>
+                    <ul>
+                        <li><a href="index.html">首頁</a></li>
+                        <li><a href="learning-path.html">學習路徑</a></li>
+                        <li><a href="basic-tutorial.html">基礎教學</a></li>
+                        <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                        <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>相關資源</h3>
+                    <ul>
+                        <li><a href="https://n8n.io/" target="_blank">n8n 官方網站</a></li>
+                        <li><a href="https://docs.n8n.io/" target="_blank">n8n 官方文檔</a></li>
+                        <li><a href="https://community.n8n.io/" target="_blank">n8n 社區論壇</a></li>
+                        <li><a href="https://github.com/n8n-io/n8n" target="_blank">n8n GitHub 倉庫</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 n8n 自動化工作流學習指南 | 本網站內容僅供學習參考</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

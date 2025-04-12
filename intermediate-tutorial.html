@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8n 中級教學：進階工作流與整合 - n8n 自動化工作流學習指南</title>
+    <meta name="description" content="n8n 中級教學，深入探討進階功能、數據處理和外部服務整合">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <img src="images/n8n-logo.png" alt="n8n Logo">
+                <h1>n8n 自動化工作流學習指南</h1>
+            </div>
+            <button class="mobile-menu-btn">☰</button>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">首頁</a></li>
+                    <li><a href="learning-path.html">學習路徑</a></li>
+                    <li><a href="basic-tutorial.html">基礎教學</a></li>
+                    <li><a href="intermediate-tutorial.html" class="active">中級教學</a></li>
+                    <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    <li><a href="use-cases.html">實用案例</a></li>
+                    <li><a href="resources.html">資源</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="two-column">
+                <div class="main-content">
+                    <section id="intermediate-tutorial" class="content-section">
+                        <h2>n8n 中級教學：進階工作流與整合</h2>
+                        
+                        <p>本教學將深入探討 n8n 的進階功能和更複雜的工作流設計。適合已經掌握 n8n 基礎知識，希望進一步提升自動化能力的用戶。通過本教學，您將學習如何創建更強大、更靈活的自動化工作流，處理複雜數據，並與各種外部服務進行整合。</p>
+
+                        <section id="advanced-workflow-design" class="content-section">
+                            <h3>進階工作流設計</h3>
+                            <p>在基礎教學中，我們學習了如何創建簡單的線性工作流。現在，讓我們探索更複雜的工作流設計技巧。</p>
+
+                            <h4>分支與條件執行</h4>
+                            <p>在實際應用中，我們經常需要根據不同條件執行不同的操作。n8n 提供了兩種主要的分支節點：</p>
+                            
+                            <h5>IF 節點</h5>
+                            <p>IF 節點允許您基於條件將工作流分為兩個分支：</p>
+                            <ul>
+                                <li><strong>條件設置</strong>：支持多種比較運算符和邏輯運算符</li>
+                                <li><strong>True/False 分支</strong>：條件滿足時執行 True 分支，否則執行 False 分支</li>
+                                <li><strong>多條件組合</strong>：使用 AND/OR 組合多個條件</li>
+                            </ul>
+                            <p>示例：根據天氣情況發送不同的通知</p>
+                            <pre><code class="language-javascript">// IF 節點條件設置
+// 檢查溫度是否高於 30 度
+return $input.item.json.temperature > 30;</code></pre>
+
+                            <h5>Switch 節點</h5>
+                            <p>當需要多個分支時，Switch 節點比多個 IF 節點更適合：</p>
+                            <ul>
+                                <li><strong>多分支支持</strong>：可以設置多個條件和對應的分支</li>
+                                <li><strong>默認分支</strong>：當所有條件都不滿足時執行</li>
+                                <li><strong>靈活的條件表達式</strong>：支持複雜的 JavaScript 表達式</li>
+                            </ul>
+                            <p>示例：根據用戶類型執行不同操作</p>
+                            <pre><code class="language-javascript">// Switch 節點條件設置
+// 根據用戶類型分類
+switch ($input.item.json.userType) {
+  case 'admin':
+    return 'admin';
+  case 'manager':
+    return 'manager';
+  case 'regular':
+    return 'regular';
+  default:
+    return 'guest';
+}</code></pre>
+
+                            <h4>循環與批處理</h4>
+                            <p>處理大量數據時，循環和批處理是必不可少的技術。n8n 提供了多種方式來處理數據集合：</p>
+                            
+                            <h5>Split In Batches 節點</h5>
+                            <p>將大型數據集分割為較小的批次進行處理：</p>
+                            <ul>
+                                <li><strong>批次大小</strong>：控制每批處理的項目數量</li>
+                                <li><strong>並行處理</strong>：提高處理效率</li>
+                                <li><strong>減輕負載</strong>：避免 API 限制和超時</li>
+                            </ul>
+                            <p>示例：批量處理用戶數據</p>
+                            <pre><code class="language-javascript">// Split In Batches 節點設置
+// 批次大小：50
+// 輸入字段：users
+// 選項：並行處理</code></pre>
+
+                            <h5>Loop Over Items 節點</h5>
+                            <p>對每個項目執行相同的操作序列：</p>
+                            <ul>
+                                <li><strong>項目迭代</strong>：逐個處理每個項目</li>
+                                <li><strong>子工作流</strong>：為每個項目執行一系列操作</li>
+                                <li><strong>結果合併</strong>：將所有處理結果合併</li>
+                            </ul>
+                            <p>示例：為每個產品生成詳細報告</p>
+                            <pre><code class="language-javascript">// Loop 節點後的 Function 節點
+// 處理每個產品
+return items.map(item => {
+  const product = item.json;
+  
+  // 生成詳細報告
+  const report = {
+    id: product.id,
+    name: product.name,
+    salesAnalysis: analyzeSales(product.sales),
+    performanceMetrics: calculateMetrics(product),
+    recommendations: generateRecommendations(product)
+  };
+  
+  return { json: report };
+});</code></pre>
+
+                            <h4>子工作流和工作流組織</h4>
+                            <p>隨著工作流變得複雜，良好的組織結構變得至關重要：</p>
+                            
+                            <h5>Execute Workflow 節點</h5>
+                            <p>允許從一個工作流調用另一個工作流：</p>
+                            <ul>
+                                <li><strong>模塊化設計</strong>：將複雜工作流拆分為可重用的組件</li>
+                                <li><strong>參數傳遞</strong>：向子工作流傳遞數據</li>
+                                <li><strong>結果處理</strong>：獲取和處理子工作流的結果</li>
+                            </ul>
+                            <p>示例：主工作流調用數據處理子工作流</p>
+                            <pre><code class="language-javascript">// Execute Workflow 節點設置
+// 工作流：數據處理工作流
+// 傳遞數據：$input.item.json.data</code></pre>
+
+                            <h5>工作流變量和環境變量</h5>
+                            <p>使用變量提高工作流的靈活性和可維護性：</p>
+                            <ul>
+                                <li><strong>工作流變量</strong>：在工作流內共享數據</li>
+                                <li><strong>環境變量</strong>：跨工作流共享配置</li>
+                                <li><strong>變量引用</strong>：使用表達式引用變量</li>
+                            </ul>
+                            <p>示例：設置和使用工作流變量</p>
+                            <pre><code class="language-javascript">// 設置工作流變量
+$workflow.variables.apiKey = 'your-api-key';
+$workflow.variables.baseUrl = 'https://api.example.com';
+
+// 使用工作流變量
+const url = $workflow.variables.baseUrl + '/endpoint';
+const headers = {
+  'Authorization': `Bearer ${$workflow.variables.apiKey}`
+};</code></pre>
+                        </section>
+
+                        <section id="data-processing" class="content-section">
+                            <h3>數據處理與轉換</h3>
+                            <p>數據處理是自動化工作流的核心。n8n 提供了強大的工具來處理和轉換各種格式的數據。</p>
+
+                            <h4>Function 節點進階用法</h4>
+                            <p>Function 節點是 n8n 中最靈活的節點之一，可以執行任意 JavaScript 代碼：</p>
+                            
+                            <h5>複雜數據轉換</h5>
+                            <p>使用 JavaScript 進行高級數據轉換：</p>
+                            <pre><code class="language-javascript">// 複雜數據轉換示例
+return items.map(item => {
+  const data = item.json;
+  
+  // 深度嵌套數據提取
+  const extractedData = data.results.map(result => {
+    return {
+      id: result.id,
+      name: result.properties.name,
+      value: result.properties.metrics.value,
+      category: result.properties.category.main
+    };
+  });
+  
+  // 數據聚合
+  const aggregated = extractedData.reduce((acc, curr) => {
+    if (!acc[curr.category]) {
+      acc[curr.category] = {
+        count: 0,
+        totalValue: 0,
+        items: []
+      };
+    }
+    
+    acc[curr.category].count += 1;
+    acc[curr.category].totalValue += curr.value;
+    acc[curr.category].items.push({
+      id: curr.id,
+      name: curr.name,
+      value: curr.value
+    });
+    
+    return acc;
+  }, {});
+  
+  return { json: { aggregated } };
+});</code></pre>
+
+                            <h5>使用外部庫</h5>
+                            <p>n8n 的 Function 節點支持許多常用的 Node.js 庫：</p>
+                            <pre><code class="language-javascript">// 使用外部庫示例
+const moment = require('moment');
+const lodash = require('lodash');
+const crypto = require('crypto');
+
+return items.map(item => {
+  const data = item.json;
+  
+  // 使用 moment 處理日期
+  const formattedDate = moment(data.timestamp).format('YYYY-MM-DD HH:mm:ss');
+  
+  // 使用 lodash 處理數組
+  const uniqueCategories = lodash.uniq(data.categories);
+  
+  // 使用 crypto 生成哈希
+  const hash = crypto.createHash('md5').update(data.content).digest('hex');
+  
+  return {
+    json: {
+      ...data,
+      formattedDate,
+      uniqueCategories,
+      contentHash: hash
+    }
+  };
+});</code></pre>
+
+                            <h5>錯誤處理</h5>
+                            <p>在 Function 節點中實現錯誤處理：</p>
+                            <pre><code class="language-javascript">// 錯誤處理示例
+return items.map(item => {
+  try {
+    const data = item.json;
+    
+    if (!data.required_field) {
+      throw new Error('Missing required field');
+    }
+    
+    // 處理數據
+    const processed = processData(data);
+    
+    return {
+      json: {
+        success: true,
+        data: processed,
+        error: null
+      }
+    };
+  } catch (error) {
+    console.error(`Error processing item: ${error.message}`);
+    
+    return {
+      json: {
+        success: false,
+        data: null,
+        error: error.message,
+        originalData: item.json
+      }
+    };
+  }
+});</code></pre>
+
+                            <h4>複雜 JSON 和 XML 處理</h4>
+                            <p>處理複雜的 JSON 和 XML 數據結構：</p>
+                            
+                            <h5>JSON 路徑表達式</h5>
+                            <p>使用 JSON 路徑表達式提取深度嵌套的數據：</p>
+                            <pre><code class="language-javascript">// JSON 路徑表達式示例
+const jsonpath = require('jsonpath');
+
+return items.map(item => {
+  const data = item.json;
+  
+  // 提取所有產品名稱
+  const productNames = jsonpath.query(data, '$.products[*].name');
+  
+  // 提取特定類別的產品
+  const electronicsProducts = jsonpath.query(data, '$.products[?(@.category=="electronics")]');
+  
+  // 提取價格大於 100 的產品
+  const expensiveProducts = jsonpath.query(data, '$.products[?(@.price>100)]');
+  
+  return {
+    json: {
+      productNames,
+      electronicsProducts,
+      expensiveProducts
+    }
+  };
+});</code></pre>
+
+                            <h5>XML 處理</h5>
+                            <p>處理 XML 數據：</p>
+                            <pre><code class="language-javascript">// XML 處理示例
+const xml2js = require('xml2js');
+const parser = new xml2js.Parser({ explicitArray: false });
+
+return items.map(item => {
+  const xmlData = item.json.xmlContent;
+  
+  // 將 XML 轉換為 JSON
+  let jsonData;
+  parser.parseString(xmlData, (err, result) => {
+    if (err) throw new Error(`XML parsing error: ${err.message}`);
+    jsonData = result;
+  });
+  
+  // 處理轉換後的 JSON 數據
+  const processed = {
+    title: jsonData.rss.channel.title,
+    description: jsonData.rss.channel.description,
+    items: Array.isArray(jsonData.rss.channel.item) 
+      ? jsonData.rss.channel.item 
+      : [jsonData.rss.channel.item]
+  };
+  
+  return { json: processed };
+});</code></pre>
+
+                            <h4>數據過濾和映射</h4>
+                            <p>過濾和映射是常見的數據處理操作：</p>
+                            
+                            <h5>過濾數據</h5>
+                            <p>根據條件過濾數據項：</p>
+                            <pre><code class="language-javascript">// 數據過濾示例
+return items.filter(item => {
+  const data = item.json;
+  
+  // 過濾條件
+  return data.status === 'active' && 
+         data.price > 50 && 
+         data.category === 'electronics';
+});</code></pre>
+
+                            <h5>數據映射</h5>
+                            <p>將數據從一種結構映射到另一種結構：</p>
+                            <pre><code class="language-javascript">// 數據映射示例
+return items.map(item => {
+  const source = item.json;
+  
+  // 映射到目標結構
+  const target = {
+    userId: source.id,
+    fullName: `${source.firstName} ${source.lastName}`,
+    contactInfo: {
+      email: source.email,
+      phone: source.phoneNumber
+    },
+    address: {
+      street: source.address.line1,
+      city: source.address.city,
+      state: source.address.state,
+      zipCode: source.address.zip
+    },
+    memberSince: new Date(source.createdAt).toISOString().split('T')[0],
+    isActive: source.status === 'active'
+  };
+  
+  return { json: target };
+});</code></pre>
+
+                            <h4>數據聚合和分析</h4>
+                            <p>對數據進行聚合和分析以獲取洞察：</p>
+                            
+                            <h5>基本聚合</h5>
+                            <p>計算總和、平均值、最大值等：</p>
+                            <pre><code class="language-javascript">// 基本聚合示例
+return items.map(item => {
+  const sales = item.json.salesData;
+  
+  // 計算總銷售額
+  const totalSales = sales.reduce((sum, sale) => sum + sale.amount, 0);
+  
+  // 計算平均銷售額
+  const averageSale = totalSales / sales.length;
+  
+  // 找出最大銷售額
+  const maxSale = Math.max(...sales.map(sale => sale.amount));
+  
+  // 找出最小銷售額
+  const minSale = Math.min(...sales.map(sale => sale.amount));
+  
+  return {
+    json: {
+      totalSales,
+      averageSale,
+      maxSale,
+      minSale,
+      salesCount: sales.length
+    }
+  };
+});</code></pre>
+
+                            <h5>分組聚合</h5>
+                            <p>按類別或其他屬性分組聚合數據：</p>
+                            <pre><code class="language-javascript">// 分組聚合示例
+return items.map(item => {
+  const products = item.json.products;
+  
+  // 按類別分組
+  const byCategory = products.reduce((groups, product) => {
+    const category = product.category;
+    
+    if (!groups[category]) {
+      groups[category] = {
+        count: 0,
+        totalValue: 0,
+        items: []
+      };
+    }
+    
+    groups[category].count += 1;
+    groups[category].totalValue += product.price;
+    groups[category].items.push(product);
+    
+    return groups;
+  }, {});
+  
+  // 計算每個類別的平均價格
+  Object.keys(byCategory).forEach(category => {
+    byCategory[category].averagePrice = 
+      byCategory[category].totalValue / byCategory[category].count;
+  });
+  
+  return { json: { categoryAnalysis: byCategory } };
+});</code></pre>
+
+                            <h5>時間序列分析</h5>
+                            <p>分析時間序列數據：</p>
+                            <pre><code class="language-javascript">// 時間序列分析示例
+const moment = require('moment');
+
+return items.map(item => {
+  const timeData = item.json.timeSeriesData;
+  
+  // 按日期分組
+  const byDate = timeData.reduce((groups, entry) => {
+    const date = moment(entry.timestamp).format('YYYY-MM-DD');
+    
+    if (!groups[date]) {
+      groups[date] = {
+        count: 0,
+        totalValue: 0,
+        entries: []
+      };
+    }
+    
+    groups[date].count += 1;
+    groups[date].totalValue += entry.value;
+    groups[date].entries.push(entry);
+    
+    return groups;
+  }, {});
+  
+  // 計算每日平均值
+  const dailyAverages = Object.keys(byDate).map(date => ({
+    date,
+    average: byDate[date].totalValue / byDate[date].count,
+    count: byDate[date].count
+  }));
+  
+  // 按日期排序
+  dailyAverages.sort((a, b) => moment(a.date).diff(moment(b.date)));
+  
+  return { json: { dailyAnalysis: dailyAverages } };
+});</code></pre>
+                        </section>
+
+                        <section id="external-services" class="content-section">
+                            <h3>整合外部服務</h3>
+                            <p>n8n 的強大之處在於能夠輕鬆整合各種外部服務和 API。</p>
+
+                            <h4>數據庫連接和操作</h4>
+                            <p>n8n 支持多種數據庫，包括 MySQL、PostgreSQL、MongoDB 等：</p>
+                            
+                            <h5>基本 CRUD 操作</h5>
+                            <p>執行基本的增刪改查操作：</p>
+                            <pre><code class="language-javascript">// PostgreSQL 節點示例
+// 操作：查詢
+// 表：customers
+// 查詢：SELECT * FROM customers WHERE status = 'active' AND created_at > $1
+// 查詢參數：['2023-01-01']</code></pre>
+
+                            <h5>事務處理</h5>
+                            <p>確保數據一致性的事務操作：</p>
+                            <pre><code class="language-javascript">// PostgreSQL 節點 - 事務示例
+// 操作：執行查詢
+// 查詢：
+BEGIN;
+UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+COMMIT;</code></pre>
+
+                            <h5>批量操作</h5>
+                            <p>高效處理大量數據：</p>
+                            <pre><code class="language-javascript">// Function 節點 - 準備批量插入數據
+return items.map(item => {
+  const products = item.json.products;
+  
+  // 準備批量插入的值
+  const values = products.map(product => 
+    `('${product.name}', '${product.category}', ${product.price}, '${product.sku}')`
+  ).join(', ');
+  
+  const query = `
+    INSERT INTO products (name, category, price, sku)
+    VALUES ${values}
+  `;
+  
+  return { json: { query } };
+});</code></pre>
+
+                            <h4>文件存儲和處理</h4>
+                            <p>處理和存儲各種類型的文件：</p>
+                            
+                            <h5>雲存儲整合</h5>
+                            <p>與 Google Drive、Dropbox、S3 等服務整合：</p>
+                            <pre><code class="language-javascript">// Google Drive 節點示例
+// 操作：上傳
+// 文件名：report-${$json.date}.pdf
+// 二進制數據：$binary.data
+// 父文件夾 ID：1a2b3c4d5e6f7g8h9i</code></pre>
+
+                            <h5>文件格式轉換</h5>
+                            <p>在不同格式之間轉換文件：</p>
+                            <pre><code class="language-javascript">// HTTP Request 節點 - 調用轉換 API
+// 方法：POST
+// URL：https://api.convertapi.com/v1/convert/docx/to/pdf
+// 查詢參數：
+//   Secret: your-api-key
+// 正文：FormData
+//   File: $binary.data</code></pre>
+
+                            <h5>文件內容提取</h5>
+                            <p>從文件中提取文本和數據：</p>
+                            <pre><code class="language-javascript">// PDF 節點示例
+// 操作：提取文本
+// 二進制屬性名：data
+// 頁面：all</code></pre>
+
+                            <h4>電子郵件和通訊服務</h4>
+                            <p>自動化電子郵件和通訊任務：</p>
+                            
+                            <h5>高級電子郵件功能</h5>
+                            <p>發送富文本郵件和附件：</p>
+                            <pre><code class="language-javascript">// Send Email 節點示例
+// 操作：發送
+// 收件人：${$json.customerEmail}
+// 主題：您的訂單 #${$json.orderId} 已發貨
+// 內容：
+// HTML 格式：true
+// 內容：
+/*
+&lt;h2&gt;您好，${$json.customerName}！&lt;/h2&gt;
+&lt;p&gt;您的訂單 #${$json.orderId} 已經發貨。&lt;/p&gt;
+&lt;p&gt;追蹤號碼：&lt;strong&gt;${$json.trackingNumber}&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;預計送達日期：${$json.estimatedDelivery}&lt;/p&gt;
+&lt;h3&gt;訂單詳情：&lt;/h3&gt;
+&lt;ul&gt;
+  ${$json.items.map(item => `&lt;li&gt;${item.quantity} x ${item.name} - $${item.price.toFixed(2)}&lt;/li&gt;`).join('')}
+&lt;/ul&gt;
+&lt;p&gt;總計：$${$json.totalAmount.toFixed(2)}&lt;/p&gt;
+&lt;p&gt;感謝您的購買！&lt;/p&gt;
+*/
+// 附件：$binary.invoice</code></pre>
+
+                            <h5>消息通知</h5>
+                            <p>發送 Slack、Telegram 等平台的通知：</p>
+                            <pre><code class="language-javascript">// Slack 節點示例
+// 操作：發送消息
+// 頻道：#alerts
+// 內容：
+/*
+:warning: *系統警報*
+服務器 ${$json.serverName} 負載過高
+- CPU 使用率: ${$json.cpuUsage}%
+- 內存使用率: ${$json.memoryUsage}%
+- 磁盤使用率: ${$json.diskUsage}%
+
+時間: ${$json.timestamp}
+*/
+// 附件：
+[
+  {
+    "color": $json.cpuUsage > 90 ? "danger" : "warning",
+    "fields": [
+      {
+        "title": "負載趨勢",
+        "value": $json.loadTrend,
+        "short": false
+      },
+      {
+        "title": "建議操作",
+        "value": $json.recommendedAction,
+        "short": false
+      }
+    ]
+  }
+]</code></pre>
+
+                            <h5>多渠道通訊</h5>
+                            <p>根據用戶偏好選擇通訊渠道：</p>
+                            <pre><code class="language-javascript">// Switch 節點 - 根據用戶偏好選擇通訊渠道
+// 表達式：$json.preferredChannel
+// 值：
+// - email: Send Email 節點
+// - sms: Twilio 節點
+// - push: Push Notification 節點
+// - slack: Slack 節點
+// - default: Send Email 節點</code></pre>
+
+                            <h4>社交媒體和營銷平台</h4>
+                            <p>自動化社交媒體和營銷任務：</p>
+                            
+                            <h5>內容發佈</h5>
+                            <p>自動發佈內容到社交媒體平台：</p>
+                            <pre><code class="language-javascript">// Twitter 節點示例
+// 操作：發推文
+// 內容：${$json.title} ${$json.shortUrl} ${$json.hashtags}</code></pre>
+
+                            <h5>社交媒體監控</h5>
+                            <p>監控品牌提及和關鍵詞：</p>
+                            <pre><code class="language-javascript">// Twitter 節點 - 搜索
+// 操作：搜索
+// 搜索詞：("YourBrand" OR "Your Brand") -from:YourBrandAccount
+// 結果類型：recent
+// 限制：100</code></pre>
+
+                            <h5>營銷自動化</h5>
+                            <p>與營銷平台整合：</p>
+                            <pre><code class="language-javascript">// Mailchimp 節點示例
+// 操作：添加成員
+// 列表 ID：your-list-id
+// 電子郵件：${$json.email}
+// 狀態：subscribed
+// 合併字段：
+// - FNAME: ${$json.firstName}
+// - LNAME: ${$json.lastName}
+// - INTERESTS: ${$json.interests.join(',')}</code></pre>
+                        </section>
+
+                        <section id="error-handling" class="content-section">
+                            <h3>錯誤處理與優化</h3>
+                            <p>穩定可靠的工作流需要良好的錯誤處理和優化策略。</p>
+
+                            <h4>錯誤捕獲和處理</h4>
+                            <p>n8n 提供多種錯誤處理機制：</p>
+                            
+                            <h5>Error Trigger 節點</h5>
+                            <p>捕獲工作流執行錯誤：</p>
+                            <pre><code class="language-javascript">// Error Trigger 節點設置
+// 工作流 ID：選擇要監控的工作流
+// 錯誤類型：all</code></pre>
+
+                            <h5>節點級錯誤處理</h5>
+                            <p>在節點設置中啟用「Continue on Fail」選項，允許工作流在節點失敗時繼續執行。</p>
+
+                            <h5>自定義錯誤處理邏輯</h5>
+                            <p>在 Function 節點中實現自定義錯誤處理：</p>
+                            <pre><code class="language-javascript">// 自定義錯誤處理示例
+return items.map(item => {
+  try {
+    // 嘗試執行可能失敗的操作
+    const result = riskyOperation(item.json);
+    return { json: { success: true, data: result } };
+  } catch (error) {
+    // 記錄錯誤
+    console.error(`Error processing item ${item.json.id}: ${error.message}`);
+    
+    // 根據錯誤類型執行不同的處理
+    if (error.message.includes('rate limit')) {
+      // 速率限制錯誤 - 可以稍後重試
+      return { 
+        json: { 
+          success: false, 
+          error: 'rate_limit', 
+          retryAfter: 60,
+          originalData: item.json 
+        } 
+      };
+    } else if (error.message.includes('not found')) {
+      // 資源不存在 - 無需重試
+      return { 
+        json: { 
+          success: false, 
+          error: 'not_found',
+          originalData: item.json 
+        } 
+      };
+    } else {
+      // 其他錯誤
+      return { 
+        json: { 
+          success: false, 
+          error: 'unknown',
+          message: error.message,
+          originalData: item.json 
+        } 
+      };
+    }
+  }
+});</code></pre>
+
+                            <h4>重試機制和備份策略</h4>
+                            <p>實現可靠的重試和備份機制：</p>
+                            
+                            <h5>自動重試</h5>
+                            <p>為不穩定的 API 實現重試邏輯：</p>
+                            <pre><code class="language-javascript">// 重試邏輯示例
+async function makeRequestWithRetry(url, options, maxRetries = 3, delay = 1000) {
+  let lastError;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error(`Attempt ${attempt} failed: ${error.message}`);
+      lastError = error;
+      
+      // 如果還有重試次數，等待後重試
+      if (attempt < maxRetries) {
+        console.log(`Waiting ${delay}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        
+        // 指數退避策略
+        delay *= 2;
+      }
+    }
+  }
+  
+  throw new Error(`Failed after ${maxRetries} attempts: ${lastError.message}`);
+}</code></pre>
+
+                            <h5>數據備份</h5>
+                            <p>實現關鍵數據的備份策略：</p>
+                            <pre><code class="language-javascript">// 數據備份示例
+// Function 節點 - 準備備份數據
+return items.map(item => {
+  const data = item.json;
+  
+  // 添加備份元數據
+  const backupData = {
+    ...data,
+    _backup: {
+      timestamp: new Date().toISOString(),
+      version: '1.0',
+      source: 'daily_backup_workflow'
+    }
+  };
+  
+  // 格式化為 JSON 字符串
+  const backupJson = JSON.stringify(backupData, null, 2);
+  
+  return {
+    json: {
+      backupData,
+      backupJson,
+      filename: `backup_${data.id}_${new Date().toISOString().split('T')[0]}.json`
+    },
+    binary: {
+      data: {
+        data: Buffer.from(backupJson).toString('base64'),
+        mimeType: 'application/json'
+      }
+    }
+  };
+});</code></pre>
+
+                            <h4>工作流性能優化</h4>
+                            <p>優化工作流性能和資源使用：</p>
+                            
+                            <h5>批處理和並行執行</h5>
+                            <p>使用批處理提高效率：</p>
+                            <pre><code class="language-javascript">// Split In Batches 節點設置
+// 批次大小：50
+// 選項：並行處理</code></pre>
+
+                            <h5>數據過濾和減少</h5>
+                            <p>盡早過濾數據以減少處理量：</p>
+                            <pre><code class="language-javascript">// 數據過濾示例
+return items.map(item => {
+  const data = item.json;
+  
+  // 只保留需要的字段
+  const filtered = {
+    id: data.id,
+    name: data.name,
+    email: data.email,
+    // 省略其他不需要的字段
+  };
+  
+  return { json: filtered };
+});</code></pre>
+
+                            <h5>緩存策略</h5>
+                            <p>實現簡單的緩存機制：</p>
+                            <pre><code class="language-javascript">// 緩存策略示例
+// Function 節點 - 檢查緩存
+return items.map(item => {
+  const cacheKey = `data_${item.json.id}`;
+  
+  // 檢查工作流變量中是否有緩存
+  if ($workflow.variables[cacheKey] && 
+      $workflow.variables[cacheKey].timestamp > Date.now() - 3600000) {
+    // 緩存有效（1小時內）
+    console.log(`Cache hit for ${cacheKey}`);
+    return {
+      json: {
+        ...$workflow.variables[cacheKey].data,
+        fromCache: true
+      }
+    };
+  } else {
+    // 緩存未命中或已過期
+    console.log(`Cache miss for ${cacheKey}`);
+    return {
+      json: {
+        ...item.json,
+        fromCache: false
+      }
+    };
+  }
+});</code></pre>
+
+                            <h4>監控和日誌記錄</h4>
+                            <p>實現有效的監控和日誌記錄：</p>
+                            
+                            <h5>結構化日誌</h5>
+                            <p>生成結構化日誌便於分析：</p>
+                            <pre><code class="language-javascript">// 結構化日誌示例
+function log(level, message, data = {}) {
+  const logEntry = {
+    timestamp: new Date().toISOString(),
+    level,
+    message,
+    workflowId: $workflow.id,
+    executionId: $execution.id,
+    ...data
+  };
+  
+  console.log(JSON.stringify(logEntry));
+  
+  return logEntry;
+}
+
+return items.map(item => {
+  // 記錄處理開始
+  log('info', 'Processing item', { itemId: item.json.id });
+  
+  try {
+    // 處理項目
+    const result = processItem(item.json);
+    
+    // 記錄成功
+    log('info', 'Item processed successfully', { 
+      itemId: item.json.id,
+      processingTime: result.processingTime
+    });
+    
+    return { json: result };
+  } catch (error) {
+    // 記錄錯誤
+    log('error', 'Error processing item', {
+      itemId: item.json.id,
+      error: error.message,
+      stack: error.stack
+    });
+    
+    throw error;
+  }
+});</code></pre>
+
+                            <h5>性能指標收集</h5>
+                            <p>收集工作流性能指標：</p>
+                            <pre><code class="language-javascript">// 性能指標收集示例
+return items.map(item => {
+  // 記錄開始時間
+  const startTime = Date.now();
+  
+  // 處理項目
+  const result = processItem(item.json);
+  
+  // 計算處理時間
+  const processingTime = Date.now() - startTime;
+  
+  // 收集性能指標
+  const metrics = {
+    processingTime,
+    itemSize: JSON.stringify(item.json).length,
+    resultSize: JSON.stringify(result).length,
+    timestamp: new Date().toISOString(),
+    workflowId: $workflow.id,
+    executionId: $execution.id
+  };
+  
+  // 可以將指標發送到監控系統或存儲到數據庫
+  
+  return {
+    json: {
+      ...result,
+      _metrics: metrics
+    }
+  };
+});</code></pre>
+
+                            <h5>警報和通知</h5>
+                            <p>設置關鍵指標的警報：</p>
+                            <pre><code class="language-javascript">// 警報和通知示例
+// IF 節點 - 檢查是否需要發送警報
+// 條件：$json.errorCount > 10 || $json.processingTime > 60000
+
+// Slack 節點 - 發送警報
+// 頻道：#alerts
+// 內容：
+/*
+:red_circle: *工作流性能警報*
+工作流：${$workflow.name} (ID: ${$workflow.id})
+執行 ID：${$execution.id}
+
+問題：
+- 錯誤數量：${$json.errorCount}
+- 處理時間：${$json.processingTime}ms
+
+時間：${new Date().toISOString()}
+
+[查看執行詳情](https://your-n8n-instance/workflow/${$workflow.id}/executions/${$execution.id})
+*/</code></pre>
+                        </section>
+
+                        <section id="intermediate-exercises" class="content-section">
+                            <h3>中級實戰練習</h3>
+                            <p>以下是一些中級實戰練習，幫助您應用所學知識：</p>
+
+                            <h4>練習 1：多分支條件工作流</h4>
+                            <p>創建一個工作流，根據用戶行為數據（如頁面訪問、點擊等）將用戶分類為不同的興趣組，並發送個性化的營銷郵件。</p>
+                            <p>使用節點：Webhook, Function, Switch, Send Email</p>
+
+                            <h4>練習 2：數據批處理和轉換</h4>
+                            <p>創建一個工作流，從 CSV 文件中批量導入產品數據，進行數據清理和轉換，然後批量上傳到電子商務平台。</p>
+                            <p>使用節點：Read Binary File, Spreadsheet File, Split In Batches, Function, HTTP Request</p>
+
+                            <h4>練習 3：數據庫操作</h4>
+                            <p>創建一個工作流，連接數據庫，執行複雜的查詢，處理結果，並生成報告。</p>
+                            <p>使用節點：Schedule, PostgreSQL/MySQL, Function, Google Sheets, Send Email</p>
+
+                            <h4>練習 4：錯誤處理和重試</h4>
+                            <p>創建一個工作流，實現可靠的 API 調用，包括錯誤處理、重試機制和失敗通知。</p>
+                            <p>使用節點：HTTP Request, Function, IF, Error Trigger, Slack</p>
+                        </section>
+
+                        <section id="next-steps" class="content-section">
+                            <h3>下一步學習</h3>
+                            <p>恭喜您完成了 n8n 的中級教學！現在您已經掌握了更高級的 n8n 功能和技巧，可以創建更複雜、更強大的自動化工作流了。</p>
+                            <p>接下來，您可以：</p>
+                            <ul>
+                                <li>嘗試完成上述實戰練習，鞏固所學知識</li>
+                                <li>探索更多 n8n 節點和功能</li>
+                                <li>學習進階教學，了解 LLM 整合和 AI 自動化應用</li>
+                                <li>參考實用案例，學習如何解決實際問題</li>
+                            </ul>
+                            <p><a href="advanced-tutorial.html" class="btn">繼續學習進階教學</a></p>
+                        </section>
+                    </section>
+                </div>
+
+                <aside class="sidebar">
+                    <div id="search-container">
+                        <h3>搜索</h3>
+                        <input type="text" id="search-input" placeholder="搜索內容...">
+                        <div id="search-results" style="display: none;"></div>
+                    </div>
+                    <div>
+                        <h3>目錄</h3>
+                        <ul>
+                            <li><a href="#intermediate-tutorial">中級教學概述</a></li>
+                            <li><a href="#advanced-workflow-design">進階工作流設計</a></li>
+                            <li><a href="#data-processing">數據處理與轉換</a></li>
+                            <li><a href="#external-services">整合外部服務</a></li>
+                            <li><a href="#error-handling">錯誤處理與優化</a></li>
+                            <li><a href="#intermediate-exercises">中級實戰練習</a></li>
+                            <li><a href="#next-steps">下一步學習</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>相關頁面</h3>
+                        <ul>
+                            <li><a href="learning-path.html">學習路徑</a></li>
+                            <li><a href="basic-tutorial.html">基礎教學</a></li>
+                            <li><a href="advanced-tutorial.html">進階教學</a></li>
+                            <li><a href="use-cases.html">實用案例</a></li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>關於本站</h3>
+                    <p>n8n 自動化工作流學習指南是一個幫助您從零開始學習 n8n 的完整資源，提供從基礎到進階的教學內容和實用案例。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速鏈接</h3>
+                    <ul>
+                        <li><a href="index.html">首頁</a></li>
+                        <li><a href="learning-path.html">學習路徑</a></li>
+                        <li><a href="basic-tutorial.html">基礎教學</a></li>
+                        <li><a href="intermediate-tutorial.html">中級教學</a></li>
+                        <li><a href="advanced-tutorial.html">進階教學</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>相關資源</h3>
+                    <ul>
+                        <li><a href="https://n8n.io/" target="_blank">n8n 官方網站</a></li>
+                        <li><a href="https://docs.n8n.io/" target="_blank">n8n 官方文檔</a></li>
+                        <li><a href="https://community.n8n.io/" target="_blank">n8n 社區論壇</a></li>
+                        <li><a href="https://github.com/n8n-io/n8n" target="_blank">n8n GitHub 倉庫</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 n8n 自動化工作流學習指南 | 本網站內容僅供學習參考</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
